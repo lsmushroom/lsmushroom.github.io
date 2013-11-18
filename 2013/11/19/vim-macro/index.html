@@ -1,0 +1,172 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>vim Macro | Mushroom'blog</title>
+  <meta name="author" content="linsiyuan">
+  
+  <meta name="description" content="vim 宏
+记录宏:
+visual 模式下q+'[a-z]',q加任意一个字母按键即开始进入宏记录模式，所记录的操作后续可使用字母引用。
+随后进入编辑模式，输入一系列的命令，在完成输入后再按q即可完成记录,记录被保存。
+应用宏：
+@[a-z]:@+之前宏对应的字母即可将宏操作应用于新的记录上
+升级版">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="vim Macro"/>
+  <meta property="og:site_name" content="Mushroom'blog"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Mushroom'blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Mushroom'blog</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div></header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2013-11-18T16:01:03.000Z"><a href="/2013/11/19/vim-macro/">Nov 19 2013</a></time>
+      
+      
+  
+    <h1 class="title">vim Macro</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1>vim 宏</h1>
+<h2>记录宏:</h2>
+<pre><code><span class="title">visual</span> 模式下q+<span class="string">'[a-z]'</span>,q加任意一个字母按键即开始进入宏记录模式，所记录的操作后续可使用字母引用。
+随后进入编辑模式，输入一系列的命令，在完成输入后再按q即可完成记录,记录被保存。</code></pre>
+<h2>应用宏：</h2>
+<pre><code><span class="variable">@[</span>a-z]:<span class="variable">@+</span>之前宏对应的字母即可将宏操作应用于新的记录上</code></pre>
+<h2>升级版：</h2>
+<pre><code>在.vimrc中添加以下内容，即可将<span class="variable">@q</span>操作映射为空格键。
+由此在记录宏时可按如下步骤进行：
+开始记录：qq
+结束记录：q
+应用宏：敲空格键</code></pre>
+<h2>将宏应用在多行上：</h2>
+<pre><code>可在<span class="constant">VISUAL</span>模式下选定多行，然后输入<span class="symbol">:normal</span> <span class="variable">@q</span>,即可将宏同时作用于多行</code></pre>
+<h2>宏的wiki</h2>
+<pre><code><span class="tag">&lt;<span class="title">http:</span>//<span class="attribute">vim.wikia.com</span>/<span class="attribute">wiki</span>/<span class="attribute">Macros</span>&gt;</span></code></pre>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+      <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+      <div id="fb-root"></div>
+<script>
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=123456789012345";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+</script>
+
+<div class="fb-comments" data-href="http://yoursite.com/2013/11/19/vim-macro/" data-num-posts="5" data-width="840" data-colorscheme="light"></div>
+      
+  
+</section>
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:yoursite.com">
+  </form>
+</div>
+
+  
+
+  
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2013 linsiyuan
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>

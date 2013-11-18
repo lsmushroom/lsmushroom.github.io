@@ -48,6 +48,53 @@
     <header>
       
         <div class="icon"></div>
+        <time datetime="2013-11-18T16:01:03.000Z"><a href="/2013/11/19/vim-macro/">Nov 19 2013</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2013/11/19/vim-macro/">vim Macro</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1>vim 宏</h1>
+<h2>记录宏:</h2>
+<pre><code><span class="title">visual</span> 模式下q+<span class="string">'[a-z]'</span>,q加任意一个字母按键即开始进入宏记录模式，所记录的操作后续可使用字母引用。
+随后进入编辑模式，输入一系列的命令，在完成输入后再按q即可完成记录,记录被保存。</code></pre>
+<h2>应用宏：</h2>
+<pre><code><span class="variable">@[</span>a-z]:<span class="variable">@+</span>之前宏对应的字母即可将宏操作应用于新的记录上</code></pre>
+<h2>升级版：</h2>
+<pre><code>在.vimrc中添加以下内容，即可将<span class="variable">@q</span>操作映射为空格键。
+由此在记录宏时可按如下步骤进行：
+开始记录：qq
+结束记录：q
+应用宏：敲空格键</code></pre>
+<h2>将宏应用在多行上：</h2>
+<pre><code>可在<span class="constant">VISUAL</span>模式下选定多行，然后输入<span class="symbol">:normal</span> <span class="variable">@q</span>,即可将宏同时作用于多行</code></pre>
+<h2>宏的wiki</h2>
+<pre><code><span class="tag">&lt;<span class="title">http:</span>//<span class="attribute">vim.wikia.com</span>/<span class="attribute">wiki</span>/<span class="attribute">Macros</span>&gt;</span></code></pre>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
         <time datetime="2013-11-18T15:07:42.000Z"><a href="/2013/11/18/deploy-hexo-on-rhel6/">Nov 18 2013</a></time>
       
       
