@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives | Hexo</title>
-  <meta name="author" content="John Doe">
+  <title>Archives | Mushroom'blog</title>
+  <meta name="author" content="linsiyuan">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-  <meta property="og:site_name" content="Hexo"/>
+  <meta property="og:site_name" content="Mushroom'blog"/>
 
   
     <meta property="og:image" content="undefined"/>
   
 
   <link href="/favicon.png" rel="icon">
-  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="alternate" href="/atom.xml" title="Mushroom'blog" type="application/atom+xml">
   <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
   <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
   
@@ -26,7 +26,7 @@
 
 <body>
   <header id="header" class="inner"><div class="alignleft">
-  <h1><a href="/">Hexo</a></h1>
+  <h1><a href="/">Mushroom'blog</a></h1>
   <h2><a href="/"></a></h2>
 </div>
 <nav id="main-nav" class="alignright">
@@ -52,17 +52,52 @@
     <header>
       
         <div class="icon"></div>
-        <time datetime="2013-11-17T14:45:31.000Z"><a href="/2013/11/17/my-first-post/">Nov 17 2013</a></time>
+        <time datetime="2013-11-18T15:07:42.000Z"><a href="/2013/11/18/deploy-hexo-on-rhel6/">Nov 18 2013</a></time>
       
       
   
-    <h1 class="title"><a href="/2013/11/17/my-first-post/">My First Post</a></h1>
+    <h1 class="title"><a href="/2013/11/18/deploy-hexo-on-rhel6/">deploy hexo on RHEL6</a></h1>
   
 
     </header>
     <div class="entry">
       
-        
+        <h1>1. 安装</h1>
+<p>出书环境的安装将被部署至用户目录下的.nvm等目录中，故root用户安装后非root用户将因权限问题而无法使用</p>
+<h2>1. 下载相关库</h2>
+<pre><code>curl https://raw<span class="preprocessor">.github</span><span class="preprocessor">.com</span>/creationix/nvm/master/install<span class="preprocessor">.sh</span> | sh
+完成后nvm即安装完毕，但需要断开终端重连后nvm可生效</code></pre>
+<h2>2. 安装Node.js</h2>
+<pre><code><span class="title">nvm</span> install <span class="number">0</span>.<span class="number">10</span></code></pre>
+<h2>3. 安装Hexo</h2>
+<pre><code><span class="title">npm</span> install -g hexo</code></pre>
+<h1>2. 使用</h1>
+<h2>2.1    初始化目录</h2>
+<pre><code><span class="title">hexo</span> init</code></pre>
+<h2>2.2    创建新的Post</h2>
+<pre><code><span class="title">hexo</span> new <span class="string">"My First Post"</span></code></pre>
+<h2>2.3    由markdown文件生成静态html文件</h2>
+<pre><code><span class="title">hexo</span> generate</code></pre>
+<h2>2.4    本地预览</h2>
+<pre><code>hexo server
+随后即可在浏览器中预览，对应的地址为服务器的ip,默认的端口为4000。也可通过hexo server -p 选项指定监听的端口
+<span class="tag">&lt;<span class="title">example:</span> <span class="attribute">10.1.41.173:4000</span></code></pre>
+<h2>2.5    将本地blog部署至github对应的仓库上</h2>
+<pre><code><span class="number">1</span>）编辑blog根目录下的_config<span class="variable">.yml</span>，指定博客将被部署至哪
+    <span class="preprocessor"># Deployment</span>
+    <span class="preprocessor">## Docs: http://zespia.tw/hexo/docs/deploy.html</span>
+    deploy:
+      type: github  <span class="preprocessor">#指定待部署的空间的类型，当前要将blog部署至github上在此填github即可</span>
+      repository: git@github<span class="variable">.com</span>:lsmushroom/lsmushroom<span class="variable">.github</span><span class="variable">.io</span><span class="variable">.git</span>  <span class="preprocessor">#给出仓库的链接</span>
+
+<span class="number">2</span>）hexo deploy
+
+至此已通过hexo成功部署一个基本的blog，后续即需了解如何写</code></pre>
+<h1>3. 写blog</h1>
+<pre><code><span class="number">3.1</span> hexo对中文输入的支持
+    hexo要求<span class="variable">.md</span>文件为utf-<span class="number">8</span>编码，故需对文件做一些设置：
+<span class="number">3.2</span> markdown语法</code></pre>
+
       
     </div>
     <footer>
@@ -132,7 +167,7 @@
   </div>
   <footer id="footer" class="inner"><div class="alignleft">
   
-  &copy; 2013 John Doe
+  &copy; 2013 linsiyuan
   
 </div>
 <div class="clearfix"></div></footer>
