@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   
-  <title>deploy hexo on RHEL6 | Mushroom'blog</title>
+  <title>Pig on Yarn | Mushroom'blog</title>
   <meta name="author" content="linsiyuan">
   
-  <meta name="description" content="基于RHEL6成功部署了hexo，博客落户github了，记录下部署的过程">
+  <meta name="description" content="今天尝试了下将pig部署到hadoop2.2.0版的集群上，过程相对较顺利，简单记录下。">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="deploy hexo on RHEL6"/>
+  <meta property="og:title" content="Pig on Yarn"/>
   <meta property="og:site_name" content="Mushroom'blog"/>
 
   
@@ -49,52 +49,40 @@
     <header>
       
         <div class="icon"></div>
-        <time datetime="2013-11-18T15:07:42.000Z"><a href="/2013/11/18/deploy-hexo-on-rhel6/">Nov 18 2013</a></time>
+        <time datetime="2013-11-28T06:52:38.000Z"><a href="/2013/11/28/pig-on-yarn/">Nov 28 2013</a></time>
       
       
   
-    <h1 class="title">deploy hexo on RHEL6</h1>
+    <h1 class="title">Pig on Yarn</h1>
   
 
     </header>
     <div class="entry">
       
-        <p>基于RHEL6成功部署了hexo，博客落户github了，记录下部署的过程<br><a id="more"></a></p>
-<h1>1. 安装</h1>
-<p>hexo环境的部署将被安装至用户目录下的.nvm等目录中，故root用户安装后非root用户将因权限问题而无法使用</p>
-<h2>1. 下载相关库</h2>
-<pre><code>curl https://raw<span class="preprocessor">.github</span><span class="preprocessor">.com</span>/creationix/nvm/master/install<span class="preprocessor">.sh</span> | sh
-完成后nvm即安装完毕，但需要断开终端重连后nvm可生效</code></pre>
-<h2>2. 安装Node.js</h2>
-<pre><code><span class="title">nvm</span> install <span class="number">0</span>.<span class="number">10</span></code></pre>
-<h2>3. 安装Hexo</h2>
-<pre><code><span class="title">npm</span> install -g hexo</code></pre>
-<h1>2. 使用</h1>
-<h2>2.1    初始化目录</h2>
-<pre><code><span class="title">hexo</span> init</code></pre>
-<h2>2.2    创建新的Post</h2>
-<pre><code><span class="title">hexo</span> new <span class="string">"My First Post"</span></code></pre>
-<h2>2.3    由markdown文件生成静态html文件</h2>
-<pre><code><span class="title">hexo</span> generate</code></pre>
-<h2>2.4    本地预览</h2>
-<pre><code>hexo server
-随后即可在浏览器中预览，对应的地址为服务器的ip,默认的端口为4000。也可通过hexo server -p 选项指定监听的端口
-<span class="tag">&lt;<span class="title">example:</span> <span class="attribute">10.1.41.173:4000</span></code></pre>
-<h2>2.5    将本地blog部署至github对应的仓库上</h2>
-<pre><code><span class="number">1</span>）编辑blog根目录下的_config<span class="variable">.yml</span>，指定博客将被部署至哪
-    <span class="preprocessor"># Deployment</span>
-    <span class="preprocessor">## Docs: http://zespia.tw/hexo/docs/deploy.html</span>
-    deploy:
-      type: github  <span class="preprocessor">#指定待部署的空间的类型，当前要将blog部署至github上在此填github即可</span>
-      repository: git@github<span class="variable">.com</span>:lsmushroom/lsmushroom<span class="variable">.github</span><span class="variable">.io</span><span class="variable">.git</span>  <span class="preprocessor">#给出仓库的链接</span>
+        <p>今天尝试了下将pig部署到hadoop2.2.0版的集群上，过程相对较顺利，简单记录下。</p>
+<a id="more"></a>
 
-<span class="number">2</span>）hexo deploy
+<h2>部署</h2>
+<p>部署需要依赖ant编译工具，当前使用版本为<a href="http://archive.apache.org/dist/ant/binaries/apache-ant-1.7.1-bin.zip" target="_blank">apache-ant-1.7.1</a><br>下载 pig 最新版源码包 pig-0.12.0-src,解压后对其进行编译,当前pig适配于hadoop20与hadoop23版本，因我们需要将其部署在Yarn平台上，选取适配的目标版本为hadoop23</p>
+<pre><code><span class="title">ant</span> clean jar-withouthadoop -Dhadoopversion=<span class="number">23</span></code></pre>
+<p>编译过程将下载依赖的包，比较慢。 编译完成后添加pig脚本所处的目录至 $PATH 环境变量中即完成了pig的部署。</p>
+<h2>测试</h2>
+<p>Pig-Latin 实现的wordcount:</p>
+<pre><code><span class="title">A</span> = load <span class="string">'./input.txt'</span>;
+<span class="title">B</span> = foreach A generate flatten(TOKENIZE((chararray)<span class="variable">$0</span>)) as word;
+<span class="title">C</span> = group B by word;
+<span class="title">D</span> = foreach C generate COUNT(B), group;
+<span class="title">store</span> D into <span class="string">'./wordcount'</span>;</code></pre>
+<p>运行wordcout测试程序：</p>
+<pre><code><span class="comment">#将输入文件上传至HDFS</span>
+[<span class="variable">@sohu_41_173</span> pig-wordcount]<span class="comment">#hdfs dfs -put ./input.txt input.txt</span>
 
-至此已通过hexo成功部署一个基本的blog，后续即需了解如何写</code></pre>
-<h1>3. 写blog</h1>
-<pre><code><span class="number">3.1</span> hexo对中文输入的支持
-    hexo要求<span class="variable">.md</span>文件为utf-<span class="number">8</span>编码，故需对文件做一些设置：
-<span class="number">3.2</span> markdown语法</code></pre>
+<span class="comment">#执行wordcount.pig脚本</span>
+[<span class="variable">@sohu_41_173</span> pig-wordcount]<span class="comment"># pig ./wordcount.pig</span>
+
+<span class="comment">#检查输出</span>
+[<span class="variable">@sohu_41_173</span> pig-wordcount]<span class="comment"># hdfs dfs -cat wordcount/part-r-00000</span></code></pre>
+<p>完成 :)</p>
 
       
     </div>
@@ -104,7 +92,7 @@
         
   
   <div class="tags">
-    <a href="/tags/hexo/">hexo</a>
+    <a href="/tags/pig/">pig</a>, <a href="/tags/yarn/">yarn</a>, <a href="/tags/hadoop/">hadoop</a>
   </div>
 
         
@@ -147,7 +135,7 @@
   }(document, 'script', 'facebook-jssdk'));
 </script>
 
-<div class="fb-comments" data-href="http://yoursite.com/2013/11/18/deploy-hexo-on-rhel6/" data-num-posts="5" data-width="840" data-colorscheme="light"></div>
+<div class="fb-comments" data-href="http://yoursite.com/2013/11/28/pig-on-yarn/" data-num-posts="5" data-width="840" data-colorscheme="light"></div>
       
   
 </section>
