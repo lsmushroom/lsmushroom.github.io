@@ -1,16 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title><![CDATA[Mushroom'blog]]></title>
+  <title><![CDATA[Mushroom's blog]]></title>
   <subtitle><![CDATA[没时间玩，就扩大玩的定义，我玩的是技术]]></subtitle>
   <link href="http://lsmushroom.github.io/atom.xml" rel="self"/>
   <link href="http://lsmushroom.github.io"/>
-  <updated>2013-11-29T15:19:42.750Z</updated>
+  <updated>2013-12-04T09:00:25.248Z</updated>
   <id>http://lsmushroom.github.io/</id>
   <author>
     <name><![CDATA[Yuan Linsi]]></name>
     <email><![CDATA[lsmushroom@126.com]]></email>
   </author>
   <generator uri="http://zespia.tw/hexo">Hexo</generator>
+  <entry>
+    <title type="html"><![CDATA[Yarn 日志级别]]></title>
+    <link href="http://lsmushroom.github.io/2013/12/04/yarn日志级别调整/"/>
+    <id>http://lsmushroom.github.io/2013/12/04/yarn日志级别调整/</id>
+    <published>2013-12-04T09:00:06.000Z</published>
+    <updated>2013-12-04T09:00:06.000Z</updated>
+    <content type="html"><![CDATA[<p>Yarn 中默认的日志级别为INFO，如何调整其输出日志的级别呢？</p>
+<a id="more"></a>
+
+<p>Yarn 中提供以下命令用以查看并设置集群的输出日志级别：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>[@sohu_41_173 ~]# yarn  daemonlog
+
+Usage: General options are:
+        [-getlevel <span class="tag">&lt;<span class="title">host:httpPort</span>&gt;</span> <span class="tag">&lt;<span class="title">name</span>&gt;</span>]
+        [-setlevel <span class="tag">&lt;<span class="title">host:httpPort</span>&gt;</span> <span class="tag">&lt;<span class="title">name</span>&gt;</span> <span class="tag">&lt;<span class="title">level</span>&gt;</span>]
+</pre></td></tr></table></figure>
+
+<p>使用“daemonlog”命令需要提供相应的“host:httpPort” 以及需要查看或修改日志级别的类的名称，而“host:httpPort”可以通过以下命令查询获得：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre>[@sohu_41_173 ~]# yarn node  -all -list
+<span class="number">13</span>/<span class="number">12</span>/<span class="number">04</span> <span class="number">15</span>:<span class="number">09</span>:<span class="number">35</span> <span class="class">INFO</span> client.<span class="class">RMProxy</span>: <span class="class">Connecting</span> to <span class="class">ResourceManager</span> at master.hadoop/<span class="number">10.1</span><span class="number">.41</span><span class="number">.173</span>:<span class="number">9080</span>
+<span class="class">Total</span> <span class="class">Nodes</span>:<span class="number">3</span>
+     <span class="class">Node</span>-<span class="class">Id</span>             <span class="class">Node</span>-<span class="class">State</span> <span class="class">Node</span>-<span class="class">Http</span>-<span class="class">Address</span>       <span class="class">Number</span>-of-<span class="class">Running</span>-<span class="class">Containers</span>
+<span class="method">slave0:</span><span class="number">54260</span>                <span class="class">RUNNING</span>       <span class="method">slave0:</span><span class="number">8042</span>                                  <span class="number">1</span>
+<span class="method">slave1:</span><span class="number">45892</span>                <span class="class">RUNNING</span>       <span class="method">slave1:</span><span class="number">8042</span>                                  <span class="number">2</span>
+<span class="method">slave2:</span><span class="number">45410</span>                <span class="class">RUNNING</span>       <span class="method">slave2:</span><span class="number">8042</span>                                  <span class="number">3</span>
+</pre></td></tr></table></figure>
+
+<p>以设置YarnChild.class为例：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="code"><pre>[@sohu_41_173 ~]# yarn  daemonlog -getlevel slave0:<span class="number">8042</span> YarnChild.<span class="class"><span class="keyword">class</span>
+<span class="title">Connecting</span> <span class="title">to</span> <span class="title">http</span>://<span class="title">slave0</span>:8042/<span class="title">logLevel</span>?<span class="title">log</span>=<span class="title">YarnChild</span>.<span class="title">class</span>
+<span class="title">Submitted</span> <span class="title">Log</span> <span class="title">Name</span>: <span class="title">YarnChild</span>.<span class="title">class</span>
+<span class="title">Log</span> <span class="title">Class</span>: <span class="title">org</span>.<span class="title">apache</span>.<span class="title">commons</span>.<span class="title">logging</span>.<span class="title">impl</span>.<span class="title">Log4JLogger</span>
+<span class="title">Effective</span> <span class="title">level</span>: <span class="title">INFO</span>
+[@<span class="title">sohu_41_173</span> ~]# <span class="title">yarn</span>  <span class="title">daemonlog</span> -<span class="title">setlevel</span> <span class="title">slave0</span>:8042 <span class="title">YarnChild</span>.<span class="title">class</span> <span class="title">DEBUG</span>
+<span class="title">Connecting</span> <span class="title">to</span> <span class="title">http</span>://<span class="title">slave0</span>:8042/<span class="title">logLevel</span>?<span class="title">log</span>=<span class="title">YarnChild</span>.<span class="title">class</span>&<span class="title">level</span>=<span class="title">DEBUG</span>
+<span class="title">Submitted</span> <span class="title">Log</span> <span class="title">Name</span>: <span class="title">YarnChild</span>.<span class="title">class</span>
+<span class="title">Log</span> <span class="title">Class</span>: <span class="title">org</span>.<span class="title">apache</span>.<span class="title">commons</span>.<span class="title">logging</span>.<span class="title">impl</span>.<span class="title">Log4JLogger</span>
+<span class="title">Submitted</span> <span class="title">Level</span>: <span class="title">DEBUG</span>
+<span class="title">Setting</span> <span class="title">Level</span> <span class="title">to</span> <span class="title">DEBUG</span> ...
+<span class="title">Effective</span> <span class="title">level</span>: <span class="title">DEBUG</span>
+[@<span class="title">sohu_41_173</span> ~]# <span class="title">yarn</span>  <span class="title">daemonlog</span> -<span class="title">getlevel</span> <span class="title">slave0</span>:8042 <span class="title">YarnChild</span>.<span class="title">class</span>
+<span class="title">Connecting</span> <span class="title">to</span> <span class="title">http</span>://<span class="title">slave0</span>:8042/<span class="title">logLevel</span>?<span class="title">log</span>=<span class="title">YarnChild</span>.<span class="title">class</span>
+<span class="title">Submitted</span> <span class="title">Log</span> <span class="title">Name</span>: <span class="title">YarnChild</span>.<span class="title">class</span>
+<span class="title">Log</span> <span class="title">Class</span>: <span class="title">org</span>.<span class="title">apache</span>.<span class="title">commons</span>.<span class="title">logging</span>.<span class="title">impl</span>.<span class="title">Log4JLogger</span>
+<span class="title">Effective</span> <span class="title">level</span>: <span class="title">DEBUG</span>
+</pre></td></tr></table></figure>
+
+<p>Done. :)</p>
+]]></content>
+    <category scheme="http://lsmushroom.github.io/tags/yarn/" term="yarn"/>
+    <category scheme="http://lsmushroom.github.io/tags/hadoop/" term="hadoop"/>
+  </entry>
   <entry>
     <title type="html"><![CDATA[Pig on Yarn]]></title>
     <link href="http://lsmushroom.github.io/2013/11/28/pig-on-yarn/"/>

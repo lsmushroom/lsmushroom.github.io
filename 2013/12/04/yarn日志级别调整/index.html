@@ -1,0 +1,295 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Yarn 日志级别 | Mushroom's blog</title>
+  <meta name="author" content="Yuan Linsi">
+  
+  <meta name="description" content="hadoop,yarn,mapreduce,linux kernel">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Yarn 日志级别"/>
+  <meta property="og:site_name" content="Mushroom's blog"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Mushroom's blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<!--script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'true']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script-->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-46104206-1', 'lsmushroom.github.io');
+    ga('send', 'pageview');
+</script>
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F048b20646e05afe9255eeb7c85739b79' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Mushroom's blog</a></h1>
+  <h2><a href="/">没时间玩，就扩大玩的定义，我玩的是技术</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+    <li><a href="/atom.xml">RSS</a></li>
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2013-12-04T09:00:06.000Z"><a href="/2013/12/04/yarn日志级别调整/">12月 4 2013</a></time>
+      
+      
+  
+    <h1 class="title">Yarn 日志级别</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>Yarn 中默认的日志级别为INFO，如何调整其输出日志的级别呢？</p>
+<a id="more"></a>
+
+<p>Yarn 中提供以下命令用以查看并设置集群的输出日志级别：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>[@sohu_41_173 ~]# yarn  daemonlog
+
+Usage: General options are:
+        [-getlevel <span class="tag">&lt;<span class="title">host:httpPort</span>&gt;</span> <span class="tag">&lt;<span class="title">name</span>&gt;</span>]
+        [-setlevel <span class="tag">&lt;<span class="title">host:httpPort</span>&gt;</span> <span class="tag">&lt;<span class="title">name</span>&gt;</span> <span class="tag">&lt;<span class="title">level</span>&gt;</span>]
+</pre></td></tr></table></figure>
+
+<p>使用“daemonlog”命令需要提供相应的“host:httpPort” 以及需要查看或修改日志级别的类的名称，而“host:httpPort”可以通过以下命令查询获得：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre>[@sohu_41_173 ~]# yarn node  -all -list
+<span class="number">13</span>/<span class="number">12</span>/<span class="number">04</span> <span class="number">15</span>:<span class="number">09</span>:<span class="number">35</span> <span class="class">INFO</span> client.<span class="class">RMProxy</span>: <span class="class">Connecting</span> to <span class="class">ResourceManager</span> at master.hadoop/<span class="number">10.1</span><span class="number">.41</span><span class="number">.173</span>:<span class="number">9080</span>
+<span class="class">Total</span> <span class="class">Nodes</span>:<span class="number">3</span>
+     <span class="class">Node</span>-<span class="class">Id</span>             <span class="class">Node</span>-<span class="class">State</span> <span class="class">Node</span>-<span class="class">Http</span>-<span class="class">Address</span>       <span class="class">Number</span>-of-<span class="class">Running</span>-<span class="class">Containers</span>
+<span class="method">slave0:</span><span class="number">54260</span>                <span class="class">RUNNING</span>       <span class="method">slave0:</span><span class="number">8042</span>                                  <span class="number">1</span>
+<span class="method">slave1:</span><span class="number">45892</span>                <span class="class">RUNNING</span>       <span class="method">slave1:</span><span class="number">8042</span>                                  <span class="number">2</span>
+<span class="method">slave2:</span><span class="number">45410</span>                <span class="class">RUNNING</span>       <span class="method">slave2:</span><span class="number">8042</span>                                  <span class="number">3</span>
+</pre></td></tr></table></figure>
+
+<p>以设置YarnChild.class为例：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="code"><pre>[@sohu_41_173 ~]# yarn  daemonlog -getlevel slave0:<span class="number">8042</span> YarnChild.<span class="class"><span class="keyword">class</span>
+<span class="title">Connecting</span> <span class="title">to</span> <span class="title">http</span>://<span class="title">slave0</span>:8042/<span class="title">logLevel</span>?<span class="title">log</span>=<span class="title">YarnChild</span>.<span class="title">class</span>
+<span class="title">Submitted</span> <span class="title">Log</span> <span class="title">Name</span>: <span class="title">YarnChild</span>.<span class="title">class</span>
+<span class="title">Log</span> <span class="title">Class</span>: <span class="title">org</span>.<span class="title">apache</span>.<span class="title">commons</span>.<span class="title">logging</span>.<span class="title">impl</span>.<span class="title">Log4JLogger</span>
+<span class="title">Effective</span> <span class="title">level</span>: <span class="title">INFO</span>
+[@<span class="title">sohu_41_173</span> ~]# <span class="title">yarn</span>  <span class="title">daemonlog</span> -<span class="title">setlevel</span> <span class="title">slave0</span>:8042 <span class="title">YarnChild</span>.<span class="title">class</span> <span class="title">DEBUG</span>
+<span class="title">Connecting</span> <span class="title">to</span> <span class="title">http</span>://<span class="title">slave0</span>:8042/<span class="title">logLevel</span>?<span class="title">log</span>=<span class="title">YarnChild</span>.<span class="title">class</span>&<span class="title">level</span>=<span class="title">DEBUG</span>
+<span class="title">Submitted</span> <span class="title">Log</span> <span class="title">Name</span>: <span class="title">YarnChild</span>.<span class="title">class</span>
+<span class="title">Log</span> <span class="title">Class</span>: <span class="title">org</span>.<span class="title">apache</span>.<span class="title">commons</span>.<span class="title">logging</span>.<span class="title">impl</span>.<span class="title">Log4JLogger</span>
+<span class="title">Submitted</span> <span class="title">Level</span>: <span class="title">DEBUG</span>
+<span class="title">Setting</span> <span class="title">Level</span> <span class="title">to</span> <span class="title">DEBUG</span> ...
+<span class="title">Effective</span> <span class="title">level</span>: <span class="title">DEBUG</span>
+[@<span class="title">sohu_41_173</span> ~]# <span class="title">yarn</span>  <span class="title">daemonlog</span> -<span class="title">getlevel</span> <span class="title">slave0</span>:8042 <span class="title">YarnChild</span>.<span class="title">class</span>
+<span class="title">Connecting</span> <span class="title">to</span> <span class="title">http</span>://<span class="title">slave0</span>:8042/<span class="title">logLevel</span>?<span class="title">log</span>=<span class="title">YarnChild</span>.<span class="title">class</span>
+<span class="title">Submitted</span> <span class="title">Log</span> <span class="title">Name</span>: <span class="title">YarnChild</span>.<span class="title">class</span>
+<span class="title">Log</span> <span class="title">Class</span>: <span class="title">org</span>.<span class="title">apache</span>.<span class="title">commons</span>.<span class="title">logging</span>.<span class="title">impl</span>.<span class="title">Log4JLogger</span>
+<span class="title">Effective</span> <span class="title">level</span>: <span class="title">DEBUG</span>
+</pre></td></tr></table></figure>
+
+<p>Done. :)</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+  
+  <div class="tags">
+    <a href="/tags/yarn/">yarn</a>, <a href="/tags/hadoop/">hadoop</a>
+  </div>
+
+        <!-- Baidu Button BEGIN -->
+        <div id="bdshare" class="bdshare_t bds_tools_32 get-codes-bdshare">
+        <a class="bds_tsina"></a>
+        <a class="bds_sqq"></a>
+        <a class="bds_douban"></a>
+        <a class="bds_tqq"></a>
+        <a class="bds_qzone"></a>
+        <a class="bds_renren"></a>
+        <a class="bds_tsohu"></a>
+        <a class="bds_t163"></a>
+        <span class="bds_more"></span>
+        <a class="shareCount"></a>
+        </div>
+        <script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=6878295" ></script>
+        <script type="text/javascript" id="bdshell_js"></script>
+        <script type="text/javascript">
+        document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000)
+        </script>
+        <!-- Baidu Button END -->
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+    <!-- Duoshuo Comment BEGIN -->
+    <div class="ds-thread"></div>
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"lsmushroom"};
+    (function() {
+         var ds = document.createElement('script');
+         ds.type = 'text/javascript';ds.async = true;
+         ds.src = 'http://static.duoshuo.com/embed.js';
+         ds.charset = 'UTF-8';
+         (document.getElementsByTagName('head')[0] 
+          || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+    <!-- Duoshuo Comment END -->
+</section>
+
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="搜索">
+    <input type="hidden" name="q" value="site:lsmushroom.github.io">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">分类</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/vim/">vim</a><small>1</small></li>
+  
+    <li><a href="/categories/yarn/">yarn</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">标签</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/hadoop/">hadoop</a><small>2</small></li>
+  
+    <li><a href="/tags/hexo/">hexo</a><small>1</small></li>
+  
+    <li><a href="/tags/pig/">pig</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>1</small></li>
+  
+    <li><a href="/tags/yarn/">yarn</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/hadoop/" style="font-size: 20.00px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
+  </div>
+</div>
+
+
+  <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=5&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=1632605594&verifier=ff6d468c&dpc=1"></iframe>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2013 Yuan Linsi
+  
+</div>
+<div class="clearfix"></div>
+</footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>
