@@ -4,13 +4,30 @@
   <subtitle><![CDATA[没时间玩，就扩大玩的定义，我玩的是技术]]></subtitle>
   <link href="http://lsmushroom.github.io/atom.xml" rel="self"/>
   <link href="http://lsmushroom.github.io"/>
-  <updated>2013-12-04T09:05:18.242Z</updated>
+  <updated>2013-12-09T06:21:48.655Z</updated>
   <id>http://lsmushroom.github.io/</id>
   <author>
     <name><![CDATA[Yuan Linsi]]></name>
     <email><![CDATA[lsmushroom@126.com]]></email>
   </author>
   <generator uri="http://zespia.tw/hexo">Hexo</generator>
+  <entry>
+    <title type="html"><![CDATA[Hadoop 2.2.0 API CHM 版本]]></title>
+    <link href="http://lsmushroom.github.io/2013/12/09/hadoop-220-api-chm-版本�/"/>
+    <id>http://lsmushroom.github.io/2013/12/09/hadoop-220-api-chm-版本�/</id>
+    <published>2013-12-09T06:16:29.000Z</published>
+    <updated>2013-12-09T06:21:35.000Z</updated>
+    <content type="html"><![CDATA[<a id="more"></a>
+
+<p>今天从hadoop 2.2.0 版本的源码中编译生成了相应的doc文件，做成了chm文档:<a href="http://vdisk.weibo.com/s/vt7vK_plTgAz" target="_blank">hadoop-2.2.0 api.chm</a>，以后可以离线查看了</p>
+<p>:)</p>
+]]></content>
+    <category scheme="http://lsmushroom.github.io/tags/hadoop/" term="hadoop"/>
+    <category scheme="http://lsmushroom.github.io/tags/yarn/" term="yarn"/>
+    <category scheme="http://lsmushroom.github.io/tags/api/" term="api"/>
+    <category scheme="http://lsmushroom.github.io/tags/chm/" term="chm"/>
+    <category scheme="http://lsmushroom.github.io/categories/yarn/" term="yarn"/>
+  </entry>
   <entry>
     <title type="html"><![CDATA[Yarn 日志级别]]></title>
     <link href="http://lsmushroom.github.io/2013/12/04/yarn日志级别调整/"/>
