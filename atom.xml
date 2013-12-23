@@ -4,7 +4,7 @@
   <subtitle><![CDATA[没时间玩，就扩大玩的定义，我玩的是技术]]></subtitle>
   <link href="http://lsmushroom.github.io/atom.xml" rel="self"/>
   <link href="http://lsmushroom.github.io"/>
-  <updated>2013-12-09T06:21:48.655Z</updated>
+  <updated>2013-12-23T07:30:49.750Z</updated>
   <id>http://lsmushroom.github.io/</id>
   <author>
     <name><![CDATA[Yuan Linsi]]></name>
@@ -177,7 +177,7 @@ Usage: General options are:
     <link href="http://lsmushroom.github.io/2013/11/18/deploy-hexo-on-rhel6/"/>
     <id>http://lsmushroom.github.io/2013/11/18/deploy-hexo-on-rhel6/</id>
     <published>2013-11-18T15:07:42.000Z</published>
-    <updated>2013-11-29T14:22:17.000Z</updated>
+    <updated>2013-12-23T07:26:43.000Z</updated>
     <content type="html"><![CDATA[<p>基于RHEL6成功部署了hexo，博客落户github了，记录下部署的过程<br><a id="more"></a></p>
 <h1>1. 安装</h1>
 <p>hexo环境的部署将被安装至用户目录下的.nvm等目录中，故root用户安装后非root用户将因权限问题而无法使用</p>
@@ -188,6 +188,8 @@ Usage: General options are:
 <pre><code><span class="title">nvm</span> install <span class="number">0</span>.<span class="number">10</span></code></pre>
 <h2>3. 安装Hexo</h2>
 <pre><code><span class="title">npm</span> install -g hexo</code></pre>
+<h2>4. 添加相关的环境变量至.bashrc中</h2>
+<pre><code><span class="title">export</span> PATH=~/.nvm/v0.<span class="number">10</span>.<span class="number">24</span>/bin/:<span class="variable">$PATH</span></code></pre>
 <h1>2. 使用</h1>
 <h2>2.1    初始化目录</h2>
 <pre><code><span class="title">hexo</span> init</code></pre>
