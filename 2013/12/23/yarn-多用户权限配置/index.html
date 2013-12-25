@@ -1,23 +1,93 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
-  <title><![CDATA[Mushroom's blog]]></title>
-  <subtitle><![CDATA[没时间玩，就扩大玩的定义，我玩的是技术]]></subtitle>
-  <link href="http://lsmushroom.github.io/atom.xml" rel="self"/>
-  <link href="http://lsmushroom.github.io"/>
-  <updated>2013-12-25T10:33:30.957Z</updated>
-  <id>http://lsmushroom.github.io/</id>
-  <author>
-    <name><![CDATA[Yuan Linsi]]></name>
-    <email><![CDATA[lsmushroom@126.com]]></email>
-  </author>
-  <generator uri="http://zespia.tw/hexo">Hexo</generator>
-  <entry>
-    <title type="html"><![CDATA[Yarn 多用户权限配置]]></title>
-    <link href="http://lsmushroom.github.io/2013/12/23/yarn-多用户权限配置/"/>
-    <id>http://lsmushroom.github.io/2013/12/23/yarn-多用户权限配置/</id>
-    <published>2013-12-23T07:32:23.000Z</published>
-    <updated>2013-12-25T10:32:57.000Z</updated>
-    <content type="html"><![CDATA[<p>近期将在yarn集群中添加多用户环境，修改了下集群的用户访问权限，记录下已备忘。</p>
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Yarn 多用户权限配置 | Mushroom's blog</title>
+  <meta name="author" content="Yuan Linsi">
+  
+  <meta name="description" content="hadoop,yarn,mapreduce,linux kernel">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Yarn 多用户权限配置"/>
+  <meta property="og:site_name" content="Mushroom's blog"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Mushroom's blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<!--script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'true']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script-->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-46104206-1', 'lsmushroom.github.io');
+    ga('send', 'pageview');
+</script>
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F048b20646e05afe9255eeb7c85739b79' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Mushroom's blog</a></h1>
+  <h2><a href="/">没时间玩，就扩大玩的定义，我玩的是技术</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+    <li><a href="/atom.xml">RSS</a></li>
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2013-12-23T07:32:23.000Z"><a href="/2013/12/23/yarn-多用户权限配置/">12月 23 2013</a></time>
+      
+      
+  
+    <h1 class="title">Yarn 多用户权限配置</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>近期将在yarn集群中添加多用户环境，修改了下集群的用户访问权限，记录下已备忘。</p>
 <p><a id="more"></a></p>
 <h1>源码分析</h1>
 <p>首先需清楚在yarn集群中将存在两类用户，一个是启动集群的用户，另一个是提交应用的用户。由此对于Yarn中的守护进程，如ResourceManager，NodeManager,NameNode,DataNode等将由管理员用户启动，而如MRAppMaster,YarnChild类，在多用户情景下应由提交应用的用户所启动。由此多用户将与Yarn中容器启动的过程紧密相关，在Yarn中提供两种实现方式：DefaultContainerExecutor和LinuxContainerExecutor，二者的执行逻辑很相似，主要的不同之处在于DefaultContainerExecutor将以NodeManager启动者的用户运行相应的应用，而LinuxContainerExecutor可以提交应用的用户执行，同时LinuxContainerExecutor可实现对CPU资源的控制。而LinuxContainerExecutor的执行则依赖二进制可执行程序container-executor来完成。</p>
@@ -211,218 +281,147 @@ allowed<span class="variable">.system</span><span class="variable">.users</span>
 <p>yarn-site.xml中yarn.nodemanager.linux-container-executor.cgroups.mount-path 指定的默认挂载点要求必须存在，可在集群内每个节点上运行/etc/init.d/cgconfig restart以确保挂载点的存在</p>
 <h2>用户添加</h2>
 <p>在集群内的每个节点上都需要新增相应的集群使用者用户账号</p>
-]]></content>
-    <category scheme="http://lsmushroom.github.io/tags/yarn/" term="yarn"/>
-    <category scheme="http://lsmushroom.github.io/tags/hadoop/" term="hadoop"/>
-    <category scheme="http://lsmushroom.github.io/categories/yarn/" term="yarn"/>
-  </entry>
-  <entry>
-    <title type="html"><![CDATA[Hadoop 2.2.0 API CHM 版本]]></title>
-    <link href="http://lsmushroom.github.io/2013/12/09/hadoop-220-api-chm-版本�/"/>
-    <id>http://lsmushroom.github.io/2013/12/09/hadoop-220-api-chm-版本�/</id>
-    <published>2013-12-09T06:16:29.000Z</published>
-    <updated>2013-12-09T06:21:35.000Z</updated>
-    <content type="html"><![CDATA[<a id="more"></a>
 
-<p>今天从hadoop 2.2.0 版本的源码中编译生成了相应的doc文件，做成了chm文档:<a href="http://vdisk.weibo.com/s/vt7vK_plTgAz" target="_blank">hadoop-2.2.0 api.chm</a>，以后可以离线查看了</p>
-<p>:)</p>
-]]></content>
-    <category scheme="http://lsmushroom.github.io/tags/hadoop/" term="hadoop"/>
-    <category scheme="http://lsmushroom.github.io/tags/yarn/" term="yarn"/>
-    <category scheme="http://lsmushroom.github.io/tags/api/" term="api"/>
-    <category scheme="http://lsmushroom.github.io/tags/chm/" term="chm"/>
-    <category scheme="http://lsmushroom.github.io/categories/yarn/" term="yarn"/>
-  </entry>
-  <entry>
-    <title type="html"><![CDATA[Yarn 日志级别]]></title>
-    <link href="http://lsmushroom.github.io/2013/12/04/yarn日志级别调整/"/>
-    <id>http://lsmushroom.github.io/2013/12/04/yarn日志级别调整/</id>
-    <published>2013-12-04T09:00:06.000Z</published>
-    <updated>2013-12-04T09:04:55.000Z</updated>
-    <content type="html"><![CDATA[<p>Yarn 中默认的日志级别为INFO，如何调整其输出日志的级别呢？</p>
-<a id="more"></a>
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/yarn/">yarn</a>
+  </div>
 
-<p>Yarn 中提供以下命令用以查看并设置集群的输出日志级别：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-</pre></td><td class="code"><pre>[@sohu_41_173 ~]# yarn  daemonlog
+        
+  
+  <div class="tags">
+    <a href="/tags/yarn/">yarn</a>, <a href="/tags/hadoop/">hadoop</a>
+  </div>
 
-Usage: General options are:
-        [-getlevel <span class="tag">&lt;<span class="title">host:httpPort</span>&gt;</span> <span class="tag">&lt;<span class="title">name</span>&gt;</span>]
-        [-setlevel <span class="tag">&lt;<span class="title">host:httpPort</span>&gt;</span> <span class="tag">&lt;<span class="title">name</span>&gt;</span> <span class="tag">&lt;<span class="title">level</span>&gt;</span>]
-</pre></td></tr></table></figure>
+        <!-- Baidu Button BEGIN -->
+        <div id="bdshare" class="bdshare_t bds_tools_32 get-codes-bdshare">
+        <a class="bds_tsina"></a>
+        <a class="bds_sqq"></a>
+        <a class="bds_douban"></a>
+        <a class="bds_tqq"></a>
+        <a class="bds_qzone"></a>
+        <a class="bds_renren"></a>
+        <a class="bds_tsohu"></a>
+        <a class="bds_t163"></a>
+        <span class="bds_more"></span>
+        <a class="shareCount"></a>
+        </div>
+        <script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=6878295" ></script>
+        <script type="text/javascript" id="bdshell_js"></script>
+        <script type="text/javascript">
+        document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000)
+        </script>
+        <!-- Baidu Button END -->
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
 
-<p>使用“daemonlog”命令需要提供相应的“host:httpPort” 以及需要查看或修改日志级别的类的名称，而“host:httpPort”可以通过以下命令查询获得：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-6
-7
-</pre></td><td class="code"><pre>[@sohu_41_173 ~]# yarn node  -all -list
-<span class="number">13</span>/<span class="number">12</span>/<span class="number">04</span> <span class="number">15</span>:<span class="number">09</span>:<span class="number">35</span> <span class="class">INFO</span> client.<span class="class">RMProxy</span>: <span class="class">Connecting</span> to <span class="class">ResourceManager</span> at master.hadoop/<span class="number">10.1</span><span class="number">.41</span><span class="number">.173</span>:<span class="number">9080</span>
-<span class="class">Total</span> <span class="class">Nodes</span>:<span class="number">3</span>
-     <span class="class">Node</span>-<span class="class">Id</span>             <span class="class">Node</span>-<span class="class">State</span> <span class="class">Node</span>-<span class="class">Http</span>-<span class="class">Address</span>       <span class="class">Number</span>-of-<span class="class">Running</span>-<span class="class">Containers</span>
-<span class="method">slave0:</span><span class="number">54260</span>                <span class="class">RUNNING</span>       <span class="method">slave0:</span><span class="number">8042</span>                                  <span class="number">1</span>
-<span class="method">slave1:</span><span class="number">45892</span>                <span class="class">RUNNING</span>       <span class="method">slave1:</span><span class="number">8042</span>                                  <span class="number">2</span>
-<span class="method">slave2:</span><span class="number">45410</span>                <span class="class">RUNNING</span>       <span class="method">slave2:</span><span class="number">8042</span>                                  <span class="number">3</span>
-</pre></td></tr></table></figure>
 
-<p>以设置YarnChild.class为例：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-</pre></td><td class="code"><pre>[@sohu_41_173 ~]# yarn  daemonlog -getlevel slave0:<span class="number">8042</span> YarnChild.<span class="class"><span class="keyword">class</span>
-<span class="title">Connecting</span> <span class="title">to</span> <span class="title">http</span>://<span class="title">slave0</span>:8042/<span class="title">logLevel</span>?<span class="title">log</span>=<span class="title">YarnChild</span>.<span class="title">class</span>
-<span class="title">Submitted</span> <span class="title">Log</span> <span class="title">Name</span>: <span class="title">YarnChild</span>.<span class="title">class</span>
-<span class="title">Log</span> <span class="title">Class</span>: <span class="title">org</span>.<span class="title">apache</span>.<span class="title">commons</span>.<span class="title">logging</span>.<span class="title">impl</span>.<span class="title">Log4JLogger</span>
-<span class="title">Effective</span> <span class="title">level</span>: <span class="title">INFO</span>
-[@<span class="title">sohu_41_173</span> ~]# <span class="title">yarn</span>  <span class="title">daemonlog</span> -<span class="title">setlevel</span> <span class="title">slave0</span>:8042 <span class="title">YarnChild</span>.<span class="title">class</span> <span class="title">DEBUG</span>
-<span class="title">Connecting</span> <span class="title">to</span> <span class="title">http</span>://<span class="title">slave0</span>:8042/<span class="title">logLevel</span>?<span class="title">log</span>=<span class="title">YarnChild</span>.<span class="title">class</span>&<span class="title">level</span>=<span class="title">DEBUG</span>
-<span class="title">Submitted</span> <span class="title">Log</span> <span class="title">Name</span>: <span class="title">YarnChild</span>.<span class="title">class</span>
-<span class="title">Log</span> <span class="title">Class</span>: <span class="title">org</span>.<span class="title">apache</span>.<span class="title">commons</span>.<span class="title">logging</span>.<span class="title">impl</span>.<span class="title">Log4JLogger</span>
-<span class="title">Submitted</span> <span class="title">Level</span>: <span class="title">DEBUG</span>
-<span class="title">Setting</span> <span class="title">Level</span> <span class="title">to</span> <span class="title">DEBUG</span> ...
-<span class="title">Effective</span> <span class="title">level</span>: <span class="title">DEBUG</span>
-[@<span class="title">sohu_41_173</span> ~]# <span class="title">yarn</span>  <span class="title">daemonlog</span> -<span class="title">getlevel</span> <span class="title">slave0</span>:8042 <span class="title">YarnChild</span>.<span class="title">class</span>
-<span class="title">Connecting</span> <span class="title">to</span> <span class="title">http</span>://<span class="title">slave0</span>:8042/<span class="title">logLevel</span>?<span class="title">log</span>=<span class="title">YarnChild</span>.<span class="title">class</span>
-<span class="title">Submitted</span> <span class="title">Log</span> <span class="title">Name</span>: <span class="title">YarnChild</span>.<span class="title">class</span>
-<span class="title">Log</span> <span class="title">Class</span>: <span class="title">org</span>.<span class="title">apache</span>.<span class="title">commons</span>.<span class="title">logging</span>.<span class="title">impl</span>.<span class="title">Log4JLogger</span>
-<span class="title">Effective</span> <span class="title">level</span>: <span class="title">DEBUG</span>
-</pre></td></tr></table></figure>
+<section id="comment">
+    <!-- Duoshuo Comment BEGIN -->
+    <div class="ds-thread"></div>
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"lsmushroom"};
+    (function() {
+         var ds = document.createElement('script');
+         ds.type = 'text/javascript';ds.async = true;
+         ds.src = 'http://static.duoshuo.com/embed.js';
+         ds.charset = 'UTF-8';
+         (document.getElementsByTagName('head')[0] 
+          || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+    <!-- Duoshuo Comment END -->
+</section>
 
-<p>Done. :)</p>
-]]></content>
-    <category scheme="http://lsmushroom.github.io/tags/yarn/" term="yarn"/>
-    <category scheme="http://lsmushroom.github.io/tags/hadoop/" term="hadoop"/>
-    <category scheme="http://lsmushroom.github.io/categories/yarn/" term="yarn"/>
-  </entry>
-  <entry>
-    <title type="html"><![CDATA[Pig on Yarn]]></title>
-    <link href="http://lsmushroom.github.io/2013/11/28/pig-on-yarn/"/>
-    <id>http://lsmushroom.github.io/2013/11/28/pig-on-yarn/</id>
-    <published>2013-11-28T06:52:38.000Z</published>
-    <updated>2013-11-29T14:22:06.000Z</updated>
-    <content type="html"><![CDATA[<p>今天尝试了下将pig部署到hadoop2.2.0版的集群上，过程相对较顺利，简单记录下。</p>
-<a id="more"></a>
 
-<h2>部署</h2>
-<p>部署需要依赖ant编译工具，当前使用版本为<a href="http://archive.apache.org/dist/ant/binaries/apache-ant-1.7.1-bin.zip" target="_blank">apache-ant-1.7.1</a><br>下载 pig 最新版源码包 pig-0.12.0-src,解压后对其进行编译,当前pig适配于hadoop20与hadoop23版本，因我们需要将其部署在Yarn平台上，选取适配的目标版本为hadoop23</p>
-<pre><code><span class="title">ant</span> clean jar-withouthadoop -Dhadoopversion=<span class="number">23</span></code></pre>
-<p>编译过程将下载依赖的包，比较慢。 编译完成后添加pig脚本所处的目录至 $PATH 环境变量中即完成了pig的部署。</p>
-<h2>测试</h2>
-<p>Pig-Latin 实现的wordcount:</p>
-<pre><code><span class="title">A</span> = load <span class="string">'./input.txt'</span>;
-<span class="title">B</span> = foreach A generate flatten(TOKENIZE((chararray)<span class="variable">$0</span>)) as word;
-<span class="title">C</span> = group B by word;
-<span class="title">D</span> = foreach C generate COUNT(B), group;
-<span class="title">store</span> D into <span class="string">'./wordcount'</span>;</code></pre>
-<p>运行wordcout测试程序：</p>
-<pre><code><span class="comment">#将输入文件上传至HDFS</span>
-[<span class="variable">@sohu_41_173</span> pig-wordcount]<span class="comment">#hdfs dfs -put ./input.txt input.txt</span>
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="搜索">
+    <input type="hidden" name="q" value="site:lsmushroom.github.io">
+  </form>
+</div>
 
-<span class="comment">#执行wordcount.pig脚本</span>
-[<span class="variable">@sohu_41_173</span> pig-wordcount]<span class="comment"># pig ./wordcount.pig</span>
+  
+<div class="widget tag">
+  <h3 class="title">分类</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/vim/">vim</a><small>1</small></li>
+  
+    <li><a href="/categories/yarn/">yarn</a><small>5</small></li>
+  
+  </ul>
+</div>
 
-<span class="comment">#检查输出</span>
-[<span class="variable">@sohu_41_173</span> pig-wordcount]<span class="comment"># hdfs dfs -cat wordcount/part-r-00000</span></code></pre>
-<p>完成 :)</p>
-]]></content>
-    <category scheme="http://lsmushroom.github.io/tags/pig/" term="pig"/>
-    <category scheme="http://lsmushroom.github.io/tags/yarn/" term="yarn"/>
-    <category scheme="http://lsmushroom.github.io/tags/hadoop/" term="hadoop"/>
-    <category scheme="http://lsmushroom.github.io/categories/yarn/" term="yarn"/>
-  </entry>
-  <entry>
-    <title type="html"><![CDATA[vim Macro]]></title>
-    <link href="http://lsmushroom.github.io/2013/11/19/vim-macro/"/>
-    <id>http://lsmushroom.github.io/2013/11/19/vim-macro/</id>
-    <published>2013-11-18T16:01:03.000Z</published>
-    <updated>2013-11-29T14:21:51.000Z</updated>
-    <content type="html"><![CDATA[<p>vim 宏提供一种将一系列的操作批量应用于多行内容上的功能<br><a id="more"></a></p>
-<h2>记录宏:</h2>
-<pre><code><span class="title">visual</span> 模式下q+<span class="string">'[a-z]'</span>,q加任意一个字母按键即开始进入宏记录模式，所记录的操作后续可使用字母引用。
-随后进入编辑模式，输入一系列的命令，在完成输入后再按q即可完成记录,记录被保存。</code></pre>
-<h2>应用宏：</h2>
-<pre><code><span class="variable">@[</span>a-z]:<span class="variable">@+</span>之前宏对应的字母即可将宏操作应用于新的记录上</code></pre>
-<h2>升级版：</h2>
-<pre><code>在.vimrc中添加以下内容，即可将<span class="variable">@q</span>操作映射为空格键。
-由此在记录宏时可按如下步骤进行：
-开始记录：qq
-结束记录：q
-应用宏：敲空格键</code></pre>
-<h2>将宏应用在多行上：</h2>
-<pre><code>可在<span class="constant">VISUAL</span>模式下选定多行，然后输入<span class="symbol">:normal</span> <span class="variable">@q</span>,即可将宏同时作用于多行</code></pre>
-<h2>宏的wiki</h2>
-<pre><code><span class="tag">&lt;<span class="title">http:</span>//<span class="attribute">vim.wikia.com</span>/<span class="attribute">wiki</span>/<span class="attribute">Macros</span>&gt;</span></code></pre>
-]]></content>
-    <category scheme="http://lsmushroom.github.io/tags/vim/" term="vim"/>
-    <category scheme="http://lsmushroom.github.io/categories/vim/" term="vim"/>
-  </entry>
-  <entry>
-    <title type="html"><![CDATA[deploy hexo on RHEL6]]></title>
-    <link href="http://lsmushroom.github.io/2013/11/18/deploy-hexo-on-rhel6/"/>
-    <id>http://lsmushroom.github.io/2013/11/18/deploy-hexo-on-rhel6/</id>
-    <published>2013-11-18T15:07:42.000Z</published>
-    <updated>2013-12-23T07:26:43.000Z</updated>
-    <content type="html"><![CDATA[<p>基于RHEL6成功部署了hexo，博客落户github了，记录下部署的过程<br><a id="more"></a></p>
-<h1>1. 安装</h1>
-<p>hexo环境的部署将被安装至用户目录下的.nvm等目录中，故root用户安装后非root用户将因权限问题而无法使用</p>
-<h2>1. 下载相关库</h2>
-<pre><code>curl https://raw<span class="preprocessor">.github</span><span class="preprocessor">.com</span>/creationix/nvm/master/install<span class="preprocessor">.sh</span> | sh
-完成后nvm即安装完毕，但需要断开终端重连后nvm可生效</code></pre>
-<h2>2. 安装Node.js</h2>
-<pre><code><span class="title">nvm</span> install <span class="number">0</span>.<span class="number">10</span></code></pre>
-<h2>3. 安装Hexo</h2>
-<pre><code><span class="title">npm</span> install -g hexo</code></pre>
-<h2>4. 添加相关的环境变量至.bashrc中</h2>
-<pre><code><span class="title">export</span> PATH=~/.nvm/v0.<span class="number">10</span>.<span class="number">24</span>/bin/:<span class="variable">$PATH</span></code></pre>
-<h1>2. 使用</h1>
-<h2>2.1    初始化目录</h2>
-<pre><code><span class="title">hexo</span> init</code></pre>
-<h2>2.2    创建新的Post</h2>
-<pre><code><span class="title">hexo</span> new <span class="string">"My First Post"</span></code></pre>
-<h2>2.3    由markdown文件生成静态html文件</h2>
-<pre><code><span class="title">hexo</span> generate</code></pre>
-<h2>2.4    本地预览</h2>
-<pre><code>hexo server
-随后即可在浏览器中预览，对应的地址为服务器的ip,默认的端口为4000。也可通过hexo server -p 选项指定监听的端口
-<span class="tag">&lt;<span class="title">example:</span> <span class="attribute">10.1.41.173:4000</span></code></pre>
-<h2>2.5    将本地blog部署至github对应的仓库上</h2>
-<pre><code><span class="number">1</span>）编辑blog根目录下的_config<span class="variable">.yml</span>，指定博客将被部署至哪
-    <span class="preprocessor"># Deployment</span>
-    <span class="preprocessor">## Docs: http://zespia.tw/hexo/docs/deploy.html</span>
-    deploy:
-      type: github  <span class="preprocessor">#指定待部署的空间的类型，当前要将blog部署至github上在此填github即可</span>
-      repository: git@github<span class="variable">.com</span>:lsmushroom/lsmushroom<span class="variable">.github</span><span class="variable">.io</span><span class="variable">.git</span>  <span class="preprocessor">#给出仓库的链接</span>
 
-<span class="number">2</span>）hexo deploy
+  
+<div class="widget tag">
+  <h3 class="title">标签</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/api/">api</a><small>1</small></li>
+  
+    <li><a href="/tags/chm/">chm</a><small>1</small></li>
+  
+    <li><a href="/tags/hadoop/">hadoop</a><small>4</small></li>
+  
+    <li><a href="/tags/hexo/">hexo</a><small>1</small></li>
+  
+    <li><a href="/tags/pig/">pig</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>1</small></li>
+  
+    <li><a href="/tags/yarn/">yarn</a><small>4</small></li>
+  
+  </ul>
+</div>
 
-至此已通过hexo成功部署一个基本的blog，后续即需了解如何写</code></pre>
-<h1>3. 写blog</h1>
-<pre><code><span class="number">3.1</span> hexo对中文输入的支持
-    hexo要求<span class="variable">.md</span>文件为utf-<span class="number">8</span>编码，故需对文件做一些设置：
-<span class="number">3.2</span> markdown语法</code></pre>
-]]></content>
-    <category scheme="http://lsmushroom.github.io/tags/hexo/" term="hexo"/>
-    <category scheme="http://lsmushroom.github.io/categories/yarn/" term="yarn"/>
-  </entry>
-</feed>
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/hadoop/" style="font-size: 20.00px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
+  </div>
+</div>
+
+
+  <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=5&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=1632605594&verifier=ff6d468c&dpc=1"></iframe>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2013 Yuan Linsi
+  
+</div>
+<div class="clearfix"></div>
+</footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>
