@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>deploy hexo on RHEL6 | Mushroom's blog</title>
+  <title>deploy hexo on RHEL6 | Mushroom&#39;s blog</title>
   <meta name="author" content="Yuan Linsi">
   
   <meta name="description" content="hadoop,yarn,mapreduce,linux kernel">
@@ -12,14 +12,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   <meta property="og:title" content="deploy hexo on RHEL6"/>
-  <meta property="og:site_name" content="Mushroom's blog"/>
+  <meta property="og:site_name" content="Mushroom&#39;s blog"/>
 
   
     <meta property="og:image" content="undefined"/>
   
 
   <link href="/favicon.png" rel="icon">
-  <link rel="alternate" href="/atom.xml" title="Mushroom's blog" type="application/atom+xml">
+  <link rel="alternate" href="/atom.xml" title="Mushroom&#39;s blog" type="application/atom+xml">
   <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
   <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
   
@@ -54,7 +54,7 @@
 
 <body>
   <header id="header" class="inner"><div class="alignleft">
-  <h1><a href="/">Mushroom's blog</a></h1>
+  <h1><a href="/">Mushroom&#39;s blog</a></h1>
   <h2><a href="/">没时间玩，就扩大玩的定义，我玩的是技术</a></h2>
 </div>
 <nav id="main-nav" class="alignright">
@@ -73,6 +73,18 @@
   <div id="content" class="inner">
     <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
   
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
   <div class="post-content">
     <header>
       
@@ -88,44 +100,44 @@
     <div class="entry">
       
         <p>基于RHEL6成功部署了hexo，博客落户github了，记录下部署的过程<br><a id="more"></a></p>
-<h1>1. 安装</h1>
+<h1 id="1-_-5b89-88c5-">1. 安装</h1>
 <p>hexo环境的部署将被安装至用户目录下的.nvm等目录中，故root用户安装后非root用户将因权限问题而无法使用</p>
-<h2>1. 下载相关库</h2>
+<h2 id="1-_-4e0b-8f7d-76f8-5173-5e93-">1. 下载相关库</h2>
 <pre><code>curl https://raw<span class="preprocessor">.github</span><span class="preprocessor">.com</span>/creationix/nvm/master/install<span class="preprocessor">.sh</span> | sh
-完成后nvm即安装完毕，但需要断开终端重连后nvm可生效</code></pre>
-<h2>2. 安装Node.js</h2>
-<pre><code><span class="title">nvm</span> install <span class="number">0</span>.<span class="number">10</span></code></pre>
-<h2>3. 安装Hexo</h2>
-<pre><code><span class="title">npm</span> install -g hexo</code></pre>
-<h2>4. 添加相关的环境变量至.bashrc中</h2>
-<pre><code><span class="title">export</span> PATH=~/.nvm/v0.<span class="number">10</span>.<span class="number">24</span>/bin/:<span class="variable">$PATH</span></code></pre>
-<h1>2. 使用</h1>
-<h2>2.1    初始化目录</h2>
-<pre><code><span class="title">hexo</span> init</code></pre>
-<h2>2.2    创建新的Post</h2>
-<pre><code><span class="title">hexo</span> new <span class="string">"My First Post"</span></code></pre>
-<h2>2.3    由markdown文件生成静态html文件</h2>
-<pre><code><span class="title">hexo</span> generate</code></pre>
-<h2>2.4    本地预览</h2>
-<pre><code>hexo server
-随后即可在浏览器中预览，对应的地址为服务器的ip,默认的端口为4000。也可通过hexo server -p 选项指定监听的端口
-<span class="tag">&lt;<span class="title">example:</span> <span class="attribute">10.1.41.173:4000</span></code></pre>
-<h2>2.5    将本地blog部署至github对应的仓库上</h2>
-<pre><code><span class="number">1</span>）编辑blog根目录下的_config<span class="variable">.yml</span>，指定博客将被部署至哪
+完成后nvm即安装完毕，但需要断开终端重连后nvm可生效
+</code></pre><h2 id="2-_-5b89-88c5-Node-js">2. 安装Node.js</h2>
+<pre><code><span class="title">nvm</span> install <span class="number">0.10</span>
+</code></pre><h2 id="3-_-5b89-88c5-Hexo">3. 安装Hexo</h2>
+<pre><code><span class="comment">npm</span> <span class="comment">install</span> <span class="literal">-</span><span class="comment">g</span> <span class="comment">hexo</span>
+</code></pre><h2 id="4-_-6dfb-52a0-76f8-5173-7684-73af-5883-53d8-91cf-81f3-bashrc-4e2d-">4. 添加相关的环境变量至.bashrc中</h2>
+<pre><code><span class="keyword">export</span> PATH=~/.nvm/v0.<span class="number">10.24</span>/bin/:<span class="variable">$PATH</span>
+</code></pre><h1 id="2-_-4f7f-7528-">2. 使用</h1>
+<h2 id="2-1_-521d-59cb-5316-76ee-5f55-">2.1    初始化目录</h2>
+<pre><code><span class="title">hexo</span> init
+</code></pre><h2 id="2-2_-521b-5efa-65b0-7684-Post">2.2    创建新的Post</h2>
+<pre><code>hexo <span class="keyword">new</span> <span class="string">"My First Post"</span>
+</code></pre><h2 id="2-3_-7531-markdown-6587-4ef6-751f-6210-9759-6001-html-6587-4ef6-">2.3    由markdown文件生成静态html文件</h2>
+<pre><code><span class="title">hexo</span> generate
+</code></pre><h2 id="2-4_-672c-5730-9884-89c8-">2.4    本地预览</h2>
+<pre><code>hexo <span class="keyword">server</span>
+随后即可在浏览器中预览，对应的地址为服务器的ip,默认的端口为<span class="number">4000</span>。也可通过hexo <span class="keyword">server</span> -p 选项指定监听的端口
+&lt;example: <span class="number">10.1</span><span class="number">.41</span><span class="number">.173</span>:<span class="number">4000</span>
+</code></pre><h2 id="2-5_-5c06-672c-5730-blog-90e8-7f72-81f3-github-5bf9-5e94-7684-4ed3-5e93-4e0a-">2.5    将本地blog部署至github对应的仓库上</h2>
+<pre><code><span class="number">1</span>）编辑blog根目录下的_config<span class="preprocessor">.yml</span>，指定博客将被部署至哪
     <span class="preprocessor"># Deployment</span>
     <span class="preprocessor">## Docs: http://zespia.tw/hexo/docs/deploy.html</span>
     deploy:
       type: github  <span class="preprocessor">#指定待部署的空间的类型，当前要将blog部署至github上在此填github即可</span>
-      repository: git@github<span class="variable">.com</span>:lsmushroom/lsmushroom<span class="variable">.github</span><span class="variable">.io</span><span class="variable">.git</span>  <span class="preprocessor">#给出仓库的链接</span>
+      repository: git@github<span class="preprocessor">.com</span>:lsmushroom/lsmushroom<span class="preprocessor">.github</span><span class="preprocessor">.io</span><span class="preprocessor">.git</span>  <span class="preprocessor">#给出仓库的链接</span>
 
 <span class="number">2</span>）hexo deploy
 
-至此已通过hexo成功部署一个基本的blog，后续即需了解如何写</code></pre>
-<h1>3. 写blog</h1>
-<pre><code><span class="number">3.1</span> hexo对中文输入的支持
-    hexo要求<span class="variable">.md</span>文件为utf-<span class="number">8</span>编码，故需对文件做一些设置：
-<span class="number">3.2</span> markdown语法</code></pre>
-
+至此已通过hexo成功部署一个基本的blog，后续即需了解如何写
+</code></pre><h1 id="3-_-5199-blog">3. 写blog</h1>
+<pre><code><span class="comment">3</span><span class="string">.</span><span class="comment">1</span> <span class="comment">hexo对中文输入的支持</span>
+    <span class="comment">hexo要求</span><span class="string">.</span><span class="comment">md文件为utf</span><span class="literal">-</span><span class="comment">8编码，故需对文件做一些设置：</span>
+<span class="comment">3</span><span class="string">.</span><span class="comment">2</span> <span class="comment">markdown语法</span>
+</code></pre>
       
     </div>
     <footer>

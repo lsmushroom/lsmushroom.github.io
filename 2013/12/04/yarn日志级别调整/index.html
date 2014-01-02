@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Yarn 日志级别 | Mushroom's blog</title>
+  <title>Yarn 日志级别 | Mushroom&#39;s blog</title>
   <meta name="author" content="Yuan Linsi">
   
   <meta name="description" content="hadoop,yarn,mapreduce,linux kernel">
@@ -12,14 +12,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   <meta property="og:title" content="Yarn 日志级别"/>
-  <meta property="og:site_name" content="Mushroom's blog"/>
+  <meta property="og:site_name" content="Mushroom&#39;s blog"/>
 
   
     <meta property="og:image" content="undefined"/>
   
 
   <link href="/favicon.png" rel="icon">
-  <link rel="alternate" href="/atom.xml" title="Mushroom's blog" type="application/atom+xml">
+  <link rel="alternate" href="/atom.xml" title="Mushroom&#39;s blog" type="application/atom+xml">
   <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
   <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
   
@@ -54,7 +54,7 @@
 
 <body>
   <header id="header" class="inner"><div class="alignleft">
-  <h1><a href="/">Mushroom's blog</a></h1>
+  <h1><a href="/">Mushroom&#39;s blog</a></h1>
   <h2><a href="/">没时间玩，就扩大玩的定义，我玩的是技术</a></h2>
 </div>
 <nav id="main-nav" class="alignright">
@@ -72,6 +72,18 @@
 </header>
   <div id="content" class="inner">
     <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
   
   <div class="post-content">
     <header>
@@ -96,14 +108,14 @@
 3
 4
 5
-</pre></td><td class="code"><pre>[@sohu_41_173 ~]# yarn  daemonlog
+</pre></td><td class="code"><pre>[<span class="property">@sohu_41_173</span> ~]<span class="comment"># yarn  daemonlog</span>
 
-Usage: General options are:
-        [-getlevel <span class="tag">&lt;<span class="title">host:httpPort</span>&gt;</span> <span class="tag">&lt;<span class="title">name</span>&gt;</span>]
-        [-setlevel <span class="tag">&lt;<span class="title">host:httpPort</span>&gt;</span> <span class="tag">&lt;<span class="title">name</span>&gt;</span> <span class="tag">&lt;<span class="title">level</span>&gt;</span>]
+<span class="attribute">Usage</span>: General options <span class="attribute">are</span>:
+        [-getlevel &lt;<span class="attribute">host</span>:httpPort&gt; &lt;name&gt;]
+        [-setlevel &lt;<span class="attribute">host</span>:httpPort&gt; &lt;name&gt; &lt;level&gt;]
 </pre></td></tr></table></figure>
 
-<p>使用“daemonlog”命令需要提供相应的“host:httpPort” 以及需要查看或修改日志级别的类的名称，而“host:httpPort”可以通过以下命令查询获得：</p>
+<p>使用”daemonlog”命令需要提供相应的”host:httpPort” 以及需要查看或修改日志级别的类的名称，而”host:httpPort”可以通过以下命令查询获得：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -111,13 +123,13 @@ Usage: General options are:
 5
 6
 7
-</pre></td><td class="code"><pre>[@sohu_41_173 ~]# yarn node  -all -list
-<span class="number">13</span>/<span class="number">12</span>/<span class="number">04</span> <span class="number">15</span>:<span class="number">09</span>:<span class="number">35</span> <span class="class">INFO</span> client.<span class="class">RMProxy</span>: <span class="class">Connecting</span> to <span class="class">ResourceManager</span> at master.hadoop/<span class="number">10.1</span><span class="number">.41</span><span class="number">.173</span>:<span class="number">9080</span>
-<span class="class">Total</span> <span class="class">Nodes</span>:<span class="number">3</span>
-     <span class="class">Node</span>-<span class="class">Id</span>             <span class="class">Node</span>-<span class="class">State</span> <span class="class">Node</span>-<span class="class">Http</span>-<span class="class">Address</span>       <span class="class">Number</span>-of-<span class="class">Running</span>-<span class="class">Containers</span>
-<span class="method">slave0:</span><span class="number">54260</span>                <span class="class">RUNNING</span>       <span class="method">slave0:</span><span class="number">8042</span>                                  <span class="number">1</span>
-<span class="method">slave1:</span><span class="number">45892</span>                <span class="class">RUNNING</span>       <span class="method">slave1:</span><span class="number">8042</span>                                  <span class="number">2</span>
-<span class="method">slave2:</span><span class="number">45410</span>                <span class="class">RUNNING</span>       <span class="method">slave2:</span><span class="number">8042</span>                                  <span class="number">3</span>
+</pre></td><td class="code"><pre>[<span class="property">@sohu_41_173</span> ~]<span class="comment"># yarn node  -all -list</span>
+<span class="number">13</span>/<span class="number">12</span>/<span class="number">04</span> <span class="number">15</span>:<span class="number">09</span>:<span class="number">35</span> INFO client.<span class="attribute">RMProxy</span>: Connecting to ResourceManager at master.hadoop/<span class="number">10.1</span><span class="number">.41</span><span class="number">.173</span>:<span class="number">9080</span>
+Total <span class="attribute">Nodes</span>:<span class="number">3</span>
+     Node-Id             Node-State Node-Http-Address       Number-<span class="keyword">of</span>-Running-Containers
+<span class="attribute">slave0</span>:<span class="number">54260</span>                RUNNING       <span class="attribute">slave0</span>:<span class="number">8042</span>                                  <span class="number">1</span>
+<span class="attribute">slave1</span>:<span class="number">45892</span>                RUNNING       <span class="attribute">slave1</span>:<span class="number">8042</span>                                  <span class="number">2</span>
+<span class="attribute">slave2</span>:<span class="number">45410</span>                RUNNING       <span class="attribute">slave2</span>:<span class="number">8042</span>                                  <span class="number">3</span>
 </pre></td></tr></table></figure>
 
 <p>以设置YarnChild.class为例：</p>
@@ -154,7 +166,7 @@ Usage: General options are:
 <span class="title">Connecting</span> <span class="title">to</span> <span class="title">http</span>://<span class="title">slave0</span>:8042/<span class="title">logLevel</span>?<span class="title">log</span>=<span class="title">YarnChild</span>.<span class="title">class</span>
 <span class="title">Submitted</span> <span class="title">Log</span> <span class="title">Name</span>: <span class="title">YarnChild</span>.<span class="title">class</span>
 <span class="title">Log</span> <span class="title">Class</span>: <span class="title">org</span>.<span class="title">apache</span>.<span class="title">commons</span>.<span class="title">logging</span>.<span class="title">impl</span>.<span class="title">Log4JLogger</span>
-<span class="title">Effective</span> <span class="title">level</span>: <span class="title">DEBUG</span>
+<span class="title">Effective</span> <span class="title">level</span>: <span class="title">DEBUG</span></span>
 </pre></td></tr></table></figure>
 
 <p>Done. :)</p>

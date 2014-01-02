@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Pig on Yarn | Mushroom's blog</title>
+  <title>Pig on Yarn | Mushroom&#39;s blog</title>
   <meta name="author" content="Yuan Linsi">
   
   <meta name="description" content="hadoop,yarn,mapreduce,linux kernel">
@@ -12,14 +12,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   <meta property="og:title" content="Pig on Yarn"/>
-  <meta property="og:site_name" content="Mushroom's blog"/>
+  <meta property="og:site_name" content="Mushroom&#39;s blog"/>
 
   
     <meta property="og:image" content="undefined"/>
   
 
   <link href="/favicon.png" rel="icon">
-  <link rel="alternate" href="/atom.xml" title="Mushroom's blog" type="application/atom+xml">
+  <link rel="alternate" href="/atom.xml" title="Mushroom&#39;s blog" type="application/atom+xml">
   <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
   <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
   
@@ -54,7 +54,7 @@
 
 <body>
   <header id="header" class="inner"><div class="alignleft">
-  <h1><a href="/">Mushroom's blog</a></h1>
+  <h1><a href="/">Mushroom&#39;s blog</a></h1>
   <h2><a href="/">没时间玩，就扩大玩的定义，我玩的是技术</a></h2>
 </div>
 <nav id="main-nav" class="alignright">
@@ -73,6 +73,18 @@
   <div id="content" class="inner">
     <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
   
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
   <div class="post-content">
     <header>
       
@@ -90,18 +102,18 @@
         <p>今天尝试了下将pig部署到hadoop2.2.0版的集群上，过程相对较顺利，简单记录下。</p>
 <a id="more"></a>
 
-<h2>部署</h2>
+<h2 id="-90e8-7f72-">部署</h2>
 <p>部署需要依赖ant编译工具，当前使用版本为<a href="http://archive.apache.org/dist/ant/binaries/apache-ant-1.7.1-bin.zip" target="_blank">apache-ant-1.7.1</a><br>下载 pig 最新版源码包 pig-0.12.0-src,解压后对其进行编译,当前pig适配于hadoop20与hadoop23版本，因我们需要将其部署在Yarn平台上，选取适配的目标版本为hadoop23</p>
-<pre><code><span class="title">ant</span> clean jar-withouthadoop -Dhadoopversion=<span class="number">23</span></code></pre>
-<p>编译过程将下载依赖的包，比较慢。 编译完成后添加pig脚本所处的目录至 $PATH 环境变量中即完成了pig的部署。</p>
-<h2>测试</h2>
+<pre><code><span class="comment">ant</span> <span class="comment">clean</span> <span class="comment">jar</span><span class="literal">-</span><span class="comment">withouthadoop</span> <span class="literal">-</span><span class="comment">Dhadoopversion=23</span>
+</code></pre><p>编译过程将下载依赖的包，比较慢。 编译完成后添加pig脚本所处的目录至 $PATH 环境变量中即完成了pig的部署。</p>
+<h2 id="-6d4b-8bd5-">测试</h2>
 <p>Pig-Latin 实现的wordcount:</p>
-<pre><code><span class="title">A</span> = load <span class="string">'./input.txt'</span>;
-<span class="title">B</span> = foreach A generate flatten(TOKENIZE((chararray)<span class="variable">$0</span>)) as word;
-<span class="title">C</span> = group B by word;
-<span class="title">D</span> = foreach C generate COUNT(B), group;
-<span class="title">store</span> D into <span class="string">'./wordcount'</span>;</code></pre>
-<p>运行wordcout测试程序：</p>
+<pre><code>A = load <span class="comment">'./input.txt';</span>
+B = foreach A generate flatten(TOKENIZE((chararray)$<span class="number">0</span>)) <span class="keyword">as</span> word;
+C = <span class="keyword">group</span> B <span class="keyword">by</span> word;
+D = foreach C generate COUNT(B), <span class="keyword">group</span>;
+store D <span class="keyword">into</span> <span class="comment">'./wordcount';</span>
+</code></pre><p>运行wordcout测试程序：</p>
 <pre><code><span class="comment">#将输入文件上传至HDFS</span>
 [<span class="variable">@sohu_41_173</span> pig-wordcount]<span class="comment">#hdfs dfs -put ./input.txt input.txt</span>
 
@@ -109,8 +121,8 @@
 [<span class="variable">@sohu_41_173</span> pig-wordcount]<span class="comment"># pig ./wordcount.pig</span>
 
 <span class="comment">#检查输出</span>
-[<span class="variable">@sohu_41_173</span> pig-wordcount]<span class="comment"># hdfs dfs -cat wordcount/part-r-00000</span></code></pre>
-<p>完成 :)</p>
+[<span class="variable">@sohu_41_173</span> pig-wordcount]<span class="comment"># hdfs dfs -cat wordcount/part-r-00000</span>
+</code></pre><p>完成 :)</p>
 
       
     </div>

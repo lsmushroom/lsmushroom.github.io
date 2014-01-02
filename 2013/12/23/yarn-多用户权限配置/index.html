@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Yarn 多用户权限配置 | Mushroom's blog</title>
+  <title>Yarn 多用户权限配置 | Mushroom&#39;s blog</title>
   <meta name="author" content="Yuan Linsi">
   
   <meta name="description" content="hadoop,yarn,mapreduce,linux kernel">
@@ -12,14 +12,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   <meta property="og:title" content="Yarn 多用户权限配置"/>
-  <meta property="og:site_name" content="Mushroom's blog"/>
+  <meta property="og:site_name" content="Mushroom&#39;s blog"/>
 
   
     <meta property="og:image" content="undefined"/>
   
 
   <link href="/favicon.png" rel="icon">
-  <link rel="alternate" href="/atom.xml" title="Mushroom's blog" type="application/atom+xml">
+  <link rel="alternate" href="/atom.xml" title="Mushroom&#39;s blog" type="application/atom+xml">
   <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
   <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
   
@@ -54,7 +54,7 @@
 
 <body>
   <header id="header" class="inner"><div class="alignleft">
-  <h1><a href="/">Mushroom's blog</a></h1>
+  <h1><a href="/">Mushroom&#39;s blog</a></h1>
   <h2><a href="/">没时间玩，就扩大玩的定义，我玩的是技术</a></h2>
 </div>
 <nav id="main-nav" class="alignright">
@@ -73,6 +73,18 @@
   <div id="content" class="inner">
     <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
   
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
   <div class="post-content">
     <header>
       
@@ -89,7 +101,7 @@
       
         <p>近期将在yarn集群中添加多用户环境，修改了下集群的用户访问权限，记录下已备忘。</p>
 <p><a id="more"></a></p>
-<h1>源码分析</h1>
+<h1 id="-6e90-7801-5206-6790-">源码分析</h1>
 <p>首先需清楚在yarn集群中将存在两类用户，一个是启动集群的用户，另一个是提交应用的用户。由此对于Yarn中的守护进程，如ResourceManager，NodeManager,NameNode,DataNode等将由管理员用户启动，而如MRAppMaster,YarnChild类，在多用户情景下应由提交应用的用户所启动。由此多用户将与Yarn中容器启动的过程紧密相关，在Yarn中提供两种实现方式：DefaultContainerExecutor和LinuxContainerExecutor，二者的执行逻辑很相似，主要的不同之处在于DefaultContainerExecutor将以NodeManager启动者的用户运行相应的应用，而LinuxContainerExecutor可以提交应用的用户执行，同时LinuxContainerExecutor可实现对CPU资源的控制。而LinuxContainerExecutor的执行则依赖二进制可执行程序container-executor来完成。</p>
 <p>对应用程序的启动必然涉及到一个用户的切换过程，而这个操作就是由Yarn中的container-executor来完成的。<br>container-executor 所支持的命令行参数如下：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
@@ -101,24 +113,24 @@
 7
 8
 9
-</pre></td><td class="code"><pre>[<span class="variable">@slave0</span> bin]# ./<span class="keyword">container</span>-executor
-Usage: <span class="keyword">container</span>-executor --checksetup
-Usage: <span class="keyword">container</span>-executor --mount-cgroups hierarchy controller=path...
-Usage: <span class="keyword">container</span>-executor user command command-args
-Commands:
-initialize <span class="keyword">container</span>:  <span class="number">0</span> appid tokens nm-local-dirs nm-<span class="keyword">log</span>-dirs cmd app...
-<span class="keyword">launch</span> <span class="keyword">container</span>:     <span class="number">1</span> appid containerid workdir <span class="keyword">container</span>-script tokens pidfile nm-local-dirs nm-<span class="keyword">log</span>-dirs resources
-signal <span class="keyword">container</span>:     <span class="number">2</span> <span class="keyword">container</span>-pid signal
-<span class="keyword">delete</span> as user:  <span class="number">3</span> relative-path
+</pre></td><td class="code"><pre><span class="title">[</span><span class="comment">@slave0</span> <span class="comment">bin</span><span class="title">]</span><span class="comment">#</span> <span class="string">.</span><span class="comment">/container</span><span class="literal">-</span><span class="comment">executor</span>
+<span class="comment">Usage:</span> <span class="comment">container</span><span class="literal">-</span><span class="comment">executor</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">checksetup</span>
+<span class="comment">Usage:</span> <span class="comment">container</span><span class="literal">-</span><span class="comment">executor</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">mount</span><span class="literal">-</span><span class="comment">cgroups</span> <span class="comment">hierarchy</span> <span class="comment">controller=path</span><span class="string">.</span><span class="string">.</span><span class="string">.</span>
+<span class="comment">Usage:</span> <span class="comment">container</span><span class="literal">-</span><span class="comment">executor</span> <span class="comment">user</span> <span class="comment">command</span> <span class="comment">command</span><span class="literal">-</span><span class="comment">args</span>
+<span class="comment">Commands:</span>
+<span class="comment">initialize</span> <span class="comment">container:</span>  <span class="comment">0</span> <span class="comment">appid</span> <span class="comment">tokens</span> <span class="comment">nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dirs</span> <span class="comment">nm</span><span class="literal">-</span><span class="comment">log</span><span class="literal">-</span><span class="comment">dirs</span> <span class="comment">cmd</span> <span class="comment">app</span><span class="string">.</span><span class="string">.</span><span class="string">.</span>
+<span class="comment">launch</span> <span class="comment">container:</span>     <span class="comment">1</span> <span class="comment">appid</span> <span class="comment">containerid</span> <span class="comment">workdir</span> <span class="comment">container</span><span class="literal">-</span><span class="comment">script</span> <span class="comment">tokens</span> <span class="comment">pidfile</span> <span class="comment">nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dirs</span> <span class="comment">nm</span><span class="literal">-</span><span class="comment">log</span><span class="literal">-</span><span class="comment">dirs</span> <span class="comment">resources</span>
+<span class="comment">signal</span> <span class="comment">container:</span>     <span class="comment">2</span> <span class="comment">container</span><span class="literal">-</span><span class="comment">pid</span> <span class="comment">signal</span>
+<span class="comment">delete</span> <span class="comment">as</span> <span class="comment">user:</span>  <span class="comment">3</span> <span class="comment">relative</span><span class="literal">-</span><span class="comment">path</span>
 </pre></td></tr></table></figure>
 
 <p>通过跟踪Container启动日志可以了解其启动过程：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
-</pre></td><td class="code"><pre><span class="number">2013</span>-<span class="number">12</span>-<span class="number">23</span> <span class="number">19</span><span class="symbol">:</span><span class="number">02</span><span class="symbol">:</span><span class="number">21</span>,<span class="number">171</span> <span class="constant">INFO</span> nodemanager.<span class="constant">LinuxContainerExecutor</span><span class="symbol">:</span> <span class="symbol">initApplication:</span> [<span class="regexp">/opt/linsiyuan</span><span class="regexp">/hadoop-2.2.0/bin</span><span class="regexp">/container-executor, smartidc, 0, application_1387731734171_0098, /tmp</span><span class="regexp">/hadoop-root/nm</span>-local-dir/nmPrivate/container_1387731734171_0098_01_000003.tokens, <span class="regexp">/tmp/hadoop</span>-root/nm-local-dir, <span class="regexp">/opt/linsiyuan</span><span class="regexp">/hadoop-2.2.0/logs</span><span class="regexp">/root/userlogs</span><span class="regexp">/root, /usr</span><span class="regexp">/lib/jvm</span><span class="regexp">/java-1.6.0-sun-1.6.0.45.x86_64/jre</span><span class="regexp">/bin/java</span>, -classpath, ... , -<span class="constant">Djava</span>.library.path=<span class="regexp">/opt/linsiyuan</span><span class="regexp">/hadoop-2.2.0/lib</span><span class="regexp">/native, org.apache.hadoop.yarn.server.nodemanager.containermanager.localizer.ContainerLocalizer, smartidc, application_1387731734171_0098, container_1387731734171_0098_01_000003, slave0, 8040, /tmp</span><span class="regexp">/hadoop-root/nm</span>-local-dir]
+</pre></td><td class="code"><pre><span class="comment">2013</span><span class="literal">-</span><span class="comment">12</span><span class="literal">-</span><span class="comment">23</span> <span class="comment">19:02:21</span><span class="string">,</span><span class="comment">171</span> <span class="comment">INFO</span> <span class="comment">nodemanager</span><span class="string">.</span><span class="comment">LinuxContainerExecutor:</span> <span class="comment">initApplication:</span> <span class="title">[</span><span class="comment">/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/bin/container</span><span class="literal">-</span><span class="comment">executor</span><span class="string">,</span> <span class="comment">smartidc</span><span class="string">,</span> <span class="comment">0</span><span class="string">,</span> <span class="comment">application_1387731734171_0098</span><span class="string">,</span> <span class="comment">/tmp/hadoop</span><span class="literal">-</span><span class="comment">root/nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dir/nmPrivate/container_1387731734171_0098_01_000003</span><span class="string">.</span><span class="comment">tokens</span><span class="string">,</span> <span class="comment">/tmp/hadoop</span><span class="literal">-</span><span class="comment">root/nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dir</span><span class="string">,</span> <span class="comment">/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/logs/root/userlogs/root</span><span class="string">,</span> <span class="comment">/usr/lib/jvm/java</span><span class="literal">-</span><span class="comment">1</span><span class="string">.</span><span class="comment">6</span><span class="string">.</span><span class="comment">0</span><span class="literal">-</span><span class="comment">sun</span><span class="literal">-</span><span class="comment">1</span><span class="string">.</span><span class="comment">6</span><span class="string">.</span><span class="comment">0</span><span class="string">.</span><span class="comment">45</span><span class="string">.</span><span class="comment">x86_64/jre/bin/java</span><span class="string">,</span> <span class="literal">-</span><span class="comment">classpath</span><span class="string">,</span> <span class="string">.</span><span class="string">.</span><span class="string">.</span> <span class="string">,</span> <span class="literal">-</span><span class="comment">Djava</span><span class="string">.</span><span class="comment">library</span><span class="string">.</span><span class="comment">path=/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/lib/native</span><span class="string">,</span> <span class="comment">org</span><span class="string">.</span><span class="comment">apache</span><span class="string">.</span><span class="comment">hadoop</span><span class="string">.</span><span class="comment">yarn</span><span class="string">.</span><span class="comment">server</span><span class="string">.</span><span class="comment">nodemanager</span><span class="string">.</span><span class="comment">containermanager</span><span class="string">.</span><span class="comment">localizer</span><span class="string">.</span><span class="comment">ContainerLocalizer</span><span class="string">,</span> <span class="comment">smartidc</span><span class="string">,</span> <span class="comment">application_1387731734171_0098</span><span class="string">,</span> <span class="comment">container_1387731734171_0098_01_000003</span><span class="string">,</span> <span class="comment">slave0</span><span class="string">,</span> <span class="comment">8040</span><span class="string">,</span> <span class="comment">/tmp/hadoop</span><span class="literal">-</span><span class="comment">root/nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dir</span><span class="title">]</span>
 
-<span class="number">2013</span>-<span class="number">12</span>-<span class="number">23</span> <span class="number">19</span><span class="symbol">:</span><span class="number">02</span><span class="symbol">:</span><span class="number">22</span>,<span class="number">907</span> <span class="constant">INFO</span> nodemanager.<span class="constant">LinuxContainerExecutor</span><span class="symbol">:</span> <span class="symbol">launchContainer:</span> [<span class="regexp">/opt/linsiyuan</span><span class="regexp">/hadoop-2.2.0/bin</span><span class="regexp">/container-executor, smartidc, 1, application_1387731734171_0098, container_1387731734171_0098_01_000003, /tmp</span><span class="regexp">/hadoop-root/nm</span>-local-dir/usercache/smartidc/appcache/application_1387731734171_0098/container_1387731734171_0098_01_000003, <span class="regexp">/tmp/hadoop</span>-root/nm-local-dir/nmPrivate/application_1387731734171_0098/container_1387731734171_0098_01_000003/launch_container.sh, <span class="regexp">/tmp/hadoop</span>-root/nm-local-dir/nmPrivate/application_1387731734171_0098/container_1387731734171_0098_01_000003/container_1387731734171_0098_01_000003.tokens, <span class="regexp">/tmp/hadoop</span>-root/nm-local-dir/nmPrivate/container_1387731734171_0098_01_000003.pid, <span class="regexp">/tmp/hadoop</span>-root/nm-local-dir, <span class="regexp">/opt/linsiyuan</span><span class="regexp">/hadoop-2.2.0/logs</span><span class="regexp">/root/userlogs</span><span class="regexp">/root, cgroups=/cgroup</span><span class="regexp">/cpu/yarn</span><span class="regexp">/container_1387731734171_0098_01_000003/tasks</span>]
+<span class="comment">2013</span><span class="literal">-</span><span class="comment">12</span><span class="literal">-</span><span class="comment">23</span> <span class="comment">19:02:22</span><span class="string">,</span><span class="comment">907</span> <span class="comment">INFO</span> <span class="comment">nodemanager</span><span class="string">.</span><span class="comment">LinuxContainerExecutor:</span> <span class="comment">launchContainer:</span> <span class="title">[</span><span class="comment">/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/bin/container</span><span class="literal">-</span><span class="comment">executor</span><span class="string">,</span> <span class="comment">smartidc</span><span class="string">,</span> <span class="comment">1</span><span class="string">,</span> <span class="comment">application_1387731734171_0098</span><span class="string">,</span> <span class="comment">container_1387731734171_0098_01_000003</span><span class="string">,</span> <span class="comment">/tmp/hadoop</span><span class="literal">-</span><span class="comment">root/nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dir/usercache/smartidc/appcache/application_1387731734171_0098/container_1387731734171_0098_01_000003</span><span class="string">,</span> <span class="comment">/tmp/hadoop</span><span class="literal">-</span><span class="comment">root/nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dir/nmPrivate/application_1387731734171_0098/container_1387731734171_0098_01_000003/launch_container</span><span class="string">.</span><span class="comment">sh</span><span class="string">,</span> <span class="comment">/tmp/hadoop</span><span class="literal">-</span><span class="comment">root/nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dir/nmPrivate/application_1387731734171_0098/container_1387731734171_0098_01_000003/container_1387731734171_0098_01_000003</span><span class="string">.</span><span class="comment">tokens</span><span class="string">,</span> <span class="comment">/tmp/hadoop</span><span class="literal">-</span><span class="comment">root/nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dir/nmPrivate/container_1387731734171_0098_01_000003</span><span class="string">.</span><span class="comment">pid</span><span class="string">,</span> <span class="comment">/tmp/hadoop</span><span class="literal">-</span><span class="comment">root/nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dir</span><span class="string">,</span> <span class="comment">/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/logs/root/userlogs/root</span><span class="string">,</span> <span class="comment">cgroups=/cgroup/cpu/yarn/container_1387731734171_0098_01_000003/tasks</span><span class="title">]</span>
 </pre></td></tr></table></figure>
 
 <p>以上两条日志记录了容器的初始化及启动命令。注意观察在可执行程序后紧跟的第一个参数即为提交应用的用户名。</p>
@@ -145,8 +157,8 @@ struct passwd* check_user(<span class="keyword">const</span> <span class="keywor
 
 <p>也即在使用LinuxContainerExecutor时，禁止root用户提交job，对提交job的用户uid小于container-executor.cfg中设置的最小用户id及处于黑名单中的用户同样禁止提交job</p>
 <p>当提交job的用户通过检查后，最终将通过系统调用 seteuid及setegid 完成有效用户（组）ID的切换</p>
-<h1>配置</h1>
-<h2>切换Yarn使用的ContainerExecutor类为LinuxContainerExecutor</h2>
+<h1 id="-914d-7f6e-">配置</h1>
+<h2 id="-5207-6362-Yarn-4f7f-7528-7684-ContainerExecutor-7c7b-4e3a-LinuxContainerExecutor">切换Yarn使用的ContainerExecutor类为LinuxContainerExecutor</h2>
 <p>在yarn-site.xml文件中添加以下内容并同步至集群中其他节点</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -195,12 +207,12 @@ struct passwd* check_user(<span class="keyword">const</span> <span class="keywor
 </pre></td><td class="code"><pre>&lt;!--Start set the <span class="keyword">container</span>-executor to LinuxContainerExecutor--&gt;
 &lt;property&gt;
 &lt;description&gt;who will execute(launch) the containers.&lt;/description&gt;
-&lt;name&gt;yarn.nodemanager.<span class="keyword">container</span>-executor.<span class="keyword">class</span>&lt;/name&gt;
-&lt;value&gt;org.apache.hadoop.yarn.<span class="keyword">server</span>.nodemanager.LinuxContainerExecutor&lt;/value&gt;
-&lt;/property&gt;
+&lt;name&gt;yarn.nodemanager.<span class="keyword">container</span>-executor.<span class="class"><span class="keyword">class</span>&lt;/<span class="title">name</span>&gt;
+&lt;<span class="title">value</span>&gt;<span class="title">org</span>.<span class="title">apache</span>.<span class="title">hadoop</span>.<span class="title">yarn</span>.<span class="title">server</span>.<span class="title">nodemanager</span>.<span class="title">LinuxContainerExecutor</span>&lt;/<span class="title">value</span>&gt;
+&lt;/<span class="title">property</span>&gt;
 
-&lt;property&gt;
-&lt;description&gt;The <span class="class"><span class="keyword">class</span> <span class="title">which</span> <span class="title">should</span> <span class="title">help</span> <span class="title">the</span> <span class="title">LCE</span> <span class="title">handle</span> <span class="title">resources</span>.&lt;/<span class="title">description</span>&gt;
+&lt;<span class="title">property</span>&gt;
+&lt;<span class="title">description</span>&gt;<span class="title">The</span> <span class="title">class</span> <span class="title">which</span> <span class="title">should</span> <span class="title">help</span> <span class="title">the</span> <span class="title">LCE</span> <span class="title">handle</span> <span class="title">resources</span>.&lt;/<span class="title">description</span>&gt;
 &lt;<span class="title">name</span>&gt;<span class="title">yarn</span>.<span class="title">nodemanager</span>.<span class="title">linux</span>-<span class="title">container</span>-<span class="title">executor</span>.<span class="title">resources</span>-<span class="title">handler</span>.<span class="title">class</span>&lt;/<span class="title">name</span>&gt;
 &lt;<span class="title">value</span>&gt;<span class="title">org</span>.<span class="title">apache</span>.<span class="title">hadoop</span>.<span class="title">yarn</span>.<span class="title">server</span>.<span class="title">nodemanager</span>.<span class="title">util</span>.<span class="title">CgroupsLCEResourcesHandler</span>&lt;/<span class="title">value</span>&gt;
 &lt;/<span class="title">property</span>&gt;
@@ -235,10 +247,10 @@ struct passwd* check_user(<span class="keyword">const</span> <span class="keywor
 &lt;<span class="title">name</span>&gt;<span class="title">yarn</span>.<span class="title">nodemanager</span>.<span class="title">linux</span>-<span class="title">container</span>-<span class="title">executor</span>.<span class="title">group</span>&lt;/<span class="title">name</span>&gt;
 &lt;<span class="title">value</span>&gt;<span class="title">yarn</span>&lt;/<span class="title">value</span>&gt;
 &lt;<span class="title">description</span>&gt;<span class="title">your</span> <span class="title">user</span> <span class="title">group</span> <span class="title">here</span>. <span class="title">should</span> <span class="title">match</span> <span class="title">container</span>-<span class="title">executor</span>.<span class="title">cfg</span>&lt;/<span class="title">description</span>&gt;
-&lt;/<span class="title">property</span>&gt;
+&lt;/<span class="title">property</span>&gt;</span>
 </pre></td></tr></table></figure>
 
-<h2>container-executor.cfg 配置</h2>
+<h2 id="container-executor-cfg_-914d-7f6e-">container-executor.cfg 配置</h2>
 <p>配置项yarn.nodemanager.linux-container-executor.group 对应yarn-site.xml中yarn.nodemanager.linux-container-executor.group,二者需保持一致<br>配置项banned.users 为黑名单<br>配置项min.user.id 指定可向集群提交job的最小用户UID，通常新增的用户的UID从500开始<br>配置项allowed.system.users 为白名单</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -251,10 +263,10 @@ struct passwd* check_user(<span class="keyword">const</span> <span class="keywor
 9
 10
 </pre></td><td class="code"><pre>[@slave0 hadoop-<span class="number">2.2</span><span class="number">.0</span>]<span class="preprocessor"># cat etc/hadoop/container-executor.cfg</span>
-yarn<span class="variable">.nodemanager</span><span class="variable">.linux</span>-container-executor<span class="variable">.group</span>=hadoop
-banned<span class="variable">.users</span>=<span class="preprocessor">#comma separated list of users who can not run applications</span>
-min<span class="variable">.user</span><span class="variable">.id</span>=<span class="number">499</span>
-allowed<span class="variable">.system</span><span class="variable">.users</span>=
+yarn<span class="preprocessor">.nodemanager</span><span class="preprocessor">.linux</span>-container-executor<span class="preprocessor">.group</span>=hadoop
+banned<span class="preprocessor">.users</span>=<span class="preprocessor">#comma separated list of users who can not run applications</span>
+min<span class="preprocessor">.user</span><span class="preprocessor">.id</span>=<span class="number">499</span>
+allowed<span class="preprocessor">.system</span><span class="preprocessor">.users</span>=
 
 <span class="preprocessor">#yarn.nodemanager.linux-container-executor.group=#configured value of yarn.nodemanager.linux-container-executor.group</span>
 <span class="preprocessor">#banned.users=#comma separated list of users who can not run applications</span>
@@ -262,24 +274,24 @@ allowed<span class="variable">.system</span><span class="variable">.users</span>
 <span class="preprocessor">#allowed.system.users=##comma separated list of system users who CAN run applications</span>
 </pre></td></tr></table></figure>
 
-<h2>权限设置</h2>
-<h3>container-executor权限设置</h3>
+<h2 id="-6743-9650-8bbe-7f6e-">权限设置</h2>
+<h3 id="container-executor-6743-9650-8bbe-7f6e-">container-executor权限设置</h3>
 <p>container-executor可执行文件对权限及所属的用户和用户组有严格的要求,需按如下方式设置：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
 4
-</pre></td><td class="code"><pre><span class="title">[</span><span class="comment">@slave0</span> <span class="comment">hadoop</span>-<span class="comment">2</span>.<span class="comment">2</span>.<span class="comment">0</span>]<span class="comment">#</span> <span class="comment">chmod</span> <span class="comment">6050</span> <span class="string">.</span><span class="comment">/container</span>-<span class="comment">executor</span>
-<span class="title">[</span><span class="comment">@slave0</span> <span class="comment">hadoop</span>-<span class="comment">2</span>.<span class="comment">2</span>.<span class="comment">0</span>]<span class="comment">#</span> <span class="comment">chown</span> <span class="comment">root:hadoop</span> <span class="string">.</span><span class="comment">/container</span>-<span class="comment">executor</span>
-<span class="title">[</span><span class="comment">@slave0</span> <span class="comment">hadoop</span>-<span class="comment">2</span>.<span class="comment">2</span>.<span class="comment">0</span>]<span class="comment">#</span> <span class="comment">ll</span> <span class="comment">bin/container</span>-<span class="comment">executor</span>
-<span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="comment">Sr</span>-<span class="comment">s</span>-<span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">root</span> <span class="comment">hadoop</span> <span class="comment">101927</span> <span class="comment">Nov</span> <span class="comment">14</span> <span class="comment">17:46</span> <span class="comment">bin/container</span>-<span class="comment">executor
+</pre></td><td class="code"><pre><span class="title">[</span><span class="comment">@slave0</span> <span class="comment">hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0</span><span class="title">]</span><span class="comment">#</span> <span class="comment">chmod</span> <span class="comment">6050</span> <span class="string">.</span><span class="comment">/container</span><span class="literal">-</span><span class="comment">executor</span>
+<span class="title">[</span><span class="comment">@slave0</span> <span class="comment">hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0</span><span class="title">]</span><span class="comment">#</span> <span class="comment">chown</span> <span class="comment">root:hadoop</span> <span class="string">.</span><span class="comment">/container</span><span class="literal">-</span><span class="comment">executor</span>
+<span class="title">[</span><span class="comment">@slave0</span> <span class="comment">hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0</span><span class="title">]</span><span class="comment">#</span> <span class="comment">ll</span> <span class="comment">bin/container</span><span class="literal">-</span><span class="comment">executor</span>
+<span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="comment">Sr</span><span class="literal">-</span><span class="comment">s</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">root</span> <span class="comment">hadoop</span> <span class="comment">101927</span> <span class="comment">Nov</span> <span class="comment">14</span> <span class="comment">17:46</span> <span class="comment">bin/container</span><span class="literal">-</span><span class="comment">executor</span>
 </pre></td></tr></table></figure>
 
-<h3>$HADOOP_HOME/etc,$HADOOP_HOME权限设置</h3>
+<h3 id="-24-HADOOP_HOME-2f-etc-2c-24-HADOOP_HOME-6743-9650-8bbe-7f6e-">$HADOOP_HOME/etc,$HADOOP_HOME权限设置</h3>
 <p>要求etc/hadoop/container-executor.cfg , $HADOOP_HOME/etc,$HADOOP_HOME目录的所有者必须为集群的启动者</p>
-<h2>cgroup 默认挂载点</h2>
+<h2 id="cgroup_-9ed8-8ba4-6302-8f7d-70b9-">cgroup 默认挂载点</h2>
 <p>yarn-site.xml中yarn.nodemanager.linux-container-executor.cgroups.mount-path 指定的默认挂载点要求必须存在，可在集群内每个节点上运行/etc/init.d/cgconfig restart以确保挂载点的存在</p>
-<h2>用户添加</h2>
+<h2 id="-7528-6237-6dfb-52a0-">用户添加</h2>
 <p>在集群内的每个节点上都需要新增相应的集群使用者用户账号</p>
 
       

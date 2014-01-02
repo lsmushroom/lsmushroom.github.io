@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>归档：2013/12 | Mushroom&#39;s blog</title>
+  <title>shell-command-tips | Mushroom&#39;s blog</title>
   <meta name="author" content="Yuan Linsi">
   
   <meta name="description" content="hadoop,yarn,mapreduce,linux kernel">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  
+  <meta property="og:title" content="shell-command-tips"/>
   <meta property="og:site_name" content="Mushroom&#39;s blog"/>
 
   
@@ -71,61 +71,118 @@
 <div class="clearfix"></div>
 </header>
   <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper">
-<h2 class="archive-title">2013/12</h2>
-
-
-  <div class="archive">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
     
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2013-12-25T12:55:03.000Z"><a href="/2013/12/25/storm-on-yarn-部署/">12月 25 2013</a></time>
-            
-              <h1 class="title"><a href="/2013/12/25/storm-on-yarn-部署/">Storm on Yarn 部署</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2013-12-23T07:32:23.000Z"><a href="/2013/12/23/yarn-多用户权限配置/">12月 23 2013</a></time>
-            
-              <h1 class="title"><a href="/2013/12/23/yarn-多用户权限配置/">Yarn 多用户权限配置</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2013-12-09T06:16:29.000Z"><a href="/2013/12/09/hadoop-220-api-chm-版本�/">12月 9 2013</a></time>
-            
-              <h1 class="title"><a href="/2013/12/09/hadoop-220-api-chm-版本�/">Hadoop 2.2.0 API CHM 版本</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2013-12-04T09:00:06.000Z"><a href="/2013/12/04/yarn日志级别调整/">12月 4 2013</a></time>
-            
-              <h1 class="title"><a href="/2013/12/04/yarn日志级别调整/">Yarn 日志级别</a></h1>
-            
-          </header>
-        </div>
-      </article>
+      <img src="">
     
   </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2014-01-02T13:28:11.000Z"><a href="/2014/01/02/shell-command-tips/">1月 2 2014</a></time>
+      
+      
+  
+    <h1 class="title">shell-command-tips</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <ul>
+<li><p>trap:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre>trap [-lp] [[arg] sigspec <span class="keyword">...</span>]
+
+arg: 信号处理函数，当接收到有sigspec定义的信号时将触发有args定义的命令的执行
+
+<span class="number">1.</span> 如未指定arg或arg为<span class="string">" - "</span> ， 则当收到sigspec时将信号复位为原值
+<span class="number">2.</span> 如arg指定为<span class="literal">NULL</span> ， 则sigspec指定的信号将被当前shell脚本以及触发信号的命令忽略
+<span class="number">3.</span> trap -l 列出当前的信号列表
+</pre></td></tr></table></figure>
+</li>
+<li><p>usermod</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>usermod <span class="attribute">-m</span> <span class="attribute">-d</span> <span class="variable">$NEW_HOME_PATH</span> <span class="variable">$USER</span>
+将<span class="variable">$USER</span>指定的用户的home目录切换至新目录中，并将原目录中的文件移动至新目录中
+
+ps <span class="attribute">-U</span> <span class="variable">$USER</span> <span class="attribute">-u</span> <span class="variable">$user</span>
+仅显示指定用户的进程，可用于干掉死掉的终端
+</pre></td></tr></table></figure>
+
+</li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <!-- Baidu Button BEGIN -->
+        <div id="bdshare" class="bdshare_t bds_tools_32 get-codes-bdshare">
+        <a class="bds_tsina"></a>
+        <a class="bds_sqq"></a>
+        <a class="bds_douban"></a>
+        <a class="bds_tqq"></a>
+        <a class="bds_qzone"></a>
+        <a class="bds_renren"></a>
+        <a class="bds_tsohu"></a>
+        <a class="bds_t163"></a>
+        <span class="bds_more"></span>
+        <a class="shareCount"></a>
+        </div>
+        <script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=6878295" ></script>
+        <script type="text/javascript" id="bdshell_js"></script>
+        <script type="text/javascript">
+        document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000)
+        </script>
+        <!-- Baidu Button END -->
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+    <!-- Duoshuo Comment BEGIN -->
+    <div class="ds-thread"></div>
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"lsmushroom"};
+    (function() {
+         var ds = document.createElement('script');
+         ds.type = 'text/javascript';ds.async = true;
+         ds.src = 'http://static.duoshuo.com/embed.js';
+         ds.charset = 'UTF-8';
+         (document.getElementsByTagName('head')[0] 
+          || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+    <!-- Duoshuo Comment END -->
+</section>
+
+
 </div></div>
     <aside id="sidebar" class="alignright">
   <div class="search">

@@ -4,7 +4,7 @@
   <subtitle><![CDATA[没时间玩，就扩大玩的定义，我玩的是技术]]></subtitle>
   <link href="http://lsmushroom.github.io/atom.xml" rel="self"/>
   <link href="http://lsmushroom.github.io"/>
-  <updated>2014-01-02T09:53:52.049Z</updated>
+  <updated>2014-01-02T13:28:49.494Z</updated>
   <id>http://lsmushroom.github.io/</id>
   <author>
     <name><![CDATA[Yuan Linsi]]></name>
@@ -12,35 +12,84 @@
   </author>
   <generator uri="http://zespia.tw/hexo">Hexo</generator>
   <entry>
+    <title type="html"><![CDATA[shell-command-tips]]></title>
+    <link href="http://lsmushroom.github.io/2014/01/02/shell-command-tips/"/>
+    <id>http://lsmushroom.github.io/2014/01/02/shell-command-tips/</id>
+    <published>2014-01-02T13:28:11.000Z</published>
+    <updated>2014-01-02T13:28:41.000Z</updated>
+    <content type="html"><![CDATA[<ul>
+<li><p>trap:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre>trap [-lp] [[arg] sigspec <span class="keyword">...</span>]
+
+arg: 信号处理函数，当接收到有sigspec定义的信号时将触发有args定义的命令的执行
+
+<span class="number">1.</span> 如未指定arg或arg为<span class="string">" - "</span> ， 则当收到sigspec时将信号复位为原值
+<span class="number">2.</span> 如arg指定为<span class="literal">NULL</span> ， 则sigspec指定的信号将被当前shell脚本以及触发信号的命令忽略
+<span class="number">3.</span> trap -l 列出当前的信号列表
+</pre></td></tr></table></figure>
+</li>
+<li><p>usermod</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>usermod <span class="attribute">-m</span> <span class="attribute">-d</span> <span class="variable">$NEW_HOME_PATH</span> <span class="variable">$USER</span>
+将<span class="variable">$USER</span>指定的用户的home目录切换至新目录中，并将原目录中的文件移动至新目录中
+
+ps <span class="attribute">-U</span> <span class="variable">$USER</span> <span class="attribute">-u</span> <span class="variable">$user</span>
+仅显示指定用户的进程，可用于干掉死掉的终端
+</pre></td></tr></table></figure>
+
+</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title type="html"><![CDATA[maven 使用]]></title>
+    <link href="http://lsmushroom.github.io/2014/01/02/maven-使用/"/>
+    <id>http://lsmushroom.github.io/2014/01/02/maven-使用/</id>
+    <published>2014-01-02T12:27:46.000Z</published>
+    <updated>2014-01-02T12:27:46.000Z</updated>
+    <content type="html"><![CDATA[]]></content>
+  </entry>
+  <entry>
     <title type="html"><![CDATA[部署 Storm on Yarn]]></title>
     <link href="http://lsmushroom.github.io/2014/01/02/部署-storm-on-yarn/"/>
     <id>http://lsmushroom.github.io/2014/01/02/部署-storm-on-yarn/</id>
     <published>2014-01-02T07:44:50.000Z</published>
     <updated>2014-01-02T09:45:26.000Z</updated>
     <content type="html"><![CDATA[<p>本文基于apache hadoop2.2.0 版本部署storm-on-yarn ， 记录下将storm 部署在 Yarn 上运行的过程<br><a id="more"></a></p>
-<h1>Precondition</h1>
+<h1 id="Precondition">Precondition</h1>
 <ol>
 <li>一个已部署好运行正常的yarn集群</li>
 <li>一个已部署好运行正常的zookeeper集群</li>
 </ol>
-<h1>部署</h1>
-<h2>环境准备</h2>
-<h3>1. Java 7</h3>
+<h1 id="-90e8-7f72-">部署</h1>
+<h2 id="-73af-5883-51c6-5907-">环境准备</h2>
+<h3 id="1-_Java_7">1. Java 7</h3>
 <p>Storm-on-yarn 要求其运行环境为<a href="">java 7</a> ，故需在集群内每个节点上将java版本升级为java 7</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
 4
 5
-</pre></td><td class="code"><pre>    [root<span class="variable">@master</span> ~]<span class="comment"># yum -y install jdk-7u40-linux-x64.rpm</span>
-    [root<span class="variable">@master</span> ~]<span class="comment"># java -version</span>
-    java version <span class="string">"1.7.0_40"</span>
-    <span class="constant">Java</span>(<span class="constant">TM</span>) <span class="constant">SE</span> <span class="constant">Runtime</span> <span class="constant">Environment</span> (build <span class="number">1.7</span>.<span class="number">0_40</span>-b43)
-    <span class="constant">Java</span> <span class="constant">HotSpot</span>(<span class="constant">TM</span>) <span class="number">64</span>-<span class="constant">Bit</span> <span class="constant">Server</span> <span class="constant">VM</span> (build <span class="number">24.0</span>-b56, mixed mode)
+</pre></td><td class="code"><pre>    <span class="title">[</span><span class="comment">root@master</span> <span class="comment">~</span><span class="title">]</span><span class="comment">#</span> <span class="comment">yum</span> <span class="literal">-</span><span class="comment">y</span> <span class="comment">install</span> <span class="comment">jdk</span><span class="literal">-</span><span class="comment">7u40</span><span class="literal">-</span><span class="comment">linux</span><span class="literal">-</span><span class="comment">x64</span><span class="string">.</span><span class="comment">rpm</span>
+    <span class="title">[</span><span class="comment">root@master</span> <span class="comment">~</span><span class="title">]</span><span class="comment">#</span> <span class="comment">java</span> <span class="literal">-</span><span class="comment">version</span>
+    <span class="comment">java</span> <span class="comment">version</span> <span class="comment">"1</span><span class="string">.</span><span class="comment">7</span><span class="string">.</span><span class="comment">0_40"</span>
+    <span class="comment">Java(TM)</span> <span class="comment">SE</span> <span class="comment">Runtime</span> <span class="comment">Environment</span> <span class="comment">(build</span> <span class="comment">1</span><span class="string">.</span><span class="comment">7</span><span class="string">.</span><span class="comment">0_40</span><span class="literal">-</span><span class="comment">b43)</span>
+    <span class="comment">Java</span> <span class="comment">HotSpot(TM)</span> <span class="comment">64</span><span class="literal">-</span><span class="comment">Bit</span> <span class="comment">Server</span> <span class="comment">VM</span> <span class="comment">(build</span> <span class="comment">24</span><span class="string">.</span><span class="comment">0</span><span class="literal">-</span><span class="comment">b56</span><span class="string">,</span> <span class="comment">mixed</span> <span class="comment">mode)</span>
 </pre></td></tr></table></figure>
 
 <p>相应的修改JAVA_HOME环境变量</p>
-<h3>2. 安装maven</h3>
+<h3 id="2-_-5b89-88c5-maven">2. 安装maven</h3>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -51,17 +100,17 @@ mv apache-maven-<span class="number">3.1</span>.<span class="number">1</span> /u
 export <span class="constant">PATH</span>=<span class="variable">$PATH</span><span class="symbol">:/usr/lib/maven/bin</span>
 </pre></td></tr></table></figure>
 
-<h2>部署storm-yarn</h2>
-<h3>1. 下载storm-on-yarn</h3>
+<h2 id="-90e8-7f72-storm-yarn">部署storm-yarn</h2>
+<h3 id="1-_-4e0b-8f7d-storm-on-yarn">1. 下载storm-on-yarn</h3>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
-</pre></td><td class="code"><pre><span class="title">wget</span> https://github.com/yahoo/storm-yarn/archive/master.zip
-<span class="title">unzip</span> master.zip
-<span class="title">cd</span> storm-yarn-master
+</pre></td><td class="code"><pre><span class="comment">wget</span> <span class="comment">https://github</span><span class="string">.</span><span class="comment">com/yahoo/storm</span><span class="literal">-</span><span class="comment">yarn/archive/master</span><span class="string">.</span><span class="comment">zip</span>
+<span class="comment">unzip</span> <span class="comment">master</span><span class="string">.</span><span class="comment">zip</span>
+<span class="comment">cd</span> <span class="comment">storm</span><span class="literal">-</span><span class="comment">yarn</span><span class="literal">-</span><span class="comment">master</span>
 </pre></td></tr></table></figure>
 
-<h3>2. 修改pom.xml</h3>
+<h3 id="2-_-4fee-6539-pom-xml">2. 修改pom.xml</h3>
 <p>当前是基于apache hadoop2.2.0 部署storm，需相应的修改pom.xml来指明</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -69,36 +118,36 @@ export <span class="constant">PATH</span>=<span class="variable">$PATH</span><sp
 4
 5
 6
-</pre></td><td class="code"><pre><span class="xml">    <span class="tag">&lt;<span class="title">properties</span>&gt;</span>
-    <span class="tag">&lt;<span class="title">storm.version</span>&gt;</span></span><span class="number">0.9</span><span class="xml"></span><span class="number">.0</span><span class="xml">-wip21<span class="tag">&lt;/<span class="title">storm.version</span>&gt;</span>
-    <span class="tag">&lt;<span class="title">hadoop.version</span>&gt;</span></span><span class="number">2.2</span><span class="xml"></span><span class="number">.0</span><span class="xml"><span class="tag">&lt;/<span class="title">hadoop.version</span>&gt;</span>
-    <span class="comment">&lt;!--hadoop.version&gt;</span><span class="number">2.1</span><span class="xml"></span><span class="number">.0</span><span class="xml">-beta<span class="tag">&lt;/<span class="title">hadoop.version--</span>&gt;</span>
-    <span class="comment">&lt;!--hadoop.version&gt;</span><span class="number">2.1</span><span class="xml"></span><span class="number">.0</span><span class="xml"></span><span class="number">.2</span><span class="xml"></span><span class="number">.0</span><span class="xml"></span><span class="number">.5</span><span class="xml"></span><span class="number">.0</span><span class="xml">-</span><span class="number">67</span><span class="xml"><span class="tag">&lt;/<span class="title">hadoop.version--</span>&gt;</span>
-    <span class="tag">&lt;/<span class="title">properties</span>&gt;</span></span>
+</pre></td><td class="code"><pre>    <span class="tag">&lt;<span class="title">properties</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">storm.version</span>&gt;</span>0.9.0-wip21<span class="tag">&lt;/<span class="title">storm.version</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">hadoop.version</span>&gt;</span>2.2.0<span class="tag">&lt;/<span class="title">hadoop.version</span>&gt;</span>
+    <span class="comment">&lt;!--hadoop.version&gt;2.1.0-beta&lt;/hadoop.version--&gt;</span>
+    <span class="comment">&lt;!--hadoop.version&gt;2.1.0.2.0.5.0-67&lt;/hadoop.version--&gt;</span>
+    <span class="tag">&lt;/<span class="title">properties</span>&gt;</span>
 </pre></td></tr></table></figure>
 
-<h3>3. 部署storm</h3>
+<h3 id="3-_-90e8-7f72-storm">3. 部署storm</h3>
 <p>在storm-yarn-master目录中包含storm.zip，创建$STORM_HOME目录用以存放storm.zip ，并将其解压</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
-</pre></td><td class="code"><pre><span class="title">cp</span> lib/storm.zip  <span class="variable">$STORM_HOME</span>
-unzip <span class="variable">$STORM_HOME</span>/storm.zip
+</pre></td><td class="code"><pre><span class="keyword">cp</span> lib/storm<span class="preprocessor">.zip</span>  $STORM_HOME
+unzip $STORM_HOME/storm<span class="preprocessor">.zip</span>
 </pre></td></tr></table></figure>
 
 <p>将storm-0.9.0-wip2 和 storm-yarn-master 的bin目录均添加至$PATH环境变量，以便后续使用storm和storm-yarn命令</p>
 <p>将storm.zip文件上传至hdfs,注意此处hdfs上的路径需对应于当前的storm版本号，否则后续编译时的测试可能无法通过</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre><span class="title">hdfs</span> dfs -put storm.zip  /lib/storm/<span class="number">0</span>.<span class="number">9</span>.<span class="number">0</span>-wip2/
+</pre></td><td class="code"><pre><span class="comment">hdfs</span> <span class="comment">dfs</span> <span class="literal">-</span><span class="comment">put</span> <span class="comment">storm</span><span class="string">.</span><span class="comment">zip</span>  <span class="comment">/lib/storm/0</span><span class="string">.</span><span class="comment">9</span><span class="string">.</span><span class="comment">0</span><span class="literal">-</span><span class="comment">wip2/</span>
 </pre></td></tr></table></figure>
 
-<h3>4. 编译storm-on-yarn</h3>
+<h3 id="4-_-7f16-8bd1-storm-on-yarn">4. 编译storm-on-yarn</h3>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
-</pre></td><td class="code"><pre><span class="title">cd</span> storm-yarn-master
-<span class="title">mvn</span> package
+</pre></td><td class="code"><pre><span class="comment">cd</span> <span class="comment">storm</span><span class="literal">-</span><span class="comment">yarn</span><span class="literal">-</span><span class="comment">master</span>
+<span class="comment">mvn</span> <span class="comment">package</span>
 </pre></td></tr></table></figure>
 
-<h3>5. 编辑storm.yaml文件</h3>
+<h3 id="5-_-7f16-8f91-storm-yaml-6587-4ef6-">5. 编辑storm.yaml文件</h3>
 <p>storm通过storm.yaml来指定当前集群的拓扑信息</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -136,46 +185,46 @@ unzip <span class="variable">$STORM_HOME</span>/storm.zip
 34
 35
 </pre></td><td class="code"><pre><span class="preprocessor">#指定storm使用的zookeeper集群</span>
-storm<span class="variable">.zookeeper</span><span class="variable">.servers</span>:
+<span class="label">storm.zookeeper.servers:</span>
 - <span class="string">"10.1.41.173"</span>
 - <span class="string">"10.1.41.181"</span>
 - <span class="string">"10.1.41.183"</span>
 - <span class="string">"10.1.41.184"</span>
 
 <span class="preprocessor">#指定与zookeeper通信的端口，对应zookeeper配置中的client port</span>
-storm<span class="variable">.zookeeper</span><span class="variable">.port</span>: <span class="number">2188</span>
+<span class="label">storm.zookeeper.port:</span> <span class="number">2188</span>
 
 <span class="preprocessor">#nimbus服务器地址</span>
-nimbus<span class="variable">.host</span>: <span class="string">"10.1.41.181"</span>
+<span class="label">nimbus.host:</span> <span class="string">"10.1.41.181"</span>
 
-master<span class="variable">.host</span>: <span class="string">"localhost"</span>
-master<span class="variable">.thrift</span><span class="variable">.port</span>: <span class="number">9000</span>
+<span class="label">master.host:</span> <span class="string">"localhost"</span>
+<span class="label">master.thrift.port:</span> <span class="number">9000</span>
 
 <span class="preprocessor">#指定初始创建的supervisor数目</span>
-master<span class="variable">.initial</span>-num-supervisors: <span class="number">1</span>
-master<span class="variable">.container</span><span class="variable">.priority</span>: <span class="number">0</span>
+master<span class="preprocessor">.initial</span>-num-supervisors: <span class="number">1</span>
+<span class="label">master.container.priority:</span> <span class="number">0</span>
 
 <span class="preprocessor">#指定storm-yarn启动的AM的Container占用的内存大小</span>
-master<span class="variable">.container</span><span class="variable">.size</span>-mb: <span class="number">4096</span>
+master<span class="preprocessor">.container</span><span class="preprocessor">.size</span>-mb: <span class="number">4096</span>
 
-master<span class="variable">.heartbeat</span><span class="variable">.interval</span><span class="variable">.millis</span>: <span class="number">1000</span>
-master<span class="variable">.timeout</span><span class="variable">.secs</span>: <span class="number">1000</span>
-yarn<span class="variable">.report</span><span class="variable">.wait</span><span class="variable">.millis</span>: <span class="number">10000</span>
-nimbusui<span class="variable">.startup</span><span class="variable">.ms</span>: <span class="number">10000</span>
+<span class="label">master.heartbeat.interval.millis:</span> <span class="number">1000</span>
+<span class="label">master.timeout.secs:</span> <span class="number">1000</span>
+<span class="label">yarn.report.wait.millis:</span> <span class="number">10000</span>
+<span class="label">nimbusui.startup.ms:</span> <span class="number">10000</span>
 
-ui<span class="variable">.port</span>: <span class="number">7070</span>
+<span class="label">ui.port:</span> <span class="number">7070</span>
 
-storm<span class="variable">.messaging</span><span class="variable">.transport</span>: <span class="string">"backtype.storm.messaging.netty.Context"</span>
-storm<span class="variable">.messaging</span><span class="variable">.netty</span><span class="variable">.buffer_size</span>: <span class="number">1048576</span>
-storm<span class="variable">.messaging</span><span class="variable">.netty</span><span class="variable">.max_retries</span>: <span class="number">100</span>
-storm<span class="variable">.messaging</span><span class="variable">.netty</span><span class="variable">.min_wait_ms</span>: <span class="number">1000</span>
-storm<span class="variable">.messaging</span><span class="variable">.netty</span><span class="variable">.max_wait_ms</span>: <span class="number">5000</span>
+<span class="label">storm.messaging.transport:</span> <span class="string">"backtype.storm.messaging.netty.Context"</span>
+<span class="label">storm.messaging.netty.buffer_size:</span> <span class="number">1048576</span>
+<span class="label">storm.messaging.netty.max_retries:</span> <span class="number">100</span>
+<span class="label">storm.messaging.netty.min_wait_ms:</span> <span class="number">1000</span>
+<span class="label">storm.messaging.netty.max_wait_ms:</span> <span class="number">5000</span>
 </pre></td></tr></table></figure>
 
-<h2>运行storm-on-yarn</h2>
+<h2 id="-8fd0-884c-storm-on-yarn">运行storm-on-yarn</h2>
 <p>启动storm-yarn , 在此需注意，storm-yarn本身将作为Yarn上的一个应用被提交到yarn上，在多用户的环境中将同其他的MR job一样禁止使用root账号提交，否则在slave结点将因权限问题而启动失败，但不会输出error message至命令行终端上。</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre>storm-yarn launch /opt/linsiyuan/hadoop-<span class="number">2.2</span><span class="number">.0</span>/storm/storm-<span class="number">0.9</span><span class="number">.0</span>-wip21/conf/<span class="filename">storm.yaml
+</pre></td><td class="code"><pre><span class="comment">storm</span><span class="literal">-</span><span class="comment">yarn</span> <span class="comment">launch</span> <span class="comment">/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/storm/storm</span><span class="literal">-</span><span class="comment">0</span><span class="string">.</span><span class="comment">9</span><span class="string">.</span><span class="comment">0</span><span class="literal">-</span><span class="comment">wip21/conf/storm</span><span class="string">.</span><span class="comment">yaml</span>
 </pre></td></tr></table></figure>
 
 <p>可通过web页面或以下命令来确认storm-on-yarn是否启动成功</p>
@@ -184,11 +233,11 @@ storm<span class="variable">.messaging</span><span class="variable">.netty</span
 3
 4
 5
-</pre></td><td class="code"><pre>[@master conf]<span class="comment"># yarn application -list</span>
-<span class="number">14</span>/<span class="number">01</span>/<span class="number">02</span> <span class="number">17</span>:<span class="number">25</span>:<span class="number">34</span> INFO client.RMProxy: Connecting <span class="keyword">to</span> ResourceManager <span class="keyword">at</span> master/<span class="number">10.1</span><span class="number">.41</span><span class="number">.173</span>:<span class="number">9080</span>
-Total <span class="type">number</span> <span class="keyword">of</span> applications (<span class="type">application</span>-types: [] <span class="keyword">and</span> states: [SUBMITTED, ACCEPTED, RUNNING]):<span class="number">1</span>
-Application-Id      Application-Name        Application-Type          User           Queue                   State          Final-State              Progress                        Tracking-URL
-application_1388633522174_0003         Storm-<span class="keyword">on</span>-Yarn                    YARN     yuanlinsi         default                 RUNNING            UNDEFINED                   <span class="number">50</span>%                                 N/A
+</pre></td><td class="code"><pre><span class="title">[</span><span class="comment">@master</span> <span class="comment">conf</span><span class="title">]</span><span class="comment">#</span> <span class="comment">yarn</span> <span class="comment">application</span> <span class="literal">-</span><span class="comment">list</span>
+<span class="comment">14/01/02</span> <span class="comment">17:25:34</span> <span class="comment">INFO</span> <span class="comment">client</span><span class="string">.</span><span class="comment">RMProxy:</span> <span class="comment">Connecting</span> <span class="comment">to</span> <span class="comment">ResourceManager</span> <span class="comment">at</span> <span class="comment">master/10</span><span class="string">.</span><span class="comment">1</span><span class="string">.</span><span class="comment">41</span><span class="string">.</span><span class="comment">173:9080</span>
+<span class="comment">Total</span> <span class="comment">number</span> <span class="comment">of</span> <span class="comment">applications</span> <span class="comment">(application</span><span class="literal">-</span><span class="comment">types:</span> <span class="title">[</span><span class="title">]</span> <span class="comment">and</span> <span class="comment">states:</span> <span class="title">[</span><span class="comment">SUBMITTED</span><span class="string">,</span> <span class="comment">ACCEPTED</span><span class="string">,</span> <span class="comment">RUNNING</span><span class="title">]</span><span class="comment">):1</span>
+<span class="comment">Application</span><span class="literal">-</span><span class="comment">Id</span>      <span class="comment">Application</span><span class="literal">-</span><span class="comment">Name</span>        <span class="comment">Application</span><span class="literal">-</span><span class="comment">Type</span>          <span class="comment">User</span>           <span class="comment">Queue</span>                   <span class="comment">State</span>          <span class="comment">Final</span><span class="literal">-</span><span class="comment">State</span>              <span class="comment">Progress</span>                        <span class="comment">Tracking</span><span class="literal">-</span><span class="comment">URL</span>
+<span class="comment">application_1388633522174_0003</span>         <span class="comment">Storm</span><span class="literal">-</span><span class="comment">on</span><span class="literal">-</span><span class="comment">Yarn</span>                    <span class="comment">YARN</span>     <span class="comment">yuanlinsi</span>         <span class="comment">default</span>                 <span class="comment">RUNNING</span>            <span class="comment">UNDEFINED</span>                   <span class="comment">50%</span>                                 <span class="comment">N/A</span>
 </pre></td></tr></table></figure>
 
 <p>注意storm-on-yarn的运行将占用大量的集群资源，尤其是虚拟内存，由此可能在storm-on-yarn启动后，因yarn中原有的对单个container可用内存资源上限的配置而将storm-on-yarn杀死。当前实验可暂时关闭对单个应用消耗虚拟内存的使用量, 在yarn-site.xml中添加以下配置项：</p>
@@ -214,23 +263,23 @@ containers.<span class="tag">&lt;/<span class="title">description</span>&gt;</sp
 5
 6
 7
-</pre></td><td class="code"><pre><span class="comment">/opt/linsiyuan/hadoop</span>-<span class="comment">2</span>.<span class="comment">2</span>.<span class="comment">0/logs/root/userlogs/root/application_1388633522174_0002/container_1388633522174_0002_01_000001</span>
-<span class="title">[</span><span class="comment">@slave0</span> <span class="comment">container_1388633522174_0002_01_000001</span>]<span class="comment">#</span> <span class="comment">ll</span>
+</pre></td><td class="code"><pre><span class="comment">/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/logs/root/userlogs/root/application_1388633522174_0002/container_1388633522174_0002_01_000001</span>
+<span class="title">[</span><span class="comment">@slave0</span> <span class="comment">container_1388633522174_0002_01_000001</span><span class="title">]</span><span class="comment">#</span> <span class="comment">ll</span>
 <span class="comment">total</span> <span class="comment">204</span>
-<span class="literal">-</span><span class="comment">rw</span>-<span class="comment">r</span>-<span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">yuanlinsi</span> <span class="comment">hadoop</span> <span class="comment">179037</span> <span class="comment">Jan</span>  <span class="comment">2</span> <span class="comment">14:16</span> <span class="comment">nimbus</span>.<span class="comment">log</span>
-<span class="literal">-</span><span class="comment">rw</span>-<span class="comment">r</span>-<span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">yuanlinsi</span> <span class="comment">hadoop</span>    <span class="comment">531</span> <span class="comment">Jan</span>  <span class="comment">2</span> <span class="comment">11:34</span> <span class="comment">stderr</span>
-<span class="literal">-</span><span class="comment">rw</span>-<span class="comment">r</span>-<span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">yuanlinsi</span> <span class="comment">hadoop</span>  <span class="comment">17644</span> <span class="comment">Jan</span>  <span class="comment">2</span> <span class="comment">14:15</span> <span class="comment">stdout</span>
-<span class="literal">-</span><span class="comment">rw</span>-<span class="comment">r</span>-<span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">yuanlinsi</span> <span class="comment">hadoop</span>   <span class="comment">1670</span> <span class="comment">Jan</span>  <span class="comment">2</span> <span class="comment">11:56</span> <span class="comment">ui</span>.<span class="comment">log
+<span class="literal">-</span><span class="comment">rw</span><span class="literal">-</span><span class="comment">r</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">yuanlinsi</span> <span class="comment">hadoop</span> <span class="comment">179037</span> <span class="comment">Jan</span>  <span class="comment">2</span> <span class="comment">14:16</span> <span class="comment">nimbus</span><span class="string">.</span><span class="comment">log</span>
+<span class="literal">-</span><span class="comment">rw</span><span class="literal">-</span><span class="comment">r</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">yuanlinsi</span> <span class="comment">hadoop</span>    <span class="comment">531</span> <span class="comment">Jan</span>  <span class="comment">2</span> <span class="comment">11:34</span> <span class="comment">stderr</span>
+<span class="literal">-</span><span class="comment">rw</span><span class="literal">-</span><span class="comment">r</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">yuanlinsi</span> <span class="comment">hadoop</span>  <span class="comment">17644</span> <span class="comment">Jan</span>  <span class="comment">2</span> <span class="comment">14:15</span> <span class="comment">stdout</span>
+<span class="literal">-</span><span class="comment">rw</span><span class="literal">-</span><span class="comment">r</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">yuanlinsi</span> <span class="comment">hadoop</span>   <span class="comment">1670</span> <span class="comment">Jan</span>  <span class="comment">2</span> <span class="comment">11:56</span> <span class="comment">ui</span><span class="string">.</span><span class="comment">log</span>
 </pre></td></tr></table></figure>
 
 <p>获取storm.yaml</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre><span class="comment">storm</span>-<span class="comment">yarn</span> <span class="comment">getStormConfig</span> <span class="literal">-</span><span class="comment">appId</span> <span class="comment">application_1388633522174_0002</span> <span class="literal">-</span><span class="comment">output</span> <span class="comment">~/</span>.<span class="comment">storm/storm</span>.<span class="comment">yaml
+</pre></td><td class="code"><pre><span class="comment">storm</span><span class="literal">-</span><span class="comment">yarn</span> <span class="comment">getStormConfig</span> <span class="literal">-</span><span class="comment">appId</span> <span class="comment">application_1388633522174_0002</span> <span class="literal">-</span><span class="comment">output</span> <span class="comment">~/</span><span class="string">.</span><span class="comment">storm/storm</span><span class="string">.</span><span class="comment">yaml</span>
 </pre></td></tr></table></figure>
 
 <p>由获得的storm.yaml可知当前nimbus在哪个结点并提交任务：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre>storm jar /opt/linsiyuan/hadoop-<span class="number">2.2</span><span class="number">.0</span>/storm/storm-yarn-master/lib/storm-starter-<span class="number">0.0</span><span class="number">.1</span>-SNAPSHOT<span class="variable">.jar</span> storm<span class="variable">.starter</span><span class="variable">.WordCountTopology</span> WordCountTopology -c nimbus<span class="variable">.host</span>=<span class="number">10.1</span><span class="number">.41</span><span class="number">.183</span>
+</pre></td><td class="code"><pre><span class="comment">storm</span> <span class="comment">jar</span> <span class="comment">/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/storm/storm</span><span class="literal">-</span><span class="comment">yarn</span><span class="literal">-</span><span class="comment">master/lib/storm</span><span class="literal">-</span><span class="comment">starter</span><span class="literal">-</span><span class="comment">0</span><span class="string">.</span><span class="comment">0</span><span class="string">.</span><span class="comment">1</span><span class="literal">-</span><span class="comment">SNAPSHOT</span><span class="string">.</span><span class="comment">jar</span> <span class="comment">storm</span><span class="string">.</span><span class="comment">starter</span><span class="string">.</span><span class="comment">WordCountTopology</span> <span class="comment">WordCountTopology</span> <span class="literal">-</span><span class="comment">c</span> <span class="comment">nimbus</span><span class="string">.</span><span class="comment">host=10</span><span class="string">.</span><span class="comment">1</span><span class="string">.</span><span class="comment">41</span><span class="string">.</span><span class="comment">183</span>
 </pre></td></tr></table></figure>
 
 <p>可通过通过$nimbus.host:7070访问storm 的web UI 来监测topology的执行</p>
@@ -245,7 +294,7 @@ containers.<span class="tag">&lt;/<span class="title">description</span>&gt;</sp
     <id>http://lsmushroom.github.io/2013/12/25/storm-on-yarn-部署/</id>
     <published>2013-12-25T12:55:03.000Z</published>
     <updated>2014-01-02T09:52:52.000Z</updated>
-    <content type="html"><![CDATA[<h2>准备安装环境</h2>
+    <content type="html"><![CDATA[<h2 id="-51c6-5907-5b89-88c5-73af-5883-">准备安装环境</h2>
 <ol>
 <li><p>下载<a href="https://github.com/yahoo/storm-yarn/archive/master.zip" target="_blank">storm-on-yarn</a><br> wget <a href="https://github.com/yahoo/storm-yarn/archive/master.zip" target="_blank">https://github.com/yahoo/storm-yarn/archive/master.zip</a><br> 或<br> git clone git@github.com:yahoo/storm-yarn.git</p>
 </li>
@@ -253,22 +302,22 @@ containers.<span class="tag">&lt;/<span class="title">description</span>&gt;</sp
 </li>
 <li>将storm.zip文件拷贝至$STORM_HOME目录并解压<br> cp ./storm-yarn-master/lib/storm.zip .<br> unzip storm.zip</li>
 </ol>
-<h2>Storm 依赖的软件环境</h2>
+<h2 id="Storm_-4f9d-8d56-7684-8f6f-4ef6-73af-5883-">Storm 依赖的软件环境</h2>
 <ol>
 <li><a href="http://zeromq.org/area:download" target="_blank">zeromq</a></li>
 <li><a href="https://github.com/nathanmarz/jzmq" target="_blank">jzmq</a></li>
 <li>Java 6</li>
 <li>Python</li>
 </ol>
-<h2>添加环境变量</h2>
+<h2 id="-6dfb-52a0-73af-5883-53d8-91cf-">添加环境变量</h2>
 <p>将storm-0.9.0-wip21 和 storm-yarn-master/bin 目录至 $PATH 环境变量中</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre>export <span class="constant">PATH</span>=<span class="regexp">/opt/linsiyuan</span><span class="regexp">/hadoop-2.2.0/storm</span><span class="regexp">/storm-0.9.0-wip21:/opt</span><span class="regexp">/linsiyuan/hadoop</span>-<span class="number">2.2</span>.<span class="number">0</span>/storm/storm-yarn-master/<span class="symbol">bin:</span><span class="variable">$PATH</span>
+</pre></td><td class="code"><pre><span class="comment">export</span> <span class="comment">PATH=/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/storm/storm</span><span class="literal">-</span><span class="comment">0</span><span class="string">.</span><span class="comment">9</span><span class="string">.</span><span class="comment">0</span><span class="literal">-</span><span class="comment">wip21:/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/storm/storm</span><span class="literal">-</span><span class="comment">yarn</span><span class="literal">-</span><span class="comment">master/bin:$PATH</span>
 </pre></td></tr></table></figure>
 
-<h2>编译</h2>
+<h2 id="-7f16-8bd1-">编译</h2>
 <p>进入storm-yarn-master目录，编译<br>    mvn package -DskipTests</p>
-<h2>部署zookeeper</h2>
+<h2 id="-90e8-7f72-zookeeper">部署zookeeper</h2>
 <p>zookeeper需要投票选举，因此建议在搭建zookeeper集群时包含奇数个结点,当包含偶数个结点时，将无法处理偶数个结点同时挂掉的情况。</p>
 <ol>
 <li>准备Java 1.6运行环境</li>
@@ -283,7 +332,7 @@ containers.<span class="tag">&lt;/<span class="title">description</span>&gt;</sp
 7
 8
 </pre></td><td class="code"><pre><span class="title">tickTime</span>=<span class="number">2000</span>
-<span class="typedef">dataDir=/var/zookeeper/</span>
+<span class="title">dataDir</span>=/var/zookeeper/
 <span class="title">clientPort</span>=<span class="number">2181</span>
 <span class="title">initLimit</span>=<span class="number">5</span>
 <span class="title">syncLimit</span>=<span class="number">2</span>
@@ -294,7 +343,11 @@ containers.<span class="tag">&lt;/<span class="title">description</span>&gt;</sp
 
 </li>
 </ol>
-<p>以上配置文件主要用于zookeeper集群中各个结点了解集群内的其他结点的信息。这主要是通过配置项server.id=host:port:port<br>5. 将zookeeper同步至集群内的其他结点<br>6. 在相应的结点上在$dataDir中指定的目录中创建相应的id文件，其中内容仅包含结点所对应的id信息</p>
+<p>以上配置文件主要用于zookeeper集群中各个结点了解集群内的其他结点的信息。这主要是通过配置项server.id=host:port:port</p>
+<ol>
+<li>将zookeeper同步至集群内的其他结点</li>
+<li>在相应的结点上在$dataDir中指定的目录中创建相应的id文件，其中内容仅包含结点所对应的id信息 </li>
+</ol>
 ]]></content>
     <category scheme="http://lsmushroom.github.io/tags/yarn/" term="yarn"/>
     <category scheme="http://lsmushroom.github.io/tags/storm/" term="storm"/>
@@ -308,7 +361,7 @@ containers.<span class="tag">&lt;/<span class="title">description</span>&gt;</sp
     <updated>2013-12-25T10:32:57.000Z</updated>
     <content type="html"><![CDATA[<p>近期将在yarn集群中添加多用户环境，修改了下集群的用户访问权限，记录下已备忘。</p>
 <p><a id="more"></a></p>
-<h1>源码分析</h1>
+<h1 id="-6e90-7801-5206-6790-">源码分析</h1>
 <p>首先需清楚在yarn集群中将存在两类用户，一个是启动集群的用户，另一个是提交应用的用户。由此对于Yarn中的守护进程，如ResourceManager，NodeManager,NameNode,DataNode等将由管理员用户启动，而如MRAppMaster,YarnChild类，在多用户情景下应由提交应用的用户所启动。由此多用户将与Yarn中容器启动的过程紧密相关，在Yarn中提供两种实现方式：DefaultContainerExecutor和LinuxContainerExecutor，二者的执行逻辑很相似，主要的不同之处在于DefaultContainerExecutor将以NodeManager启动者的用户运行相应的应用，而LinuxContainerExecutor可以提交应用的用户执行，同时LinuxContainerExecutor可实现对CPU资源的控制。而LinuxContainerExecutor的执行则依赖二进制可执行程序container-executor来完成。</p>
 <p>对应用程序的启动必然涉及到一个用户的切换过程，而这个操作就是由Yarn中的container-executor来完成的。<br>container-executor 所支持的命令行参数如下：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
@@ -320,24 +373,24 @@ containers.<span class="tag">&lt;/<span class="title">description</span>&gt;</sp
 7
 8
 9
-</pre></td><td class="code"><pre>[<span class="variable">@slave0</span> bin]# ./<span class="keyword">container</span>-executor
-Usage: <span class="keyword">container</span>-executor --checksetup
-Usage: <span class="keyword">container</span>-executor --mount-cgroups hierarchy controller=path...
-Usage: <span class="keyword">container</span>-executor user command command-args
-Commands:
-initialize <span class="keyword">container</span>:  <span class="number">0</span> appid tokens nm-local-dirs nm-<span class="keyword">log</span>-dirs cmd app...
-<span class="keyword">launch</span> <span class="keyword">container</span>:     <span class="number">1</span> appid containerid workdir <span class="keyword">container</span>-script tokens pidfile nm-local-dirs nm-<span class="keyword">log</span>-dirs resources
-signal <span class="keyword">container</span>:     <span class="number">2</span> <span class="keyword">container</span>-pid signal
-<span class="keyword">delete</span> as user:  <span class="number">3</span> relative-path
+</pre></td><td class="code"><pre><span class="title">[</span><span class="comment">@slave0</span> <span class="comment">bin</span><span class="title">]</span><span class="comment">#</span> <span class="string">.</span><span class="comment">/container</span><span class="literal">-</span><span class="comment">executor</span>
+<span class="comment">Usage:</span> <span class="comment">container</span><span class="literal">-</span><span class="comment">executor</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">checksetup</span>
+<span class="comment">Usage:</span> <span class="comment">container</span><span class="literal">-</span><span class="comment">executor</span> <span class="literal">-</span><span class="literal">-</span><span class="comment">mount</span><span class="literal">-</span><span class="comment">cgroups</span> <span class="comment">hierarchy</span> <span class="comment">controller=path</span><span class="string">.</span><span class="string">.</span><span class="string">.</span>
+<span class="comment">Usage:</span> <span class="comment">container</span><span class="literal">-</span><span class="comment">executor</span> <span class="comment">user</span> <span class="comment">command</span> <span class="comment">command</span><span class="literal">-</span><span class="comment">args</span>
+<span class="comment">Commands:</span>
+<span class="comment">initialize</span> <span class="comment">container:</span>  <span class="comment">0</span> <span class="comment">appid</span> <span class="comment">tokens</span> <span class="comment">nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dirs</span> <span class="comment">nm</span><span class="literal">-</span><span class="comment">log</span><span class="literal">-</span><span class="comment">dirs</span> <span class="comment">cmd</span> <span class="comment">app</span><span class="string">.</span><span class="string">.</span><span class="string">.</span>
+<span class="comment">launch</span> <span class="comment">container:</span>     <span class="comment">1</span> <span class="comment">appid</span> <span class="comment">containerid</span> <span class="comment">workdir</span> <span class="comment">container</span><span class="literal">-</span><span class="comment">script</span> <span class="comment">tokens</span> <span class="comment">pidfile</span> <span class="comment">nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dirs</span> <span class="comment">nm</span><span class="literal">-</span><span class="comment">log</span><span class="literal">-</span><span class="comment">dirs</span> <span class="comment">resources</span>
+<span class="comment">signal</span> <span class="comment">container:</span>     <span class="comment">2</span> <span class="comment">container</span><span class="literal">-</span><span class="comment">pid</span> <span class="comment">signal</span>
+<span class="comment">delete</span> <span class="comment">as</span> <span class="comment">user:</span>  <span class="comment">3</span> <span class="comment">relative</span><span class="literal">-</span><span class="comment">path</span>
 </pre></td></tr></table></figure>
 
 <p>通过跟踪Container启动日志可以了解其启动过程：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
-</pre></td><td class="code"><pre><span class="number">2013</span>-<span class="number">12</span>-<span class="number">23</span> <span class="number">19</span><span class="symbol">:</span><span class="number">02</span><span class="symbol">:</span><span class="number">21</span>,<span class="number">171</span> <span class="constant">INFO</span> nodemanager.<span class="constant">LinuxContainerExecutor</span><span class="symbol">:</span> <span class="symbol">initApplication:</span> [<span class="regexp">/opt/linsiyuan</span><span class="regexp">/hadoop-2.2.0/bin</span><span class="regexp">/container-executor, smartidc, 0, application_1387731734171_0098, /tmp</span><span class="regexp">/hadoop-root/nm</span>-local-dir/nmPrivate/container_1387731734171_0098_01_000003.tokens, <span class="regexp">/tmp/hadoop</span>-root/nm-local-dir, <span class="regexp">/opt/linsiyuan</span><span class="regexp">/hadoop-2.2.0/logs</span><span class="regexp">/root/userlogs</span><span class="regexp">/root, /usr</span><span class="regexp">/lib/jvm</span><span class="regexp">/java-1.6.0-sun-1.6.0.45.x86_64/jre</span><span class="regexp">/bin/java</span>, -classpath, ... , -<span class="constant">Djava</span>.library.path=<span class="regexp">/opt/linsiyuan</span><span class="regexp">/hadoop-2.2.0/lib</span><span class="regexp">/native, org.apache.hadoop.yarn.server.nodemanager.containermanager.localizer.ContainerLocalizer, smartidc, application_1387731734171_0098, container_1387731734171_0098_01_000003, slave0, 8040, /tmp</span><span class="regexp">/hadoop-root/nm</span>-local-dir]
+</pre></td><td class="code"><pre><span class="comment">2013</span><span class="literal">-</span><span class="comment">12</span><span class="literal">-</span><span class="comment">23</span> <span class="comment">19:02:21</span><span class="string">,</span><span class="comment">171</span> <span class="comment">INFO</span> <span class="comment">nodemanager</span><span class="string">.</span><span class="comment">LinuxContainerExecutor:</span> <span class="comment">initApplication:</span> <span class="title">[</span><span class="comment">/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/bin/container</span><span class="literal">-</span><span class="comment">executor</span><span class="string">,</span> <span class="comment">smartidc</span><span class="string">,</span> <span class="comment">0</span><span class="string">,</span> <span class="comment">application_1387731734171_0098</span><span class="string">,</span> <span class="comment">/tmp/hadoop</span><span class="literal">-</span><span class="comment">root/nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dir/nmPrivate/container_1387731734171_0098_01_000003</span><span class="string">.</span><span class="comment">tokens</span><span class="string">,</span> <span class="comment">/tmp/hadoop</span><span class="literal">-</span><span class="comment">root/nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dir</span><span class="string">,</span> <span class="comment">/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/logs/root/userlogs/root</span><span class="string">,</span> <span class="comment">/usr/lib/jvm/java</span><span class="literal">-</span><span class="comment">1</span><span class="string">.</span><span class="comment">6</span><span class="string">.</span><span class="comment">0</span><span class="literal">-</span><span class="comment">sun</span><span class="literal">-</span><span class="comment">1</span><span class="string">.</span><span class="comment">6</span><span class="string">.</span><span class="comment">0</span><span class="string">.</span><span class="comment">45</span><span class="string">.</span><span class="comment">x86_64/jre/bin/java</span><span class="string">,</span> <span class="literal">-</span><span class="comment">classpath</span><span class="string">,</span> <span class="string">.</span><span class="string">.</span><span class="string">.</span> <span class="string">,</span> <span class="literal">-</span><span class="comment">Djava</span><span class="string">.</span><span class="comment">library</span><span class="string">.</span><span class="comment">path=/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/lib/native</span><span class="string">,</span> <span class="comment">org</span><span class="string">.</span><span class="comment">apache</span><span class="string">.</span><span class="comment">hadoop</span><span class="string">.</span><span class="comment">yarn</span><span class="string">.</span><span class="comment">server</span><span class="string">.</span><span class="comment">nodemanager</span><span class="string">.</span><span class="comment">containermanager</span><span class="string">.</span><span class="comment">localizer</span><span class="string">.</span><span class="comment">ContainerLocalizer</span><span class="string">,</span> <span class="comment">smartidc</span><span class="string">,</span> <span class="comment">application_1387731734171_0098</span><span class="string">,</span> <span class="comment">container_1387731734171_0098_01_000003</span><span class="string">,</span> <span class="comment">slave0</span><span class="string">,</span> <span class="comment">8040</span><span class="string">,</span> <span class="comment">/tmp/hadoop</span><span class="literal">-</span><span class="comment">root/nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dir</span><span class="title">]</span>
 
-<span class="number">2013</span>-<span class="number">12</span>-<span class="number">23</span> <span class="number">19</span><span class="symbol">:</span><span class="number">02</span><span class="symbol">:</span><span class="number">22</span>,<span class="number">907</span> <span class="constant">INFO</span> nodemanager.<span class="constant">LinuxContainerExecutor</span><span class="symbol">:</span> <span class="symbol">launchContainer:</span> [<span class="regexp">/opt/linsiyuan</span><span class="regexp">/hadoop-2.2.0/bin</span><span class="regexp">/container-executor, smartidc, 1, application_1387731734171_0098, container_1387731734171_0098_01_000003, /tmp</span><span class="regexp">/hadoop-root/nm</span>-local-dir/usercache/smartidc/appcache/application_1387731734171_0098/container_1387731734171_0098_01_000003, <span class="regexp">/tmp/hadoop</span>-root/nm-local-dir/nmPrivate/application_1387731734171_0098/container_1387731734171_0098_01_000003/launch_container.sh, <span class="regexp">/tmp/hadoop</span>-root/nm-local-dir/nmPrivate/application_1387731734171_0098/container_1387731734171_0098_01_000003/container_1387731734171_0098_01_000003.tokens, <span class="regexp">/tmp/hadoop</span>-root/nm-local-dir/nmPrivate/container_1387731734171_0098_01_000003.pid, <span class="regexp">/tmp/hadoop</span>-root/nm-local-dir, <span class="regexp">/opt/linsiyuan</span><span class="regexp">/hadoop-2.2.0/logs</span><span class="regexp">/root/userlogs</span><span class="regexp">/root, cgroups=/cgroup</span><span class="regexp">/cpu/yarn</span><span class="regexp">/container_1387731734171_0098_01_000003/tasks</span>]
+<span class="comment">2013</span><span class="literal">-</span><span class="comment">12</span><span class="literal">-</span><span class="comment">23</span> <span class="comment">19:02:22</span><span class="string">,</span><span class="comment">907</span> <span class="comment">INFO</span> <span class="comment">nodemanager</span><span class="string">.</span><span class="comment">LinuxContainerExecutor:</span> <span class="comment">launchContainer:</span> <span class="title">[</span><span class="comment">/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/bin/container</span><span class="literal">-</span><span class="comment">executor</span><span class="string">,</span> <span class="comment">smartidc</span><span class="string">,</span> <span class="comment">1</span><span class="string">,</span> <span class="comment">application_1387731734171_0098</span><span class="string">,</span> <span class="comment">container_1387731734171_0098_01_000003</span><span class="string">,</span> <span class="comment">/tmp/hadoop</span><span class="literal">-</span><span class="comment">root/nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dir/usercache/smartidc/appcache/application_1387731734171_0098/container_1387731734171_0098_01_000003</span><span class="string">,</span> <span class="comment">/tmp/hadoop</span><span class="literal">-</span><span class="comment">root/nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dir/nmPrivate/application_1387731734171_0098/container_1387731734171_0098_01_000003/launch_container</span><span class="string">.</span><span class="comment">sh</span><span class="string">,</span> <span class="comment">/tmp/hadoop</span><span class="literal">-</span><span class="comment">root/nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dir/nmPrivate/application_1387731734171_0098/container_1387731734171_0098_01_000003/container_1387731734171_0098_01_000003</span><span class="string">.</span><span class="comment">tokens</span><span class="string">,</span> <span class="comment">/tmp/hadoop</span><span class="literal">-</span><span class="comment">root/nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dir/nmPrivate/container_1387731734171_0098_01_000003</span><span class="string">.</span><span class="comment">pid</span><span class="string">,</span> <span class="comment">/tmp/hadoop</span><span class="literal">-</span><span class="comment">root/nm</span><span class="literal">-</span><span class="comment">local</span><span class="literal">-</span><span class="comment">dir</span><span class="string">,</span> <span class="comment">/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/logs/root/userlogs/root</span><span class="string">,</span> <span class="comment">cgroups=/cgroup/cpu/yarn/container_1387731734171_0098_01_000003/tasks</span><span class="title">]</span>
 </pre></td></tr></table></figure>
 
 <p>以上两条日志记录了容器的初始化及启动命令。注意观察在可执行程序后紧跟的第一个参数即为提交应用的用户名。</p>
@@ -364,8 +417,8 @@ struct passwd* check_user(<span class="keyword">const</span> <span class="keywor
 
 <p>也即在使用LinuxContainerExecutor时，禁止root用户提交job，对提交job的用户uid小于container-executor.cfg中设置的最小用户id及处于黑名单中的用户同样禁止提交job</p>
 <p>当提交job的用户通过检查后，最终将通过系统调用 seteuid及setegid 完成有效用户（组）ID的切换</p>
-<h1>配置</h1>
-<h2>切换Yarn使用的ContainerExecutor类为LinuxContainerExecutor</h2>
+<h1 id="-914d-7f6e-">配置</h1>
+<h2 id="-5207-6362-Yarn-4f7f-7528-7684-ContainerExecutor-7c7b-4e3a-LinuxContainerExecutor">切换Yarn使用的ContainerExecutor类为LinuxContainerExecutor</h2>
 <p>在yarn-site.xml文件中添加以下内容并同步至集群中其他节点</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -414,12 +467,12 @@ struct passwd* check_user(<span class="keyword">const</span> <span class="keywor
 </pre></td><td class="code"><pre>&lt;!--Start set the <span class="keyword">container</span>-executor to LinuxContainerExecutor--&gt;
 &lt;property&gt;
 &lt;description&gt;who will execute(launch) the containers.&lt;/description&gt;
-&lt;name&gt;yarn.nodemanager.<span class="keyword">container</span>-executor.<span class="keyword">class</span>&lt;/name&gt;
-&lt;value&gt;org.apache.hadoop.yarn.<span class="keyword">server</span>.nodemanager.LinuxContainerExecutor&lt;/value&gt;
-&lt;/property&gt;
+&lt;name&gt;yarn.nodemanager.<span class="keyword">container</span>-executor.<span class="class"><span class="keyword">class</span>&lt;/<span class="title">name</span>&gt;
+&lt;<span class="title">value</span>&gt;<span class="title">org</span>.<span class="title">apache</span>.<span class="title">hadoop</span>.<span class="title">yarn</span>.<span class="title">server</span>.<span class="title">nodemanager</span>.<span class="title">LinuxContainerExecutor</span>&lt;/<span class="title">value</span>&gt;
+&lt;/<span class="title">property</span>&gt;
 
-&lt;property&gt;
-&lt;description&gt;The <span class="class"><span class="keyword">class</span> <span class="title">which</span> <span class="title">should</span> <span class="title">help</span> <span class="title">the</span> <span class="title">LCE</span> <span class="title">handle</span> <span class="title">resources</span>.&lt;/<span class="title">description</span>&gt;
+&lt;<span class="title">property</span>&gt;
+&lt;<span class="title">description</span>&gt;<span class="title">The</span> <span class="title">class</span> <span class="title">which</span> <span class="title">should</span> <span class="title">help</span> <span class="title">the</span> <span class="title">LCE</span> <span class="title">handle</span> <span class="title">resources</span>.&lt;/<span class="title">description</span>&gt;
 &lt;<span class="title">name</span>&gt;<span class="title">yarn</span>.<span class="title">nodemanager</span>.<span class="title">linux</span>-<span class="title">container</span>-<span class="title">executor</span>.<span class="title">resources</span>-<span class="title">handler</span>.<span class="title">class</span>&lt;/<span class="title">name</span>&gt;
 &lt;<span class="title">value</span>&gt;<span class="title">org</span>.<span class="title">apache</span>.<span class="title">hadoop</span>.<span class="title">yarn</span>.<span class="title">server</span>.<span class="title">nodemanager</span>.<span class="title">util</span>.<span class="title">CgroupsLCEResourcesHandler</span>&lt;/<span class="title">value</span>&gt;
 &lt;/<span class="title">property</span>&gt;
@@ -454,10 +507,10 @@ struct passwd* check_user(<span class="keyword">const</span> <span class="keywor
 &lt;<span class="title">name</span>&gt;<span class="title">yarn</span>.<span class="title">nodemanager</span>.<span class="title">linux</span>-<span class="title">container</span>-<span class="title">executor</span>.<span class="title">group</span>&lt;/<span class="title">name</span>&gt;
 &lt;<span class="title">value</span>&gt;<span class="title">yarn</span>&lt;/<span class="title">value</span>&gt;
 &lt;<span class="title">description</span>&gt;<span class="title">your</span> <span class="title">user</span> <span class="title">group</span> <span class="title">here</span>. <span class="title">should</span> <span class="title">match</span> <span class="title">container</span>-<span class="title">executor</span>.<span class="title">cfg</span>&lt;/<span class="title">description</span>&gt;
-&lt;/<span class="title">property</span>&gt;
+&lt;/<span class="title">property</span>&gt;</span>
 </pre></td></tr></table></figure>
 
-<h2>container-executor.cfg 配置</h2>
+<h2 id="container-executor-cfg_-914d-7f6e-">container-executor.cfg 配置</h2>
 <p>配置项yarn.nodemanager.linux-container-executor.group 对应yarn-site.xml中yarn.nodemanager.linux-container-executor.group,二者需保持一致<br>配置项banned.users 为黑名单<br>配置项min.user.id 指定可向集群提交job的最小用户UID，通常新增的用户的UID从500开始<br>配置项allowed.system.users 为白名单</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -470,10 +523,10 @@ struct passwd* check_user(<span class="keyword">const</span> <span class="keywor
 9
 10
 </pre></td><td class="code"><pre>[@slave0 hadoop-<span class="number">2.2</span><span class="number">.0</span>]<span class="preprocessor"># cat etc/hadoop/container-executor.cfg</span>
-yarn<span class="variable">.nodemanager</span><span class="variable">.linux</span>-container-executor<span class="variable">.group</span>=hadoop
-banned<span class="variable">.users</span>=<span class="preprocessor">#comma separated list of users who can not run applications</span>
-min<span class="variable">.user</span><span class="variable">.id</span>=<span class="number">499</span>
-allowed<span class="variable">.system</span><span class="variable">.users</span>=
+yarn<span class="preprocessor">.nodemanager</span><span class="preprocessor">.linux</span>-container-executor<span class="preprocessor">.group</span>=hadoop
+banned<span class="preprocessor">.users</span>=<span class="preprocessor">#comma separated list of users who can not run applications</span>
+min<span class="preprocessor">.user</span><span class="preprocessor">.id</span>=<span class="number">499</span>
+allowed<span class="preprocessor">.system</span><span class="preprocessor">.users</span>=
 
 <span class="preprocessor">#yarn.nodemanager.linux-container-executor.group=#configured value of yarn.nodemanager.linux-container-executor.group</span>
 <span class="preprocessor">#banned.users=#comma separated list of users who can not run applications</span>
@@ -481,24 +534,24 @@ allowed<span class="variable">.system</span><span class="variable">.users</span>
 <span class="preprocessor">#allowed.system.users=##comma separated list of system users who CAN run applications</span>
 </pre></td></tr></table></figure>
 
-<h2>权限设置</h2>
-<h3>container-executor权限设置</h3>
+<h2 id="-6743-9650-8bbe-7f6e-">权限设置</h2>
+<h3 id="container-executor-6743-9650-8bbe-7f6e-">container-executor权限设置</h3>
 <p>container-executor可执行文件对权限及所属的用户和用户组有严格的要求,需按如下方式设置：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
 4
-</pre></td><td class="code"><pre><span class="title">[</span><span class="comment">@slave0</span> <span class="comment">hadoop</span>-<span class="comment">2</span>.<span class="comment">2</span>.<span class="comment">0</span>]<span class="comment">#</span> <span class="comment">chmod</span> <span class="comment">6050</span> <span class="string">.</span><span class="comment">/container</span>-<span class="comment">executor</span>
-<span class="title">[</span><span class="comment">@slave0</span> <span class="comment">hadoop</span>-<span class="comment">2</span>.<span class="comment">2</span>.<span class="comment">0</span>]<span class="comment">#</span> <span class="comment">chown</span> <span class="comment">root:hadoop</span> <span class="string">.</span><span class="comment">/container</span>-<span class="comment">executor</span>
-<span class="title">[</span><span class="comment">@slave0</span> <span class="comment">hadoop</span>-<span class="comment">2</span>.<span class="comment">2</span>.<span class="comment">0</span>]<span class="comment">#</span> <span class="comment">ll</span> <span class="comment">bin/container</span>-<span class="comment">executor</span>
-<span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="comment">Sr</span>-<span class="comment">s</span>-<span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">root</span> <span class="comment">hadoop</span> <span class="comment">101927</span> <span class="comment">Nov</span> <span class="comment">14</span> <span class="comment">17:46</span> <span class="comment">bin/container</span>-<span class="comment">executor
+</pre></td><td class="code"><pre><span class="title">[</span><span class="comment">@slave0</span> <span class="comment">hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0</span><span class="title">]</span><span class="comment">#</span> <span class="comment">chmod</span> <span class="comment">6050</span> <span class="string">.</span><span class="comment">/container</span><span class="literal">-</span><span class="comment">executor</span>
+<span class="title">[</span><span class="comment">@slave0</span> <span class="comment">hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0</span><span class="title">]</span><span class="comment">#</span> <span class="comment">chown</span> <span class="comment">root:hadoop</span> <span class="string">.</span><span class="comment">/container</span><span class="literal">-</span><span class="comment">executor</span>
+<span class="title">[</span><span class="comment">@slave0</span> <span class="comment">hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0</span><span class="title">]</span><span class="comment">#</span> <span class="comment">ll</span> <span class="comment">bin/container</span><span class="literal">-</span><span class="comment">executor</span>
+<span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="comment">Sr</span><span class="literal">-</span><span class="comment">s</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">root</span> <span class="comment">hadoop</span> <span class="comment">101927</span> <span class="comment">Nov</span> <span class="comment">14</span> <span class="comment">17:46</span> <span class="comment">bin/container</span><span class="literal">-</span><span class="comment">executor</span>
 </pre></td></tr></table></figure>
 
-<h3>$HADOOP_HOME/etc,$HADOOP_HOME权限设置</h3>
+<h3 id="-24-HADOOP_HOME-2f-etc-2c-24-HADOOP_HOME-6743-9650-8bbe-7f6e-">$HADOOP_HOME/etc,$HADOOP_HOME权限设置</h3>
 <p>要求etc/hadoop/container-executor.cfg , $HADOOP_HOME/etc,$HADOOP_HOME目录的所有者必须为集群的启动者</p>
-<h2>cgroup 默认挂载点</h2>
+<h2 id="cgroup_-9ed8-8ba4-6302-8f7d-70b9-">cgroup 默认挂载点</h2>
 <p>yarn-site.xml中yarn.nodemanager.linux-container-executor.cgroups.mount-path 指定的默认挂载点要求必须存在，可在集群内每个节点上运行/etc/init.d/cgconfig restart以确保挂载点的存在</p>
-<h2>用户添加</h2>
+<h2 id="-7528-6237-6dfb-52a0-">用户添加</h2>
 <p>在集群内的每个节点上都需要新增相应的集群使用者用户账号</p>
 ]]></content>
     <category scheme="http://lsmushroom.github.io/tags/yarn/" term="yarn"/>
@@ -537,14 +590,14 @@ allowed<span class="variable">.system</span><span class="variable">.users</span>
 3
 4
 5
-</pre></td><td class="code"><pre>[@sohu_41_173 ~]# yarn  daemonlog
+</pre></td><td class="code"><pre>[<span class="property">@sohu_41_173</span> ~]<span class="comment"># yarn  daemonlog</span>
 
-Usage: General options are:
-        [-getlevel <span class="tag">&lt;<span class="title">host:httpPort</span>&gt;</span> <span class="tag">&lt;<span class="title">name</span>&gt;</span>]
-        [-setlevel <span class="tag">&lt;<span class="title">host:httpPort</span>&gt;</span> <span class="tag">&lt;<span class="title">name</span>&gt;</span> <span class="tag">&lt;<span class="title">level</span>&gt;</span>]
+<span class="attribute">Usage</span>: General options <span class="attribute">are</span>:
+        [-getlevel &lt;<span class="attribute">host</span>:httpPort&gt; &lt;name&gt;]
+        [-setlevel &lt;<span class="attribute">host</span>:httpPort&gt; &lt;name&gt; &lt;level&gt;]
 </pre></td></tr></table></figure>
 
-<p>使用“daemonlog”命令需要提供相应的“host:httpPort” 以及需要查看或修改日志级别的类的名称，而“host:httpPort”可以通过以下命令查询获得：</p>
+<p>使用”daemonlog”命令需要提供相应的”host:httpPort” 以及需要查看或修改日志级别的类的名称，而”host:httpPort”可以通过以下命令查询获得：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -552,13 +605,13 @@ Usage: General options are:
 5
 6
 7
-</pre></td><td class="code"><pre>[@sohu_41_173 ~]# yarn node  -all -list
-<span class="number">13</span>/<span class="number">12</span>/<span class="number">04</span> <span class="number">15</span>:<span class="number">09</span>:<span class="number">35</span> <span class="class">INFO</span> client.<span class="class">RMProxy</span>: <span class="class">Connecting</span> to <span class="class">ResourceManager</span> at master.hadoop/<span class="number">10.1</span><span class="number">.41</span><span class="number">.173</span>:<span class="number">9080</span>
-<span class="class">Total</span> <span class="class">Nodes</span>:<span class="number">3</span>
-     <span class="class">Node</span>-<span class="class">Id</span>             <span class="class">Node</span>-<span class="class">State</span> <span class="class">Node</span>-<span class="class">Http</span>-<span class="class">Address</span>       <span class="class">Number</span>-of-<span class="class">Running</span>-<span class="class">Containers</span>
-<span class="method">slave0:</span><span class="number">54260</span>                <span class="class">RUNNING</span>       <span class="method">slave0:</span><span class="number">8042</span>                                  <span class="number">1</span>
-<span class="method">slave1:</span><span class="number">45892</span>                <span class="class">RUNNING</span>       <span class="method">slave1:</span><span class="number">8042</span>                                  <span class="number">2</span>
-<span class="method">slave2:</span><span class="number">45410</span>                <span class="class">RUNNING</span>       <span class="method">slave2:</span><span class="number">8042</span>                                  <span class="number">3</span>
+</pre></td><td class="code"><pre>[<span class="property">@sohu_41_173</span> ~]<span class="comment"># yarn node  -all -list</span>
+<span class="number">13</span>/<span class="number">12</span>/<span class="number">04</span> <span class="number">15</span>:<span class="number">09</span>:<span class="number">35</span> INFO client.<span class="attribute">RMProxy</span>: Connecting to ResourceManager at master.hadoop/<span class="number">10.1</span><span class="number">.41</span><span class="number">.173</span>:<span class="number">9080</span>
+Total <span class="attribute">Nodes</span>:<span class="number">3</span>
+     Node-Id             Node-State Node-Http-Address       Number-<span class="keyword">of</span>-Running-Containers
+<span class="attribute">slave0</span>:<span class="number">54260</span>                RUNNING       <span class="attribute">slave0</span>:<span class="number">8042</span>                                  <span class="number">1</span>
+<span class="attribute">slave1</span>:<span class="number">45892</span>                RUNNING       <span class="attribute">slave1</span>:<span class="number">8042</span>                                  <span class="number">2</span>
+<span class="attribute">slave2</span>:<span class="number">45410</span>                RUNNING       <span class="attribute">slave2</span>:<span class="number">8042</span>                                  <span class="number">3</span>
 </pre></td></tr></table></figure>
 
 <p>以设置YarnChild.class为例：</p>
@@ -595,7 +648,7 @@ Usage: General options are:
 <span class="title">Connecting</span> <span class="title">to</span> <span class="title">http</span>://<span class="title">slave0</span>:8042/<span class="title">logLevel</span>?<span class="title">log</span>=<span class="title">YarnChild</span>.<span class="title">class</span>
 <span class="title">Submitted</span> <span class="title">Log</span> <span class="title">Name</span>: <span class="title">YarnChild</span>.<span class="title">class</span>
 <span class="title">Log</span> <span class="title">Class</span>: <span class="title">org</span>.<span class="title">apache</span>.<span class="title">commons</span>.<span class="title">logging</span>.<span class="title">impl</span>.<span class="title">Log4JLogger</span>
-<span class="title">Effective</span> <span class="title">level</span>: <span class="title">DEBUG</span>
+<span class="title">Effective</span> <span class="title">level</span>: <span class="title">DEBUG</span></span>
 </pre></td></tr></table></figure>
 
 <p>Done. :)</p>
@@ -613,18 +666,18 @@ Usage: General options are:
     <content type="html"><![CDATA[<p>今天尝试了下将pig部署到hadoop2.2.0版的集群上，过程相对较顺利，简单记录下。</p>
 <a id="more"></a>
 
-<h2>部署</h2>
+<h2 id="-90e8-7f72-">部署</h2>
 <p>部署需要依赖ant编译工具，当前使用版本为<a href="http://archive.apache.org/dist/ant/binaries/apache-ant-1.7.1-bin.zip" target="_blank">apache-ant-1.7.1</a><br>下载 pig 最新版源码包 pig-0.12.0-src,解压后对其进行编译,当前pig适配于hadoop20与hadoop23版本，因我们需要将其部署在Yarn平台上，选取适配的目标版本为hadoop23</p>
-<pre><code><span class="title">ant</span> clean jar-withouthadoop -Dhadoopversion=<span class="number">23</span></code></pre>
-<p>编译过程将下载依赖的包，比较慢。 编译完成后添加pig脚本所处的目录至 $PATH 环境变量中即完成了pig的部署。</p>
-<h2>测试</h2>
+<pre><code><span class="comment">ant</span> <span class="comment">clean</span> <span class="comment">jar</span><span class="literal">-</span><span class="comment">withouthadoop</span> <span class="literal">-</span><span class="comment">Dhadoopversion=23</span>
+</code></pre><p>编译过程将下载依赖的包，比较慢。 编译完成后添加pig脚本所处的目录至 $PATH 环境变量中即完成了pig的部署。</p>
+<h2 id="-6d4b-8bd5-">测试</h2>
 <p>Pig-Latin 实现的wordcount:</p>
-<pre><code><span class="title">A</span> = load <span class="string">'./input.txt'</span>;
-<span class="title">B</span> = foreach A generate flatten(TOKENIZE((chararray)<span class="variable">$0</span>)) as word;
-<span class="title">C</span> = group B by word;
-<span class="title">D</span> = foreach C generate COUNT(B), group;
-<span class="title">store</span> D into <span class="string">'./wordcount'</span>;</code></pre>
-<p>运行wordcout测试程序：</p>
+<pre><code>A = load <span class="comment">'./input.txt';</span>
+B = foreach A generate flatten(TOKENIZE((chararray)$<span class="number">0</span>)) <span class="keyword">as</span> word;
+C = <span class="keyword">group</span> B <span class="keyword">by</span> word;
+D = foreach C generate COUNT(B), <span class="keyword">group</span>;
+store D <span class="keyword">into</span> <span class="comment">'./wordcount';</span>
+</code></pre><p>运行wordcout测试程序：</p>
 <pre><code><span class="comment">#将输入文件上传至HDFS</span>
 [<span class="variable">@sohu_41_173</span> pig-wordcount]<span class="comment">#hdfs dfs -put ./input.txt input.txt</span>
 
@@ -632,8 +685,8 @@ Usage: General options are:
 [<span class="variable">@sohu_41_173</span> pig-wordcount]<span class="comment"># pig ./wordcount.pig</span>
 
 <span class="comment">#检查输出</span>
-[<span class="variable">@sohu_41_173</span> pig-wordcount]<span class="comment"># hdfs dfs -cat wordcount/part-r-00000</span></code></pre>
-<p>完成 :)</p>
+[<span class="variable">@sohu_41_173</span> pig-wordcount]<span class="comment"># hdfs dfs -cat wordcount/part-r-00000</span>
+</code></pre><p>完成 :)</p>
 ]]></content>
     <category scheme="http://lsmushroom.github.io/tags/pig/" term="pig"/>
     <category scheme="http://lsmushroom.github.io/tags/yarn/" term="yarn"/>
@@ -647,22 +700,22 @@ Usage: General options are:
     <published>2013-11-18T16:01:03.000Z</published>
     <updated>2013-11-29T14:21:51.000Z</updated>
     <content type="html"><![CDATA[<p>vim 宏提供一种将一系列的操作批量应用于多行内容上的功能<br><a id="more"></a></p>
-<h2>记录宏:</h2>
-<pre><code><span class="title">visual</span> 模式下q+<span class="string">'[a-z]'</span>,q加任意一个字母按键即开始进入宏记录模式，所记录的操作后续可使用字母引用。
-随后进入编辑模式，输入一系列的命令，在完成输入后再按q即可完成记录,记录被保存。</code></pre>
-<h2>应用宏：</h2>
-<pre><code><span class="variable">@[</span>a-z]:<span class="variable">@+</span>之前宏对应的字母即可将宏操作应用于新的记录上</code></pre>
-<h2>升级版：</h2>
+<h2 id="-8bb0-5f55-5b8f-3a-">记录宏:</h2>
+<pre><code><span class="comment">visual</span> <span class="comment">模式下q</span><span class="literal">+</span><span class="comment">'</span><span class="title">[</span><span class="comment">a</span><span class="literal">-</span><span class="comment">z</span><span class="title">]</span><span class="comment">'</span><span class="string">,</span><span class="comment">q加任意一个字母按键即开始进入宏记录模式，所记录的操作后续可使用字母引用。</span>
+<span class="comment">随后进入编辑模式，输入一系列的命令，在完成输入后再按q即可完成记录</span><span class="string">,</span><span class="comment">记录被保存。</span>
+</code></pre><h2 id="-5e94-7528-5b8f-ff1a-">应用宏：</h2>
+<pre><code><span class="comment">@</span><span class="title">[</span><span class="comment">a</span><span class="literal">-</span><span class="comment">z</span><span class="title">]</span><span class="comment">:@</span><span class="literal">+</span><span class="comment">之前宏对应的字母即可将宏操作应用于新的记录上</span>
+</code></pre><h2 id="-5347-7ea7-7248-ff1a-">升级版：</h2>
 <pre><code>在.vimrc中添加以下内容，即可将<span class="variable">@q</span>操作映射为空格键。
 由此在记录宏时可按如下步骤进行：
 开始记录：qq
 结束记录：q
-应用宏：敲空格键</code></pre>
-<h2>将宏应用在多行上：</h2>
-<pre><code>可在<span class="constant">VISUAL</span>模式下选定多行，然后输入<span class="symbol">:normal</span> <span class="variable">@q</span>,即可将宏同时作用于多行</code></pre>
-<h2>宏的wiki</h2>
-<pre><code><span class="tag">&lt;<span class="title">http:</span>//<span class="attribute">vim.wikia.com</span>/<span class="attribute">wiki</span>/<span class="attribute">Macros</span>&gt;</span></code></pre>
-]]></content>
+应用宏：敲空格键
+</code></pre><h2 id="-5c06-5b8f-5e94-7528-5728-591a-884c-4e0a-ff1a-">将宏应用在多行上：</h2>
+<pre><code>可在<span class="constant">VISUAL</span>模式下选定多行，然后输入<span class="symbol">:normal</span> <span class="variable">@q</span>,即可将宏同时作用于多行
+</code></pre><h2 id="-5b8f-7684-wiki">宏的wiki</h2>
+<pre><code>&lt;http://vim<span class="preprocessor">.wikia</span><span class="preprocessor">.com</span>/wiki/Macros&gt;
+</code></pre>]]></content>
     <category scheme="http://lsmushroom.github.io/tags/vim/" term="vim"/>
     <category scheme="http://lsmushroom.github.io/categories/vim/" term="vim"/>
   </entry>
@@ -673,44 +726,44 @@ Usage: General options are:
     <published>2013-11-18T15:07:42.000Z</published>
     <updated>2013-12-23T07:26:43.000Z</updated>
     <content type="html"><![CDATA[<p>基于RHEL6成功部署了hexo，博客落户github了，记录下部署的过程<br><a id="more"></a></p>
-<h1>1. 安装</h1>
+<h1 id="1-_-5b89-88c5-">1. 安装</h1>
 <p>hexo环境的部署将被安装至用户目录下的.nvm等目录中，故root用户安装后非root用户将因权限问题而无法使用</p>
-<h2>1. 下载相关库</h2>
+<h2 id="1-_-4e0b-8f7d-76f8-5173-5e93-">1. 下载相关库</h2>
 <pre><code>curl https://raw<span class="preprocessor">.github</span><span class="preprocessor">.com</span>/creationix/nvm/master/install<span class="preprocessor">.sh</span> | sh
-完成后nvm即安装完毕，但需要断开终端重连后nvm可生效</code></pre>
-<h2>2. 安装Node.js</h2>
-<pre><code><span class="title">nvm</span> install <span class="number">0</span>.<span class="number">10</span></code></pre>
-<h2>3. 安装Hexo</h2>
-<pre><code><span class="title">npm</span> install -g hexo</code></pre>
-<h2>4. 添加相关的环境变量至.bashrc中</h2>
-<pre><code><span class="title">export</span> PATH=~/.nvm/v0.<span class="number">10</span>.<span class="number">24</span>/bin/:<span class="variable">$PATH</span></code></pre>
-<h1>2. 使用</h1>
-<h2>2.1    初始化目录</h2>
-<pre><code><span class="title">hexo</span> init</code></pre>
-<h2>2.2    创建新的Post</h2>
-<pre><code><span class="title">hexo</span> new <span class="string">"My First Post"</span></code></pre>
-<h2>2.3    由markdown文件生成静态html文件</h2>
-<pre><code><span class="title">hexo</span> generate</code></pre>
-<h2>2.4    本地预览</h2>
-<pre><code>hexo server
-随后即可在浏览器中预览，对应的地址为服务器的ip,默认的端口为4000。也可通过hexo server -p 选项指定监听的端口
-<span class="tag">&lt;<span class="title">example:</span> <span class="attribute">10.1.41.173:4000</span></code></pre>
-<h2>2.5    将本地blog部署至github对应的仓库上</h2>
-<pre><code><span class="number">1</span>）编辑blog根目录下的_config<span class="variable">.yml</span>，指定博客将被部署至哪
+完成后nvm即安装完毕，但需要断开终端重连后nvm可生效
+</code></pre><h2 id="2-_-5b89-88c5-Node-js">2. 安装Node.js</h2>
+<pre><code><span class="title">nvm</span> install <span class="number">0.10</span>
+</code></pre><h2 id="3-_-5b89-88c5-Hexo">3. 安装Hexo</h2>
+<pre><code><span class="comment">npm</span> <span class="comment">install</span> <span class="literal">-</span><span class="comment">g</span> <span class="comment">hexo</span>
+</code></pre><h2 id="4-_-6dfb-52a0-76f8-5173-7684-73af-5883-53d8-91cf-81f3-bashrc-4e2d-">4. 添加相关的环境变量至.bashrc中</h2>
+<pre><code><span class="keyword">export</span> PATH=~/.nvm/v0.<span class="number">10.24</span>/bin/:<span class="variable">$PATH</span>
+</code></pre><h1 id="2-_-4f7f-7528-">2. 使用</h1>
+<h2 id="2-1_-521d-59cb-5316-76ee-5f55-">2.1    初始化目录</h2>
+<pre><code><span class="title">hexo</span> init
+</code></pre><h2 id="2-2_-521b-5efa-65b0-7684-Post">2.2    创建新的Post</h2>
+<pre><code>hexo <span class="keyword">new</span> <span class="string">"My First Post"</span>
+</code></pre><h2 id="2-3_-7531-markdown-6587-4ef6-751f-6210-9759-6001-html-6587-4ef6-">2.3    由markdown文件生成静态html文件</h2>
+<pre><code><span class="title">hexo</span> generate
+</code></pre><h2 id="2-4_-672c-5730-9884-89c8-">2.4    本地预览</h2>
+<pre><code>hexo <span class="keyword">server</span>
+随后即可在浏览器中预览，对应的地址为服务器的ip,默认的端口为<span class="number">4000</span>。也可通过hexo <span class="keyword">server</span> -p 选项指定监听的端口
+&lt;example: <span class="number">10.1</span><span class="number">.41</span><span class="number">.173</span>:<span class="number">4000</span>
+</code></pre><h2 id="2-5_-5c06-672c-5730-blog-90e8-7f72-81f3-github-5bf9-5e94-7684-4ed3-5e93-4e0a-">2.5    将本地blog部署至github对应的仓库上</h2>
+<pre><code><span class="number">1</span>）编辑blog根目录下的_config<span class="preprocessor">.yml</span>，指定博客将被部署至哪
     <span class="preprocessor"># Deployment</span>
     <span class="preprocessor">## Docs: http://zespia.tw/hexo/docs/deploy.html</span>
     deploy:
       type: github  <span class="preprocessor">#指定待部署的空间的类型，当前要将blog部署至github上在此填github即可</span>
-      repository: git@github<span class="variable">.com</span>:lsmushroom/lsmushroom<span class="variable">.github</span><span class="variable">.io</span><span class="variable">.git</span>  <span class="preprocessor">#给出仓库的链接</span>
+      repository: git@github<span class="preprocessor">.com</span>:lsmushroom/lsmushroom<span class="preprocessor">.github</span><span class="preprocessor">.io</span><span class="preprocessor">.git</span>  <span class="preprocessor">#给出仓库的链接</span>
 
 <span class="number">2</span>）hexo deploy
 
-至此已通过hexo成功部署一个基本的blog，后续即需了解如何写</code></pre>
-<h1>3. 写blog</h1>
-<pre><code><span class="number">3.1</span> hexo对中文输入的支持
-    hexo要求<span class="variable">.md</span>文件为utf-<span class="number">8</span>编码，故需对文件做一些设置：
-<span class="number">3.2</span> markdown语法</code></pre>
-]]></content>
+至此已通过hexo成功部署一个基本的blog，后续即需了解如何写
+</code></pre><h1 id="3-_-5199-blog">3. 写blog</h1>
+<pre><code><span class="comment">3</span><span class="string">.</span><span class="comment">1</span> <span class="comment">hexo对中文输入的支持</span>
+    <span class="comment">hexo要求</span><span class="string">.</span><span class="comment">md文件为utf</span><span class="literal">-</span><span class="comment">8编码，故需对文件做一些设置：</span>
+<span class="comment">3</span><span class="string">.</span><span class="comment">2</span> <span class="comment">markdown语法</span>
+</code></pre>]]></content>
     <category scheme="http://lsmushroom.github.io/tags/hexo/" term="hexo"/>
     <category scheme="http://lsmushroom.github.io/categories/yarn/" term="yarn"/>
   </entry>

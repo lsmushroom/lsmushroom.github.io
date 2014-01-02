@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Mushroom's blog</title>
+  <title>Mushroom&#39;s blog</title>
   <meta name="author" content="Yuan Linsi">
   
   <meta name="description" content="hadoop,yarn,mapreduce,linux kernel">
@@ -12,14 +12,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-  <meta property="og:site_name" content="Mushroom's blog"/>
+  <meta property="og:site_name" content="Mushroom&#39;s blog"/>
 
   
     <meta property="og:image" content="undefined"/>
   
 
   <link href="/favicon.png" rel="icon">
-  <link rel="alternate" href="/atom.xml" title="Mushroom's blog" type="application/atom+xml">
+  <link rel="alternate" href="/atom.xml" title="Mushroom&#39;s blog" type="application/atom+xml">
   <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
   <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
   
@@ -54,7 +54,7 @@
 
 <body>
   <header id="header" class="inner"><div class="alignleft">
-  <h1><a href="/">Mushroom's blog</a></h1>
+  <h1><a href="/">Mushroom&#39;s blog</a></h1>
   <h2><a href="/">没时间玩，就扩大玩的定义，我玩的是技术</a></h2>
 </div>
 <nav id="main-nav" class="alignright">
@@ -73,6 +73,141 @@
   <div id="content" class="inner">
     <div id="main-col" class="alignleft"><div id="wrapper">
   <article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2014-01-02T13:28:11.000Z"><a href="/2014/01/02/shell-command-tips/">1月 2 2014</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2014/01/02/shell-command-tips/">shell-command-tips</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <ul>
+<li><p>trap:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre>trap [-lp] [[arg] sigspec <span class="keyword">...</span>]
+
+arg: 信号处理函数，当接收到有sigspec定义的信号时将触发有args定义的命令的执行
+
+<span class="number">1.</span> 如未指定arg或arg为<span class="string">" - "</span> ， 则当收到sigspec时将信号复位为原值
+<span class="number">2.</span> 如arg指定为<span class="literal">NULL</span> ， 则sigspec指定的信号将被当前shell脚本以及触发信号的命令忽略
+<span class="number">3.</span> trap -l 列出当前的信号列表
+</pre></td></tr></table></figure>
+</li>
+<li><p>usermod</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>usermod <span class="attribute">-m</span> <span class="attribute">-d</span> <span class="variable">$NEW_HOME_PATH</span> <span class="variable">$USER</span>
+将<span class="variable">$USER</span>指定的用户的home目录切换至新目录中，并将原目录中的文件移动至新目录中
+
+ps <span class="attribute">-U</span> <span class="variable">$USER</span> <span class="attribute">-u</span> <span class="variable">$user</span>
+仅显示指定用户的进程，可用于干掉死掉的终端
+</pre></td></tr></table></figure>
+
+</li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  <article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2014-01-02T12:27:46.000Z"><a href="/2014/01/02/maven-使用/">1月 2 2014</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2014/01/02/maven-使用/">maven 使用</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  <article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
   
   <div class="post-content">
     <header>
@@ -111,6 +246,18 @@
 
   <article class="post">
   
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
   <div class="post-content">
     <header>
       
@@ -125,7 +272,7 @@
     </header>
     <div class="entry">
       
-        <h2>准备安装环境</h2>
+        <h2 id="-51c6-5907-5b89-88c5-73af-5883-">准备安装环境</h2>
 <ol>
 <li><p>下载<a href="https://github.com/yahoo/storm-yarn/archive/master.zip" target="_blank">storm-on-yarn</a><br> wget <a href="https://github.com/yahoo/storm-yarn/archive/master.zip" target="_blank">https://github.com/yahoo/storm-yarn/archive/master.zip</a><br> 或<br> git clone git@github.com:yahoo/storm-yarn.git</p>
 </li>
@@ -133,22 +280,22 @@
 </li>
 <li>将storm.zip文件拷贝至$STORM_HOME目录并解压<br> cp ./storm-yarn-master/lib/storm.zip .<br> unzip storm.zip</li>
 </ol>
-<h2>Storm 依赖的软件环境</h2>
+<h2 id="Storm_-4f9d-8d56-7684-8f6f-4ef6-73af-5883-">Storm 依赖的软件环境</h2>
 <ol>
 <li><a href="http://zeromq.org/area:download" target="_blank">zeromq</a></li>
 <li><a href="https://github.com/nathanmarz/jzmq" target="_blank">jzmq</a></li>
 <li>Java 6</li>
 <li>Python</li>
 </ol>
-<h2>添加环境变量</h2>
+<h2 id="-6dfb-52a0-73af-5883-53d8-91cf-">添加环境变量</h2>
 <p>将storm-0.9.0-wip21 和 storm-yarn-master/bin 目录至 $PATH 环境变量中</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre>export <span class="constant">PATH</span>=<span class="regexp">/opt/linsiyuan</span><span class="regexp">/hadoop-2.2.0/storm</span><span class="regexp">/storm-0.9.0-wip21:/opt</span><span class="regexp">/linsiyuan/hadoop</span>-<span class="number">2.2</span>.<span class="number">0</span>/storm/storm-yarn-master/<span class="symbol">bin:</span><span class="variable">$PATH</span>
+</pre></td><td class="code"><pre><span class="comment">export</span> <span class="comment">PATH=/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/storm/storm</span><span class="literal">-</span><span class="comment">0</span><span class="string">.</span><span class="comment">9</span><span class="string">.</span><span class="comment">0</span><span class="literal">-</span><span class="comment">wip21:/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/storm/storm</span><span class="literal">-</span><span class="comment">yarn</span><span class="literal">-</span><span class="comment">master/bin:$PATH</span>
 </pre></td></tr></table></figure>
 
-<h2>编译</h2>
+<h2 id="-7f16-8bd1-">编译</h2>
 <p>进入storm-yarn-master目录，编译<br>    mvn package -DskipTests</p>
-<h2>部署zookeeper</h2>
+<h2 id="-90e8-7f72-zookeeper">部署zookeeper</h2>
 <p>zookeeper需要投票选举，因此建议在搭建zookeeper集群时包含奇数个结点,当包含偶数个结点时，将无法处理偶数个结点同时挂掉的情况。</p>
 <ol>
 <li>准备Java 1.6运行环境</li>
@@ -163,7 +310,7 @@
 7
 8
 </pre></td><td class="code"><pre><span class="title">tickTime</span>=<span class="number">2000</span>
-<span class="typedef">dataDir=/var/zookeeper/</span>
+<span class="title">dataDir</span>=/var/zookeeper/
 <span class="title">clientPort</span>=<span class="number">2181</span>
 <span class="title">initLimit</span>=<span class="number">5</span>
 <span class="title">syncLimit</span>=<span class="number">2</span>
@@ -174,7 +321,11 @@
 
 </li>
 </ol>
-<p>以上配置文件主要用于zookeeper集群中各个结点了解集群内的其他结点的信息。这主要是通过配置项server.id=host:port:port<br>5. 将zookeeper同步至集群内的其他结点<br>6. 在相应的结点上在$dataDir中指定的目录中创建相应的id文件，其中内容仅包含结点所对应的id信息</p>
+<p>以上配置文件主要用于zookeeper集群中各个结点了解集群内的其他结点的信息。这主要是通过配置项server.id=host:port:port</p>
+<ol>
+<li>将zookeeper同步至集群内的其他结点</li>
+<li>在相应的结点上在$dataDir中指定的目录中创建相应的id文件，其中内容仅包含结点所对应的id信息 </li>
+</ol>
 
       
     </div>
@@ -193,6 +344,18 @@
 
 
   <article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
   
   <div class="post-content">
     <header>
@@ -232,6 +395,18 @@
 
   <article class="post">
   
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
   <div class="post-content">
     <header>
       
@@ -268,6 +443,18 @@
 
 
   <article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
   
   <div class="post-content">
     <header>
@@ -307,6 +494,18 @@
 
   <article class="post">
   
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
   <div class="post-content">
     <header>
       
@@ -345,6 +544,18 @@
 
   <article class="post">
   
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
   <div class="post-content">
     <header>
       
@@ -381,6 +592,18 @@
 
 
   <article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
   
   <div class="post-content">
     <header>

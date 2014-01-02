@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>部署 Storm on Yarn | Mushroom's blog</title>
+  <title>部署 Storm on Yarn | Mushroom&#39;s blog</title>
   <meta name="author" content="Yuan Linsi">
   
   <meta name="description" content="hadoop,yarn,mapreduce,linux kernel">
@@ -12,14 +12,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   <meta property="og:title" content="部署 Storm on Yarn"/>
-  <meta property="og:site_name" content="Mushroom's blog"/>
+  <meta property="og:site_name" content="Mushroom&#39;s blog"/>
 
   
     <meta property="og:image" content="undefined"/>
   
 
   <link href="/favicon.png" rel="icon">
-  <link rel="alternate" href="/atom.xml" title="Mushroom's blog" type="application/atom+xml">
+  <link rel="alternate" href="/atom.xml" title="Mushroom&#39;s blog" type="application/atom+xml">
   <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
   <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
   
@@ -54,7 +54,7 @@
 
 <body>
   <header id="header" class="inner"><div class="alignleft">
-  <h1><a href="/">Mushroom's blog</a></h1>
+  <h1><a href="/">Mushroom&#39;s blog</a></h1>
   <h2><a href="/">没时间玩，就扩大玩的定义，我玩的是技术</a></h2>
 </div>
 <nav id="main-nav" class="alignright">
@@ -73,6 +73,18 @@
   <div id="content" class="inner">
     <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
   
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
   <div class="post-content">
     <header>
       
@@ -88,29 +100,29 @@
     <div class="entry">
       
         <p>本文基于apache hadoop2.2.0 版本部署storm-on-yarn ， 记录下将storm 部署在 Yarn 上运行的过程<br><a id="more"></a></p>
-<h1>Precondition</h1>
+<h1 id="Precondition">Precondition</h1>
 <ol>
 <li>一个已部署好运行正常的yarn集群</li>
 <li>一个已部署好运行正常的zookeeper集群</li>
 </ol>
-<h1>部署</h1>
-<h2>环境准备</h2>
-<h3>1. Java 7</h3>
+<h1 id="-90e8-7f72-">部署</h1>
+<h2 id="-73af-5883-51c6-5907-">环境准备</h2>
+<h3 id="1-_Java_7">1. Java 7</h3>
 <p>Storm-on-yarn 要求其运行环境为<a href="">java 7</a> ，故需在集群内每个节点上将java版本升级为java 7</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
 4
 5
-</pre></td><td class="code"><pre>    [root<span class="variable">@master</span> ~]<span class="comment"># yum -y install jdk-7u40-linux-x64.rpm</span>
-    [root<span class="variable">@master</span> ~]<span class="comment"># java -version</span>
-    java version <span class="string">"1.7.0_40"</span>
-    <span class="constant">Java</span>(<span class="constant">TM</span>) <span class="constant">SE</span> <span class="constant">Runtime</span> <span class="constant">Environment</span> (build <span class="number">1.7</span>.<span class="number">0_40</span>-b43)
-    <span class="constant">Java</span> <span class="constant">HotSpot</span>(<span class="constant">TM</span>) <span class="number">64</span>-<span class="constant">Bit</span> <span class="constant">Server</span> <span class="constant">VM</span> (build <span class="number">24.0</span>-b56, mixed mode)
+</pre></td><td class="code"><pre>    <span class="title">[</span><span class="comment">root@master</span> <span class="comment">~</span><span class="title">]</span><span class="comment">#</span> <span class="comment">yum</span> <span class="literal">-</span><span class="comment">y</span> <span class="comment">install</span> <span class="comment">jdk</span><span class="literal">-</span><span class="comment">7u40</span><span class="literal">-</span><span class="comment">linux</span><span class="literal">-</span><span class="comment">x64</span><span class="string">.</span><span class="comment">rpm</span>
+    <span class="title">[</span><span class="comment">root@master</span> <span class="comment">~</span><span class="title">]</span><span class="comment">#</span> <span class="comment">java</span> <span class="literal">-</span><span class="comment">version</span>
+    <span class="comment">java</span> <span class="comment">version</span> <span class="comment">"1</span><span class="string">.</span><span class="comment">7</span><span class="string">.</span><span class="comment">0_40"</span>
+    <span class="comment">Java(TM)</span> <span class="comment">SE</span> <span class="comment">Runtime</span> <span class="comment">Environment</span> <span class="comment">(build</span> <span class="comment">1</span><span class="string">.</span><span class="comment">7</span><span class="string">.</span><span class="comment">0_40</span><span class="literal">-</span><span class="comment">b43)</span>
+    <span class="comment">Java</span> <span class="comment">HotSpot(TM)</span> <span class="comment">64</span><span class="literal">-</span><span class="comment">Bit</span> <span class="comment">Server</span> <span class="comment">VM</span> <span class="comment">(build</span> <span class="comment">24</span><span class="string">.</span><span class="comment">0</span><span class="literal">-</span><span class="comment">b56</span><span class="string">,</span> <span class="comment">mixed</span> <span class="comment">mode)</span>
 </pre></td></tr></table></figure>
 
 <p>相应的修改JAVA_HOME环境变量</p>
-<h3>2. 安装maven</h3>
+<h3 id="2-_-5b89-88c5-maven">2. 安装maven</h3>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -121,17 +133,17 @@ mv apache-maven-<span class="number">3.1</span>.<span class="number">1</span> /u
 export <span class="constant">PATH</span>=<span class="variable">$PATH</span><span class="symbol">:/usr/lib/maven/bin</span>
 </pre></td></tr></table></figure>
 
-<h2>部署storm-yarn</h2>
-<h3>1. 下载storm-on-yarn</h3>
+<h2 id="-90e8-7f72-storm-yarn">部署storm-yarn</h2>
+<h3 id="1-_-4e0b-8f7d-storm-on-yarn">1. 下载storm-on-yarn</h3>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
-</pre></td><td class="code"><pre><span class="title">wget</span> https://github.com/yahoo/storm-yarn/archive/master.zip
-<span class="title">unzip</span> master.zip
-<span class="title">cd</span> storm-yarn-master
+</pre></td><td class="code"><pre><span class="comment">wget</span> <span class="comment">https://github</span><span class="string">.</span><span class="comment">com/yahoo/storm</span><span class="literal">-</span><span class="comment">yarn/archive/master</span><span class="string">.</span><span class="comment">zip</span>
+<span class="comment">unzip</span> <span class="comment">master</span><span class="string">.</span><span class="comment">zip</span>
+<span class="comment">cd</span> <span class="comment">storm</span><span class="literal">-</span><span class="comment">yarn</span><span class="literal">-</span><span class="comment">master</span>
 </pre></td></tr></table></figure>
 
-<h3>2. 修改pom.xml</h3>
+<h3 id="2-_-4fee-6539-pom-xml">2. 修改pom.xml</h3>
 <p>当前是基于apache hadoop2.2.0 部署storm，需相应的修改pom.xml来指明</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -139,36 +151,36 @@ export <span class="constant">PATH</span>=<span class="variable">$PATH</span><sp
 4
 5
 6
-</pre></td><td class="code"><pre><span class="xml">    <span class="tag">&lt;<span class="title">properties</span>&gt;</span>
-    <span class="tag">&lt;<span class="title">storm.version</span>&gt;</span></span><span class="number">0.9</span><span class="xml"></span><span class="number">.0</span><span class="xml">-wip21<span class="tag">&lt;/<span class="title">storm.version</span>&gt;</span>
-    <span class="tag">&lt;<span class="title">hadoop.version</span>&gt;</span></span><span class="number">2.2</span><span class="xml"></span><span class="number">.0</span><span class="xml"><span class="tag">&lt;/<span class="title">hadoop.version</span>&gt;</span>
-    <span class="comment">&lt;!--hadoop.version&gt;</span><span class="number">2.1</span><span class="xml"></span><span class="number">.0</span><span class="xml">-beta<span class="tag">&lt;/<span class="title">hadoop.version--</span>&gt;</span>
-    <span class="comment">&lt;!--hadoop.version&gt;</span><span class="number">2.1</span><span class="xml"></span><span class="number">.0</span><span class="xml"></span><span class="number">.2</span><span class="xml"></span><span class="number">.0</span><span class="xml"></span><span class="number">.5</span><span class="xml"></span><span class="number">.0</span><span class="xml">-</span><span class="number">67</span><span class="xml"><span class="tag">&lt;/<span class="title">hadoop.version--</span>&gt;</span>
-    <span class="tag">&lt;/<span class="title">properties</span>&gt;</span></span>
+</pre></td><td class="code"><pre>    <span class="tag">&lt;<span class="title">properties</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">storm.version</span>&gt;</span>0.9.0-wip21<span class="tag">&lt;/<span class="title">storm.version</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">hadoop.version</span>&gt;</span>2.2.0<span class="tag">&lt;/<span class="title">hadoop.version</span>&gt;</span>
+    <span class="comment">&lt;!--hadoop.version&gt;2.1.0-beta&lt;/hadoop.version--&gt;</span>
+    <span class="comment">&lt;!--hadoop.version&gt;2.1.0.2.0.5.0-67&lt;/hadoop.version--&gt;</span>
+    <span class="tag">&lt;/<span class="title">properties</span>&gt;</span>
 </pre></td></tr></table></figure>
 
-<h3>3. 部署storm</h3>
+<h3 id="3-_-90e8-7f72-storm">3. 部署storm</h3>
 <p>在storm-yarn-master目录中包含storm.zip，创建$STORM_HOME目录用以存放storm.zip ，并将其解压</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
-</pre></td><td class="code"><pre><span class="title">cp</span> lib/storm.zip  <span class="variable">$STORM_HOME</span>
-unzip <span class="variable">$STORM_HOME</span>/storm.zip
+</pre></td><td class="code"><pre><span class="keyword">cp</span> lib/storm<span class="preprocessor">.zip</span>  $STORM_HOME
+unzip $STORM_HOME/storm<span class="preprocessor">.zip</span>
 </pre></td></tr></table></figure>
 
 <p>将storm-0.9.0-wip2 和 storm-yarn-master 的bin目录均添加至$PATH环境变量，以便后续使用storm和storm-yarn命令</p>
 <p>将storm.zip文件上传至hdfs,注意此处hdfs上的路径需对应于当前的storm版本号，否则后续编译时的测试可能无法通过</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre><span class="title">hdfs</span> dfs -put storm.zip  /lib/storm/<span class="number">0</span>.<span class="number">9</span>.<span class="number">0</span>-wip2/
+</pre></td><td class="code"><pre><span class="comment">hdfs</span> <span class="comment">dfs</span> <span class="literal">-</span><span class="comment">put</span> <span class="comment">storm</span><span class="string">.</span><span class="comment">zip</span>  <span class="comment">/lib/storm/0</span><span class="string">.</span><span class="comment">9</span><span class="string">.</span><span class="comment">0</span><span class="literal">-</span><span class="comment">wip2/</span>
 </pre></td></tr></table></figure>
 
-<h3>4. 编译storm-on-yarn</h3>
+<h3 id="4-_-7f16-8bd1-storm-on-yarn">4. 编译storm-on-yarn</h3>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
-</pre></td><td class="code"><pre><span class="title">cd</span> storm-yarn-master
-<span class="title">mvn</span> package
+</pre></td><td class="code"><pre><span class="comment">cd</span> <span class="comment">storm</span><span class="literal">-</span><span class="comment">yarn</span><span class="literal">-</span><span class="comment">master</span>
+<span class="comment">mvn</span> <span class="comment">package</span>
 </pre></td></tr></table></figure>
 
-<h3>5. 编辑storm.yaml文件</h3>
+<h3 id="5-_-7f16-8f91-storm-yaml-6587-4ef6-">5. 编辑storm.yaml文件</h3>
 <p>storm通过storm.yaml来指定当前集群的拓扑信息</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -206,46 +218,46 @@ unzip <span class="variable">$STORM_HOME</span>/storm.zip
 34
 35
 </pre></td><td class="code"><pre><span class="preprocessor">#指定storm使用的zookeeper集群</span>
-storm<span class="variable">.zookeeper</span><span class="variable">.servers</span>:
+<span class="label">storm.zookeeper.servers:</span>
 - <span class="string">"10.1.41.173"</span>
 - <span class="string">"10.1.41.181"</span>
 - <span class="string">"10.1.41.183"</span>
 - <span class="string">"10.1.41.184"</span>
 
 <span class="preprocessor">#指定与zookeeper通信的端口，对应zookeeper配置中的client port</span>
-storm<span class="variable">.zookeeper</span><span class="variable">.port</span>: <span class="number">2188</span>
+<span class="label">storm.zookeeper.port:</span> <span class="number">2188</span>
 
 <span class="preprocessor">#nimbus服务器地址</span>
-nimbus<span class="variable">.host</span>: <span class="string">"10.1.41.181"</span>
+<span class="label">nimbus.host:</span> <span class="string">"10.1.41.181"</span>
 
-master<span class="variable">.host</span>: <span class="string">"localhost"</span>
-master<span class="variable">.thrift</span><span class="variable">.port</span>: <span class="number">9000</span>
+<span class="label">master.host:</span> <span class="string">"localhost"</span>
+<span class="label">master.thrift.port:</span> <span class="number">9000</span>
 
 <span class="preprocessor">#指定初始创建的supervisor数目</span>
-master<span class="variable">.initial</span>-num-supervisors: <span class="number">1</span>
-master<span class="variable">.container</span><span class="variable">.priority</span>: <span class="number">0</span>
+master<span class="preprocessor">.initial</span>-num-supervisors: <span class="number">1</span>
+<span class="label">master.container.priority:</span> <span class="number">0</span>
 
 <span class="preprocessor">#指定storm-yarn启动的AM的Container占用的内存大小</span>
-master<span class="variable">.container</span><span class="variable">.size</span>-mb: <span class="number">4096</span>
+master<span class="preprocessor">.container</span><span class="preprocessor">.size</span>-mb: <span class="number">4096</span>
 
-master<span class="variable">.heartbeat</span><span class="variable">.interval</span><span class="variable">.millis</span>: <span class="number">1000</span>
-master<span class="variable">.timeout</span><span class="variable">.secs</span>: <span class="number">1000</span>
-yarn<span class="variable">.report</span><span class="variable">.wait</span><span class="variable">.millis</span>: <span class="number">10000</span>
-nimbusui<span class="variable">.startup</span><span class="variable">.ms</span>: <span class="number">10000</span>
+<span class="label">master.heartbeat.interval.millis:</span> <span class="number">1000</span>
+<span class="label">master.timeout.secs:</span> <span class="number">1000</span>
+<span class="label">yarn.report.wait.millis:</span> <span class="number">10000</span>
+<span class="label">nimbusui.startup.ms:</span> <span class="number">10000</span>
 
-ui<span class="variable">.port</span>: <span class="number">7070</span>
+<span class="label">ui.port:</span> <span class="number">7070</span>
 
-storm<span class="variable">.messaging</span><span class="variable">.transport</span>: <span class="string">"backtype.storm.messaging.netty.Context"</span>
-storm<span class="variable">.messaging</span><span class="variable">.netty</span><span class="variable">.buffer_size</span>: <span class="number">1048576</span>
-storm<span class="variable">.messaging</span><span class="variable">.netty</span><span class="variable">.max_retries</span>: <span class="number">100</span>
-storm<span class="variable">.messaging</span><span class="variable">.netty</span><span class="variable">.min_wait_ms</span>: <span class="number">1000</span>
-storm<span class="variable">.messaging</span><span class="variable">.netty</span><span class="variable">.max_wait_ms</span>: <span class="number">5000</span>
+<span class="label">storm.messaging.transport:</span> <span class="string">"backtype.storm.messaging.netty.Context"</span>
+<span class="label">storm.messaging.netty.buffer_size:</span> <span class="number">1048576</span>
+<span class="label">storm.messaging.netty.max_retries:</span> <span class="number">100</span>
+<span class="label">storm.messaging.netty.min_wait_ms:</span> <span class="number">1000</span>
+<span class="label">storm.messaging.netty.max_wait_ms:</span> <span class="number">5000</span>
 </pre></td></tr></table></figure>
 
-<h2>运行storm-on-yarn</h2>
+<h2 id="-8fd0-884c-storm-on-yarn">运行storm-on-yarn</h2>
 <p>启动storm-yarn , 在此需注意，storm-yarn本身将作为Yarn上的一个应用被提交到yarn上，在多用户的环境中将同其他的MR job一样禁止使用root账号提交，否则在slave结点将因权限问题而启动失败，但不会输出error message至命令行终端上。</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre>storm-yarn launch /opt/linsiyuan/hadoop-<span class="number">2.2</span><span class="number">.0</span>/storm/storm-<span class="number">0.9</span><span class="number">.0</span>-wip21/conf/<span class="filename">storm.yaml
+</pre></td><td class="code"><pre><span class="comment">storm</span><span class="literal">-</span><span class="comment">yarn</span> <span class="comment">launch</span> <span class="comment">/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/storm/storm</span><span class="literal">-</span><span class="comment">0</span><span class="string">.</span><span class="comment">9</span><span class="string">.</span><span class="comment">0</span><span class="literal">-</span><span class="comment">wip21/conf/storm</span><span class="string">.</span><span class="comment">yaml</span>
 </pre></td></tr></table></figure>
 
 <p>可通过web页面或以下命令来确认storm-on-yarn是否启动成功</p>
@@ -254,11 +266,11 @@ storm<span class="variable">.messaging</span><span class="variable">.netty</span
 3
 4
 5
-</pre></td><td class="code"><pre>[@master conf]<span class="comment"># yarn application -list</span>
-<span class="number">14</span>/<span class="number">01</span>/<span class="number">02</span> <span class="number">17</span>:<span class="number">25</span>:<span class="number">34</span> INFO client.RMProxy: Connecting <span class="keyword">to</span> ResourceManager <span class="keyword">at</span> master/<span class="number">10.1</span><span class="number">.41</span><span class="number">.173</span>:<span class="number">9080</span>
-Total <span class="type">number</span> <span class="keyword">of</span> applications (<span class="type">application</span>-types: [] <span class="keyword">and</span> states: [SUBMITTED, ACCEPTED, RUNNING]):<span class="number">1</span>
-Application-Id      Application-Name        Application-Type          User           Queue                   State          Final-State              Progress                        Tracking-URL
-application_1388633522174_0003         Storm-<span class="keyword">on</span>-Yarn                    YARN     yuanlinsi         default                 RUNNING            UNDEFINED                   <span class="number">50</span>%                                 N/A
+</pre></td><td class="code"><pre><span class="title">[</span><span class="comment">@master</span> <span class="comment">conf</span><span class="title">]</span><span class="comment">#</span> <span class="comment">yarn</span> <span class="comment">application</span> <span class="literal">-</span><span class="comment">list</span>
+<span class="comment">14/01/02</span> <span class="comment">17:25:34</span> <span class="comment">INFO</span> <span class="comment">client</span><span class="string">.</span><span class="comment">RMProxy:</span> <span class="comment">Connecting</span> <span class="comment">to</span> <span class="comment">ResourceManager</span> <span class="comment">at</span> <span class="comment">master/10</span><span class="string">.</span><span class="comment">1</span><span class="string">.</span><span class="comment">41</span><span class="string">.</span><span class="comment">173:9080</span>
+<span class="comment">Total</span> <span class="comment">number</span> <span class="comment">of</span> <span class="comment">applications</span> <span class="comment">(application</span><span class="literal">-</span><span class="comment">types:</span> <span class="title">[</span><span class="title">]</span> <span class="comment">and</span> <span class="comment">states:</span> <span class="title">[</span><span class="comment">SUBMITTED</span><span class="string">,</span> <span class="comment">ACCEPTED</span><span class="string">,</span> <span class="comment">RUNNING</span><span class="title">]</span><span class="comment">):1</span>
+<span class="comment">Application</span><span class="literal">-</span><span class="comment">Id</span>      <span class="comment">Application</span><span class="literal">-</span><span class="comment">Name</span>        <span class="comment">Application</span><span class="literal">-</span><span class="comment">Type</span>          <span class="comment">User</span>           <span class="comment">Queue</span>                   <span class="comment">State</span>          <span class="comment">Final</span><span class="literal">-</span><span class="comment">State</span>              <span class="comment">Progress</span>                        <span class="comment">Tracking</span><span class="literal">-</span><span class="comment">URL</span>
+<span class="comment">application_1388633522174_0003</span>         <span class="comment">Storm</span><span class="literal">-</span><span class="comment">on</span><span class="literal">-</span><span class="comment">Yarn</span>                    <span class="comment">YARN</span>     <span class="comment">yuanlinsi</span>         <span class="comment">default</span>                 <span class="comment">RUNNING</span>            <span class="comment">UNDEFINED</span>                   <span class="comment">50%</span>                                 <span class="comment">N/A</span>
 </pre></td></tr></table></figure>
 
 <p>注意storm-on-yarn的运行将占用大量的集群资源，尤其是虚拟内存，由此可能在storm-on-yarn启动后，因yarn中原有的对单个container可用内存资源上限的配置而将storm-on-yarn杀死。当前实验可暂时关闭对单个应用消耗虚拟内存的使用量, 在yarn-site.xml中添加以下配置项：</p>
@@ -284,23 +296,23 @@ containers.<span class="tag">&lt;/<span class="title">description</span>&gt;</sp
 5
 6
 7
-</pre></td><td class="code"><pre><span class="comment">/opt/linsiyuan/hadoop</span>-<span class="comment">2</span>.<span class="comment">2</span>.<span class="comment">0/logs/root/userlogs/root/application_1388633522174_0002/container_1388633522174_0002_01_000001</span>
-<span class="title">[</span><span class="comment">@slave0</span> <span class="comment">container_1388633522174_0002_01_000001</span>]<span class="comment">#</span> <span class="comment">ll</span>
+</pre></td><td class="code"><pre><span class="comment">/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/logs/root/userlogs/root/application_1388633522174_0002/container_1388633522174_0002_01_000001</span>
+<span class="title">[</span><span class="comment">@slave0</span> <span class="comment">container_1388633522174_0002_01_000001</span><span class="title">]</span><span class="comment">#</span> <span class="comment">ll</span>
 <span class="comment">total</span> <span class="comment">204</span>
-<span class="literal">-</span><span class="comment">rw</span>-<span class="comment">r</span>-<span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">yuanlinsi</span> <span class="comment">hadoop</span> <span class="comment">179037</span> <span class="comment">Jan</span>  <span class="comment">2</span> <span class="comment">14:16</span> <span class="comment">nimbus</span>.<span class="comment">log</span>
-<span class="literal">-</span><span class="comment">rw</span>-<span class="comment">r</span>-<span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">yuanlinsi</span> <span class="comment">hadoop</span>    <span class="comment">531</span> <span class="comment">Jan</span>  <span class="comment">2</span> <span class="comment">11:34</span> <span class="comment">stderr</span>
-<span class="literal">-</span><span class="comment">rw</span>-<span class="comment">r</span>-<span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">yuanlinsi</span> <span class="comment">hadoop</span>  <span class="comment">17644</span> <span class="comment">Jan</span>  <span class="comment">2</span> <span class="comment">14:15</span> <span class="comment">stdout</span>
-<span class="literal">-</span><span class="comment">rw</span>-<span class="comment">r</span>-<span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">yuanlinsi</span> <span class="comment">hadoop</span>   <span class="comment">1670</span> <span class="comment">Jan</span>  <span class="comment">2</span> <span class="comment">11:56</span> <span class="comment">ui</span>.<span class="comment">log
+<span class="literal">-</span><span class="comment">rw</span><span class="literal">-</span><span class="comment">r</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">yuanlinsi</span> <span class="comment">hadoop</span> <span class="comment">179037</span> <span class="comment">Jan</span>  <span class="comment">2</span> <span class="comment">14:16</span> <span class="comment">nimbus</span><span class="string">.</span><span class="comment">log</span>
+<span class="literal">-</span><span class="comment">rw</span><span class="literal">-</span><span class="comment">r</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">yuanlinsi</span> <span class="comment">hadoop</span>    <span class="comment">531</span> <span class="comment">Jan</span>  <span class="comment">2</span> <span class="comment">11:34</span> <span class="comment">stderr</span>
+<span class="literal">-</span><span class="comment">rw</span><span class="literal">-</span><span class="comment">r</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">yuanlinsi</span> <span class="comment">hadoop</span>  <span class="comment">17644</span> <span class="comment">Jan</span>  <span class="comment">2</span> <span class="comment">14:15</span> <span class="comment">stdout</span>
+<span class="literal">-</span><span class="comment">rw</span><span class="literal">-</span><span class="comment">r</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">yuanlinsi</span> <span class="comment">hadoop</span>   <span class="comment">1670</span> <span class="comment">Jan</span>  <span class="comment">2</span> <span class="comment">11:56</span> <span class="comment">ui</span><span class="string">.</span><span class="comment">log</span>
 </pre></td></tr></table></figure>
 
 <p>获取storm.yaml</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre><span class="comment">storm</span>-<span class="comment">yarn</span> <span class="comment">getStormConfig</span> <span class="literal">-</span><span class="comment">appId</span> <span class="comment">application_1388633522174_0002</span> <span class="literal">-</span><span class="comment">output</span> <span class="comment">~/</span>.<span class="comment">storm/storm</span>.<span class="comment">yaml
+</pre></td><td class="code"><pre><span class="comment">storm</span><span class="literal">-</span><span class="comment">yarn</span> <span class="comment">getStormConfig</span> <span class="literal">-</span><span class="comment">appId</span> <span class="comment">application_1388633522174_0002</span> <span class="literal">-</span><span class="comment">output</span> <span class="comment">~/</span><span class="string">.</span><span class="comment">storm/storm</span><span class="string">.</span><span class="comment">yaml</span>
 </pre></td></tr></table></figure>
 
 <p>由获得的storm.yaml可知当前nimbus在哪个结点并提交任务：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre>storm jar /opt/linsiyuan/hadoop-<span class="number">2.2</span><span class="number">.0</span>/storm/storm-yarn-master/lib/storm-starter-<span class="number">0.0</span><span class="number">.1</span>-SNAPSHOT<span class="variable">.jar</span> storm<span class="variable">.starter</span><span class="variable">.WordCountTopology</span> WordCountTopology -c nimbus<span class="variable">.host</span>=<span class="number">10.1</span><span class="number">.41</span><span class="number">.183</span>
+</pre></td><td class="code"><pre><span class="comment">storm</span> <span class="comment">jar</span> <span class="comment">/opt/linsiyuan/hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0/storm/storm</span><span class="literal">-</span><span class="comment">yarn</span><span class="literal">-</span><span class="comment">master/lib/storm</span><span class="literal">-</span><span class="comment">starter</span><span class="literal">-</span><span class="comment">0</span><span class="string">.</span><span class="comment">0</span><span class="string">.</span><span class="comment">1</span><span class="literal">-</span><span class="comment">SNAPSHOT</span><span class="string">.</span><span class="comment">jar</span> <span class="comment">storm</span><span class="string">.</span><span class="comment">starter</span><span class="string">.</span><span class="comment">WordCountTopology</span> <span class="comment">WordCountTopology</span> <span class="literal">-</span><span class="comment">c</span> <span class="comment">nimbus</span><span class="string">.</span><span class="comment">host=10</span><span class="string">.</span><span class="comment">1</span><span class="string">.</span><span class="comment">41</span><span class="string">.</span><span class="comment">183</span>
 </pre></td></tr></table></figure>
 
 <p>可通过通过$nimbus.host:7070访问storm 的web UI 来监测topology的执行</p>
