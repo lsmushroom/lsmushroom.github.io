@@ -78,6 +78,126 @@
     <header>
       
         <div class="icon"></div>
+        <time datetime="2014-01-02T07:44:50.000Z"><a href="/2014/01/02/部署-storm-on-yarn/">1月 2 2014</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2014/01/02/部署-storm-on-yarn/">部署 Storm on Yarn</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>本文基于apache hadoop2.2.0 版本部署storm-on-yarn ， 记录下将storm 部署在 Yarn 上运行的过程<br>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2014/01/02/部署-storm-on-yarn/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2013-12-25T12:55:03.000Z"><a href="/2013/12/25/storm-on-yarn-部署/">12月 25 2013</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2013/12/25/storm-on-yarn-部署/">Storm on Yarn 部署</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2>准备安装环境</h2>
+<ol>
+<li><p>下载<a href="https://github.com/yahoo/storm-yarn/archive/master.zip" target="_blank">storm-on-yarn</a><br> wget <a href="https://github.com/yahoo/storm-yarn/archive/master.zip" target="_blank">https://github.com/yahoo/storm-yarn/archive/master.zip</a><br> 或<br> git clone git@github.com:yahoo/storm-yarn.git</p>
+</li>
+<li><p>创建一个目录用以存放storm相关文件<br> mkdir storm</p>
+</li>
+<li>将storm.zip文件拷贝至$STORM_HOME目录并解压<br> cp ./storm-yarn-master/lib/storm.zip .<br> unzip storm.zip</li>
+</ol>
+<h2>Storm 依赖的软件环境</h2>
+<ol>
+<li><a href="http://zeromq.org/area:download" target="_blank">zeromq</a></li>
+<li><a href="https://github.com/nathanmarz/jzmq" target="_blank">jzmq</a></li>
+<li>Java 6</li>
+<li>Python</li>
+</ol>
+<h2>添加环境变量</h2>
+<p>将storm-0.9.0-wip21 和 storm-yarn-master/bin 目录至 $PATH 环境变量中</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>export <span class="constant">PATH</span>=<span class="regexp">/opt/linsiyuan</span><span class="regexp">/hadoop-2.2.0/storm</span><span class="regexp">/storm-0.9.0-wip21:/opt</span><span class="regexp">/linsiyuan/hadoop</span>-<span class="number">2.2</span>.<span class="number">0</span>/storm/storm-yarn-master/<span class="symbol">bin:</span><span class="variable">$PATH</span>
+</pre></td></tr></table></figure>
+
+<h2>编译</h2>
+<p>进入storm-yarn-master目录，编译<br>    mvn package -DskipTests</p>
+<h2>部署zookeeper</h2>
+<p>zookeeper需要投票选举，因此建议在搭建zookeeper集群时包含奇数个结点,当包含偶数个结点时，将无法处理偶数个结点同时挂掉的情况。</p>
+<ol>
+<li>准备Java 1.6运行环境</li>
+<li>Set the Java heap size. This is very important to avoid swapping, which will seriously degrade ZooKeeper performance. To determine the correct value, use load tests, and make sure you are well below the usage limit that would cause you to swap. Be conservative - use a maximum heap size of 3GB for a 4GB machine.</li>
+<li>下载<a href="http://zookeeper.apache.org/releases.html#download" target="_blank">zookeeper安装包</a></li>
+<li>创建配置文件，包含以下内容,配置文件名随意,通常命名为$ZOOKEEPER_HOME/conf/zoo.cfg<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="code"><pre><span class="title">tickTime</span>=<span class="number">2000</span>
+<span class="typedef">dataDir=/var/zookeeper/</span>
+<span class="title">clientPort</span>=<span class="number">2181</span>
+<span class="title">initLimit</span>=<span class="number">5</span>
+<span class="title">syncLimit</span>=<span class="number">2</span>
+<span class="title">server</span><span class="number">.1</span>=zoo1:<span class="number">2888</span>:<span class="number">3888</span>
+<span class="title">server</span><span class="number">.2</span>=zoo2:<span class="number">2888</span>:<span class="number">3888</span>
+<span class="title">server</span><span class="number">.3</span>=zoo3:<span class="number">2888</span>:<span class="number">3888</span>
+</pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>以上配置文件主要用于zookeeper集群中各个结点了解集群内的其他结点的信息。这主要是通过配置项server.id=host:port:port<br>5. 将zookeeper同步至集群内的其他结点<br>6. 在相应的结点上在$dataDir中指定的目录中创建相应的id文件，其中内容仅包含结点所对应的id信息</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
         <time datetime="2013-12-23T07:32:23.000Z"><a href="/2013/12/23/yarn-多用户权限配置/">12月 23 2013</a></time>
       
       
@@ -318,7 +438,7 @@
   
     <li><a href="/categories/vim/">vim</a><small>1</small></li>
   
-    <li><a href="/categories/yarn/">yarn</a><small>5</small></li>
+    <li><a href="/categories/yarn/">yarn</a><small>7</small></li>
   
   </ul>
 </div>
@@ -339,9 +459,11 @@
   
     <li><a href="/tags/pig/">pig</a><small>1</small></li>
   
+    <li><a href="/tags/storm/">storm</a><small>1</small></li>
+  
     <li><a href="/tags/vim/">vim</a><small>1</small></li>
   
-    <li><a href="/tags/yarn/">yarn</a><small>4</small></li>
+    <li><a href="/tags/yarn/">yarn</a><small>6</small></li>
   
   </ul>
 </div>
@@ -351,7 +473,7 @@
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/hadoop/" style="font-size: 20.00px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
+    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
   </div>
 </div>
 
@@ -363,7 +485,7 @@
   </div>
   <footer id="footer" class="inner"><div class="alignleft">
   
-  &copy; 2013 Yuan Linsi
+  &copy; 2014 Yuan Linsi
   
 </div>
 <div class="clearfix"></div>

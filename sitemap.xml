@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://lsmushroom.github.io/2013/12/25/storm-on-yarn-部署/</loc>
+    <lastmod>2014-01-02T09:52:52.000Z</lastmod>
+  </url>
+  <url>
+    <loc>http://lsmushroom.github.io/2014/01/02/部署-storm-on-yarn/</loc>
+    <lastmod>2014-01-02T09:45:26.000Z</lastmod>
+  </url>
+  <url>
     <loc>http://lsmushroom.github.io/2013/12/23/yarn-多用户权限配置/</loc>
     <lastmod>2013-12-25T10:32:57.000Z</lastmod>
   </url>
