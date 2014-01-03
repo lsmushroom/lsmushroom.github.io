@@ -178,7 +178,123 @@ ps <span class="attribute">-U</span> <span class="variable">$USER</span> <span c
     </header>
     <div class="entry">
       
-        
+        <ul>
+<li>创建项目<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="xml"><span class="tag"><span class="attribute">mvn</span> <span class="attribute">archetype:create</span> <span class="attribute">-DgroupId</span>=<span class="value">com.practise.java</span> <span class="attribute">-DartifactId</span>=<span class="value">helloworld</span> <span class="attribute">-DpackageName</span>=<span class="value">com.practise.java</span></span></span>
+</pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>创建后的目录结构如下:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="code"><pre>[@sohu_41_173 java-practise]$ tree helloworld/
+helloworld/
+├── pom<span class="preprocessor">.xml</span>
+└── src
+    ├── main
+    │   └── java
+    │       └── <span class="keyword">com</span>
+    │           └── practise
+    │               └── java
+    │                   └── App<span class="preprocessor">.java</span>
+    └── test
+        └── java
+            └── <span class="keyword">com</span>
+                └── practise
+                    └── java
+                        └── AppTest<span class="preprocessor">.java</span>
+
+<span class="number">11</span> directories, <span class="number">3</span> files
+</pre></td></tr></table></figure>
+
+<p>其中archetype:create称为一个Maven目标，相应的会创建一个pom.xml文件，文件中各项的含义如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+</pre></td><td class="code"><pre><span class="literal">-</span> <span class="comment">groupId:</span> <span class="comment">通常为项目的顶级包名。</span>
+<span class="literal">-</span> <span class="comment">artifactId:</span> <span class="comment">通常为项目名</span>
+<span class="literal">-</span> <span class="comment">version：项目的版本号，在开发的不同阶段，你需要更改这个版本号。</span>
+<span class="literal">-</span> <span class="comment">packaging：项目发布时的打包类型。比如对于普通Java程序打包为jar文件；对于Java</span> <span class="comment">web项目则打包为war文件。</span>
+<span class="literal">-</span> <span class="comment">name：通常也是项目名</span>
+<span class="literal">-</span> <span class="comment">url：项目的主页。</span>
+</pre></td></tr></table></figure>
+
+<ul>
+<li>安装<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="title">mvn</span> clean install
+</pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>会将由mvn package编译生成的jar包拷贝至类似如下的路径：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="comment">/opt/home/mushroom/</span><span class="string">.</span><span class="comment">m2/repository/com/practise/java/helloworld/1</span><span class="string">.</span><span class="comment">0</span><span class="literal">-</span><span class="comment">SNAPSHOT/helloworld</span><span class="literal">-</span><span class="comment">1</span><span class="string">.</span><span class="comment">0</span><span class="literal">-</span><span class="comment">SNAPSHOT</span><span class="string">.</span><span class="comment">jar</span>
+</pre></td></tr></table></figure>
+
+<ul>
+<li><p>清理</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="code"><pre><span class="title">[</span><span class="comment">@sohu_41_173</span> <span class="comment">helloworld</span><span class="title">]</span><span class="comment">$</span> <span class="comment">mvn</span> <span class="comment">clean</span>
+<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="comment">Scanning</span> <span class="comment">for</span> <span class="comment">projects</span><span class="string">.</span><span class="string">.</span><span class="string">.</span>
+<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span>
+<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span>
+<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="comment">Building</span> <span class="comment">helloworld</span> <span class="comment">1</span><span class="string">.</span><span class="comment">0</span><span class="literal">-</span><span class="comment">SNAPSHOT</span>
+<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span>
+<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span>
+<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">maven</span><span class="literal">-</span><span class="comment">clean</span><span class="literal">-</span><span class="comment">plugin:2</span><span class="string">.</span><span class="comment">5:clean</span> <span class="comment">(default</span><span class="literal">-</span><span class="comment">clean)</span> <span class="comment">@</span> <span class="comment">helloworld</span> <span class="literal">-</span><span class="literal">-</span><span class="literal">-</span>
+<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="comment">Deleting</span> <span class="comment">/opt/linsiyuan/git/java</span><span class="literal">-</span><span class="comment">practise/helloworld/target</span>
+<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span>
+<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="comment">BUILD</span> <span class="comment">SUCCESS</span>
+<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span>
+<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="comment">Total</span> <span class="comment">time:</span> <span class="comment">0</span><span class="string">.</span><span class="comment">294s</span>
+<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="comment">Finished</span> <span class="comment">at:</span> <span class="comment">Fri</span> <span class="comment">Jan</span> <span class="comment">03</span> <span class="comment">10:24:04</span> <span class="comment">CST</span> <span class="comment">2014</span>
+<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="comment">Final</span> <span class="comment">Memory:</span> <span class="comment">16M/963M</span>
+<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span>
+</pre></td></tr></table></figure>
+</li>
+<li><p>运行</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>[@sohu_41_173 target]$ java -<span class="keyword">cp</span> ./helloworld-<span class="number">1.0</span>-SNAPSHOT<span class="preprocessor">.jar</span> <span class="keyword">com</span><span class="preprocessor">.practise</span><span class="preprocessor">.java</span><span class="preprocessor">.App</span>
+</pre></td></tr></table></figure>
+
+</li>
+</ul>
+
       
     </div>
     <footer>
@@ -659,6 +775,8 @@ ps <span class="attribute">-U</span> <span class="variable">$USER</span> <span c
   <h3 class="title">分类</h3>
   <ul class="entry">
   
+    <li><a href="/categories/java/">java</a><small>1</small></li>
+  
     <li><a href="/categories/vim/">vim</a><small>1</small></li>
   
     <li><a href="/categories/yarn/">yarn</a><small>7</small></li>
@@ -680,6 +798,8 @@ ps <span class="attribute">-U</span> <span class="variable">$USER</span> <span c
   
     <li><a href="/tags/hexo/">hexo</a><small>1</small></li>
   
+    <li><a href="/tags/java/">java</a><small>1</small></li>
+  
     <li><a href="/tags/pig/">pig</a><small>1</small></li>
   
     <li><a href="/tags/storm/">storm</a><small>1</small></li>
@@ -696,7 +816,7 @@ ps <span class="attribute">-U</span> <span class="variable">$USER</span> <span c
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
+    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
   </div>
 </div>
 
