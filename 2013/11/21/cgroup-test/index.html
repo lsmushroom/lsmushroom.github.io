@@ -1,0 +1,69 @@
+<h1 id="Cgroup_Subsystem">Cgroup Subsystem</h1>
+<hr>
+<h2 id="CPU_Subsystem">CPU Subsystem</h2>
+<p>创建三个cgroup，对前两组设定cpu.shares比例为1:2 ，对第三组不设定cpu.shares参数，三个cgroup内运行的进程均被限制仅能在0号核上运行，可访问内存结点为0,1</p>
+<pre><code>[@sohu_41_173 ~]<span class="preprocessor"># cat /etc/cgconfig.conf</span>
+mount {
+    cpu     = /cgroup/cpu<span class="comment">;</span>
+    cpuset  = /cgroup/cpuset<span class="comment">;</span>
+    memory  = /cgroup/memory<span class="comment">;</span>
+}
+
+group test1 {
+    cpuset{
+        cpuset<span class="preprocessor">.cpus</span>=<span class="string">"0"</span><span class="comment">;</span>
+        cpuset<span class="preprocessor">.mems</span>=<span class="string">"0,1"</span><span class="comment">;</span>
+    }
+    cpu{
+        cpu<span class="preprocessor">.shares</span>=<span class="string">"100"</span><span class="comment">;</span>
+    }
+}
+group test2 {
+    cpuset{
+        cpuset<span class="preprocessor">.cpus</span>=<span class="string">"0"</span><span class="comment">;</span>
+        cpuset<span class="preprocessor">.mems</span>=<span class="string">"0,1"</span><span class="comment">;</span>
+    }
+    cpu{
+        cpu<span class="preprocessor">.shares</span>=<span class="string">"200"</span><span class="comment">;</span>
+    }
+}
+
+group test3 {
+    cpuset{
+        cpuset<span class="preprocessor">.cpus</span>=<span class="string">"0"</span><span class="comment">;</span>
+        cpuset<span class="preprocessor">.mems</span>=<span class="string">"0,1"</span><span class="comment">;</span>
+    }
+}
+</code></pre><p>设定cgrules.conf 如下，使用C实现的简易的压测工具stress，其被编译成单独的可执行程序，简单的复制并重命名2份供另两组使用，在启动时将由cgrulesengd自动与配置的cgroup绑定运行，受相应的subsystem控制</p>
+<pre><code>[<span class="variable">@sohu_41_173</span> ~]<span class="comment"># cat /etc/cgrules.conf</span>
+*<span class="symbol">:/usr/local/bin/stress</span>         cpu,cpuset              /test1
+*<span class="symbol">:/usr/local/bin/stress2</span>        cpu,cpuset              /test2
+*<span class="symbol">:/usr/local/bin/stress3</span>        cpuset                  /test3
+</code></pre><p><em>测试一</em></p>
+<pre><code>[<span class="variable">@sohu_41_173</span> ~]<span class="comment"># stress -c 1</span>
+stress: info: [<span class="number">48624</span>] dispatching hogs: <span class="number">1</span> cpu, <span class="number">0</span> io, <span class="number">0</span> vm, <span class="number">0</span> hdd
+
+[<span class="variable">@sohu_41_173</span> ~]<span class="comment"># stress2 -c 1</span>
+stress2: info: [<span class="number">48632</span>] dispatching hogs: <span class="number">1</span> cpu, <span class="number">0</span> io, <span class="number">0</span> vm, <span class="number">0</span> hdd
+
+[<span class="variable">@sohu_41_173</span> ~]<span class="comment"># top -p 48633,48625 -b</span>
+top - <span class="number">12</span>:08:<span class="number">04</span> up <span class="number">9</span> days, <span class="number">16</span>:<span class="number">32</span>,  <span class="number">7</span> users,  load average: <span class="number">1.94</span>, <span class="number">1.19</span>, <span class="number">2.09</span>
+Tasks:   <span class="number">2</span> total,   <span class="number">2</span> running,   <span class="number">0</span> sleeping,   <span class="number">0</span> stopped,   <span class="number">0</span> zombie
+Cpu(<span class="keyword">s</span>):  <span class="number">0</span>.<span class="number">2</span><span class="variable">%us</span>,  <span class="number">0</span>.<span class="number">1</span><span class="variable">%sy</span>,  <span class="number">0</span>.<span class="number">0</span><span class="variable">%ni</span>, <span class="number">99.7</span><span class="variable">%id</span>,  <span class="number">0</span>.<span class="number">0</span><span class="variable">%wa</span>,  <span class="number">0</span>.<span class="number">0</span><span class="variable">%hi</span>,  <span class="number">0</span>.<span class="number">0</span><span class="variable">%si</span>,  <span class="number">0</span>.<span class="number">0</span><span class="variable">%st</span>
+Mem:  <span class="number">65820492</span>k total, <span class="number">30009200</span>k used, <span class="number">35811292</span>k free,  <span class="number">1110200</span>k buffers
+Swap:  <span class="number">4194296</span>k total,        0k used,  <span class="number">4194296</span>k free,  <span class="number">9438732</span>k cached
+
+PID USER      PR  NI  VIRT  RES  SHR S <span class="variable">%CPU</span> <span class="variable">%MEM</span>    TIME+  COMMAND
+<span class="number">48633</span> root      <span class="number">20</span>   <span class="number">0</span>  <span class="number">6516</span>  <span class="number">192</span>  <span class="number">104</span> R <span class="number">67.8</span>  <span class="number">0</span>.<span class="number">0</span>   <span class="number">1</span>:<span class="number">23.57</span> stress2
+<span class="number">48625</span> root      <span class="number">20</span>   <span class="number">0</span>  <span class="number">6516</span>  <span class="number">192</span>  <span class="number">104</span> R <span class="number">33.9</span>  <span class="number">0</span>.<span class="number">0</span>   <span class="number">0</span>:<span class="number">47.31</span> stress
+</code></pre><p>运行stress和stress2，两个程序分别受test和test1 cpu和cpuset子系统控制，从%CPU可看出，当两个进程被限制在同一个CPU核上运行时，其占用CPU的比例符合cpu.shares所配置的1:2的比例</p>
+<p><em>测试二</em><br>修改三个cgroup组cpuset配置如下：</p>
+<pre><code>cpuset<span class="preprocessor">.cpus</span>=<span class="string">"0,2"</span><span class="comment">;</span>
+</code></pre><p>限制三个组内运行的进程可使用的CPU核为0和2号核，重启服务以使配置生效</p>
+<pre><code>[<span class="property">@sohu_41_173</span> ~]<span class="comment"># /etc/init.d/cgconfig restart</span>
+Stopping cgconfig <span class="attribute">service</span>:                                 [  OK  ]
+Starting cgconfig <span class="attribute">service</span>:                                 [  OK  ]
+[<span class="property">@sohu_41_173</span> ~]<span class="comment"># /etc/init.d/cgred restart</span>
+Stopping CGroup Rules Engine Daemon...                     [  OK  ]
+Starting CGroup Rules Engine <span class="attribute">Daemon</span>:                       [  OK  ]
+</code></pre>

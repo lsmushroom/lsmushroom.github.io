@@ -1,0 +1,498 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>top 实现 | Mushroom&#39;s blog</title>
+  <meta name="author" content="Yuan Linsi">
+  
+  <meta name="description" content="hadoop,yarn,mapreduce,linux kernel">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="top 实现"/>
+  <meta property="og:site_name" content="Mushroom&#39;s blog"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Mushroom&#39;s blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<!--script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'true']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script-->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-46104206-1', 'lsmushroom.github.io');
+    ga('send', 'pageview');
+</script>
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F048b20646e05afe9255eeb7c85739b79' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Mushroom&#39;s blog</a></h1>
+  <h2><a href="/">没时间玩，就扩大玩的定义，我玩的是技术</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+    <li><a href="/atom.xml">RSS</a></li>
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2014-01-06T06:43:18.000Z"><a href="/2014/01/06/top-实现/">1月 6 2014</a></time>
+      
+      
+  
+    <h1 class="title">top 实现</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>心血来潮分析了下操作系统中的idle进程及动态时钟的相关的实现，简单记录下</p>
+<a id="more"></a>
+
+<p>动态时钟是在2.6.17版本中引入内核的，Kernel中与动态时钟相关的配置项为CONFIG_NO_HZ,其设计的初衷就是改变周期性时钟带来的消耗。<br>内核中周期性时钟中断主要用于更新进程时间片进而促发进程调度，也用于更新各个进程运行的统计计数等，而周期性时钟中断的问题在于其触发时钟中断时并不考虑当前系统中进程的运行状况，无论当前系统是空闲的运行的是idle进程还是真正处于繁忙状态都只是定时的周期性的触发时钟中断。</p>
+<p>而动态时钟的主要思想是在在系统处于idle状态时主动关闭时钟中断，从而降低时钟中断频率达到减小系统能耗的目的，在有进程需要被调度运行时，将重新开启时钟中断。</p>
+<p>但需要注意的是只有经典定时器需要考虑此用法，高分辨率定时器不绑定到时钟频率，也并非基于周期时钟实现。</p>
+<p>以下源码为RHEL6 2.6.32版本内核源码的实现，idle进程实为操作系统的0号进程，其在系统启动后首先创建1号init进程，随后便调用<figure class="highlight lang-cpu_idle()```函数使自身成为idle进程，其相关实现如下："><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+</pre></td><td class="code"><pre>```
+void cpu_idle(void)
+{
+	current_thread_info()-&gt;status |= TS_POLLING;
+
+	/*
+	 * If we're the non-boot CPU, nothing set the stack canary up
+	 * for us.  CPU0 already has it initialized but no harm in
+	 * doing it again.  This is a good place for updating it, as
+	 * we wont ever return from this function (so the invalid
+	 * canaries already on the stack wont ever trigger).
+	 */
+	boot_init_stack_canary();
+
+	/* endless idle loop with no priority at all */
+	while (1) {
+        //进入循环后即关闭系统的周期性时钟中断
+		tick_nohz_stop_sched_tick(1);
+        //退出以下循环的条件为当前系统中有进程需要被调度，否则将进程idle状态
+		while (!need_resched()) {
+
+			rmb();
+
+			if (cpu_is_offline(smp_processor_id()))
+				play_dead();
+			/*
+			 * Idle routines should keep interrupts disabled
+			 * from here on, until they go to idle.
+			 * Otherwise, idle callbacks can misfire.
+			 */
+			local_irq_disable();
+			enter_idle();
+			/* Don't trace irqs off for idle */
+			stop_critical_timings();
+			pm_idle();
+			start_critical_timings();
+			/* In many cases the interrupt that ended idle
+			   has already called exit_idle. But some idle
+			   loops can be woken up without interrupt. */
+			__exit_idle();
+		}
+
+        //当有进程需要调度时，将重新开启周期性时钟中断
+		tick_nohz_restart_sched_tick();
+		preempt_enable_no_resched();
+        //主动触发一次进程调度，当再次回到这里时，说明当前CPU的运行队列为空，idle进程再次被选中运行，进而再次进入循环
+		schedule();
+		preempt_disable();
+	}
+}
+</pre></td></tr></table></figure></p>
+<p>idle进程的主题逻辑十分清晰，而更让我好奇的是idle进程本身在多核系统启动期间的初始化过程。一番上下求索，逐步清晰其初始化的逻辑：</p>
+<p>操作系统启动时将首先启动主CPU，在主CPU上调用start_kernel(),将通过调用<figure class="highlight lang-sched_init```对调度器做初始化,而sched_init()将调用init_idle（）来初始化当前CPU的调度队列的idle,详细如下："><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="code"><pre>```
+void __init sched_init(void)
+{
+    ...
+
+    init_idle(current, smp_processor_id());
+
+    <span class="comment">/*
+     * During early bootup we pretend to be a normal task:
+     */</span>
+    current-&gt;sched_<span class="class"><span class="keyword">class</span> = &<span class="title">fair_sched_class</span>;</span>
+
+    ...
+}
+</pre></td></tr></table></figure></p>
+<p>void __cpuinit init_idle(struct task_struct <em>idle, int cpu)<br>{<br>    struct rq </em>rq = cpu_rq(cpu);<br>    unsigned long flags;</p>
+<pre><code><span class="title">spin_lock_irqsave</span>(&amp;rq-&gt;lock, flags);
+
+<span class="title">__sched_fork</span>(idle);
+<span class="title">idle</span>-&gt;state = <span class="type">TASK_RUNNING</span>;
+<span class="title">idle</span>-&gt;se.exec_start = sched_clock();
+
+<span class="title">cpumask_copy</span>(&amp;idle-&gt;cpus_allowed, cpumask_of(cpu));
+<span class="title">__set_task_cpu</span>(idle, cpu);
+
+//在此初始化当前<span class="type">CPU</span>的调度队列的idle进程为当前进程
+<span class="title">rq</span>-&gt;curr = rq-&gt;idle = idle;
+</code></pre><h1 id="if_defined-28-CONFIG_SMP-29-_-26-amp-3b-26-amp-3b-_defined-28-__ARCH_WANT_UNLOCKED_CTXSW-29-">if defined(CONFIG_SMP) &amp;&amp; defined(__ARCH_WANT_UNLOCKED_CTXSW)</h1>
+<pre><code><span class="title">idle</span>-&gt;oncpu = <span class="number">1</span>;
+</code></pre><h1 id="endif">endif</h1>
+<pre><code>spin_unlock_irqrestore(&amp;rq-&gt;<span class="operator"><span class="keyword">lock</span>, flags);</span>
+
+<span class="comment">/* Set the preempt count _outside_ the spinlocks! */</span>
+</code></pre><h1 id="if_defined-28-CONFIG_PREEMPT-29-">if defined(CONFIG_PREEMPT)</h1>
+<pre><code><span class="function"><span class="title">task_thread_info</span><span class="params">(idle)</span>-&gt;</span>preempt_count = (idle-&gt;lock_depth &gt;= <span class="number">0</span>);
+</code></pre><h1 id="else">else</h1>
+<pre><code><span class="function"><span class="title">task_thread_info</span><span class="params">(idle)</span>-&gt;</span>preempt_count = <span class="number">0</span>;
+</code></pre><h1 id="endif-1">endif</h1>
+<pre><code>/*
+ * <span class="type">The</span> idle tasks have their own, simple scheduling <span class="keyword">class</span>:
+ */
+<span class="title">idle</span>-&gt;sched_class = &amp;idle_sched_class;
+<span class="title">ftrace_graph_init_task</span>(idle);
+</code></pre><p>}</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre>
+在<span class="function">start_kernel()</span>函数的最后将调用<span class="function">rest_init()</span>,其中在创建完init进程后，将使当前进程进入idle进程的处理逻辑,当系统空闲时当前进程将作为idle进程被调度：
+</pre></td></tr></table></figure>
+
+<p>static noinline void <strong>init_refok rest_init(void)
+    </strong>releases(kernel_lock)<br>{<br>    int pid;</p>
+<pre><code>rcu_scheduler_starting()<span class="comment">;</span>
+<span class="comment">/*
+ * We need to spawn init first so that it obtains pid-1, however
+ * the init task will end up wanting to create kthreads, which, if
+ * we schedule it before we create kthreadd, will OOPS.
+ */</span>
+//在此创建系统的init进程
+kernel_thread(kernel_init, NULL, CLONE_FS | CLONE_SIGHAND)<span class="comment">;</span>
+numa_default_policy()<span class="comment">;</span>
+pid = kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES)<span class="comment">;</span>
+kthreadd_task = find_task_by_pid_ns(pid, &amp;init_pid_ns)<span class="comment">;</span>
+complete(&amp;kthreadd_done)<span class="comment">;</span>
+unlock_kernel()<span class="comment">;</span>
+
+<span class="comment">/*
+ * The boot idle thread must execute schedule()
+ * at least once to get things moving:
+ */</span>
+//至此，将当前系统启动进程的调度类切换为idle_sched_class调度类,随后让出CPU
+init_idle_bootup_task(current)<span class="comment">;</span>
+preempt_enable_no_resched()<span class="comment">;</span>
+schedule()<span class="comment">;</span>
+preempt_disable()<span class="comment">;</span>
+
+<span class="comment">/* Call into cpu_idle with preempt disabled */</span>
+//当再次回来时，在完成所有的初始化后将调用cpu_idle()函数，将自身作为主CPU的idle进程运行
+cpu_idle()<span class="comment">;</span>
+</code></pre><p>}</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre>至此idle进程在主CPU上的初始化过程即完成，当系统空闲时，idle进程如何被选中的呢？
+以上分析中可知系统的主CPU上的启动进程在最后将自己的调度类切换为idle_sched_class，并在最后调用<span class="function">cpu_idle()</span>,使自身完全进入idle进程的处理逻辑,成为一个普通进程供调度器调度。idle_sched_class定义如下：
+</pre></td></tr></table></figure>
+
+<p>static const struct sched_class idle_sched_class = {<br>    …</p>
+<pre><code>.pick_next_task        = pick_next_task_idle,
+
+<span class="keyword">...</span>
+</code></pre><p>};</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>32内核中已引入调度类的概念，在每一次发生进程调度时，将以此遍历各个调度类，需找可被调度需要执行的进程，而idle_sched_class是最后的调度类，当其他的调度类中均没有可被调度的进程时，将由idle_sched_class提供idle进程供调度执行。
+</pre></td></tr></table></figure>
+
+<p>static inline struct task_struct <em><br>pick_next_task(struct rq </em>rq)<br>{<br>    const struct sched_class <em>class;<br>    struct task_struct </em>p;</p>
+<pre><code>/*
+ * <span class="type">Optimization</span>: we know that <span class="keyword">if</span> all tasks are <span class="keyword">in</span>
+ * the fair <span class="class"><span class="keyword">class</span> we can call that function directly:
+ */
+if <span class="container">(<span class="title">likely</span>(<span class="title">rq</span>-&gt;<span class="title">nr_running</span> == <span class="title">rq</span>-&gt;<span class="title">cfs</span>.<span class="title">h_nr_running</span>)</span>) {
+    p = fair_sched_class.pick_next_task<span class="container">(<span class="title">rq</span>)</span>;
+    if <span class="container">(<span class="title">likely</span>(<span class="title">p</span>)</span>)
+        return p;
+}
+
+//循环遍历各个调度类，调用每个调度类定义的pick_next_task<span class="container">()</span>来返回各自调度类中可执行的进程
+for_each_class<span class="container">(<span class="title">class</span>)</span> {
+    p = <span class="keyword">class</span>-&gt;pick_next_task<span class="container">(<span class="title">rq</span>)</span>;
+    if <span class="container">(<span class="title">p</span>)</span>
+        return p;
+}
+
+<span class="type">BUG</span><span class="container">()</span>; /* the idle <span class="keyword">class</span> will always have a runnable task */</span>
+</code></pre><p>}</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="title">pick_next_task_idle</span>的实现如下，简单的返回当前<span class="type">CPU</span>对应的idle进程，而此值是在前文分析的系统启动时被初始化的
+</pre></td></tr></table></figure>
+
+<p>static struct task_struct <em>pick_next_task_idle(struct rq </em>rq)<br>{<br>    schedstat_inc(rq, sched_goidle);<br>    /<em> adjust the active tasks as we might go into a long sleep </em>/<br>    calc_load_account_active(rq);<br>    return rq-&gt;idle;<br>}<br>```<br>至此主CPU的idle进程的初始化及被调度的过程分析完毕，但从CPU的初始化过程略有不一样，后续再分析。</p>
+<p>Done. ：）</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/kernel/">kernel</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/kernel/">kernel</a>
+  </div>
+
+        <!-- Baidu Button BEGIN -->
+        <div id="bdshare" class="bdshare_t bds_tools_32 get-codes-bdshare">
+        <a class="bds_tsina"></a>
+        <a class="bds_sqq"></a>
+        <a class="bds_douban"></a>
+        <a class="bds_tqq"></a>
+        <a class="bds_qzone"></a>
+        <a class="bds_renren"></a>
+        <a class="bds_tsohu"></a>
+        <a class="bds_t163"></a>
+        <span class="bds_more"></span>
+        <a class="shareCount"></a>
+        </div>
+        <script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=6878295" ></script>
+        <script type="text/javascript" id="bdshell_js"></script>
+        <script type="text/javascript">
+        document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000)
+        </script>
+        <!-- Baidu Button END -->
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+    <!-- Duoshuo Comment BEGIN -->
+    <div class="ds-thread"></div>
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"lsmushroom"};
+    (function() {
+         var ds = document.createElement('script');
+         ds.type = 'text/javascript';ds.async = true;
+         ds.src = 'http://static.duoshuo.com/embed.js';
+         ds.charset = 'UTF-8';
+         (document.getElementsByTagName('head')[0] 
+          || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+    <!-- Duoshuo Comment END -->
+</section>
+
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="搜索">
+    <input type="hidden" name="q" value="site:lsmushroom.github.io">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">分类</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/java/">java</a><small>1</small></li>
+  
+    <li><a href="/categories/kernel/">kernel</a><small>1</small></li>
+  
+    <li><a href="/categories/vim/">vim</a><small>1</small></li>
+  
+    <li><a href="/categories/yarn/">yarn</a><small>7</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">标签</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/api/">api</a><small>1</small></li>
+  
+    <li><a href="/tags/chm/">chm</a><small>1</small></li>
+  
+    <li><a href="/tags/hadoop/">hadoop</a><small>4</small></li>
+  
+    <li><a href="/tags/hexo/">hexo</a><small>1</small></li>
+  
+    <li><a href="/tags/java/">java</a><small>1</small></li>
+  
+    <li><a href="/tags/kernel/">kernel</a><small>1</small></li>
+  
+    <li><a href="/tags/pig/">pig</a><small>1</small></li>
+  
+    <li><a href="/tags/storm/">storm</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>1</small></li>
+  
+    <li><a href="/tags/yarn/">yarn</a><small>6</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/kernel/" style="font-size: 10.00px;">kernel</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
+  </div>
+</div>
+
+
+  <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=5&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=1632605594&verifier=ff6d468c&dpc=1"></iframe>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2014 Yuan Linsi
+  
+</div>
+<div class="clearfix"></div>
+</footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>

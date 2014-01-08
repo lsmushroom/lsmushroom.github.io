@@ -90,6 +90,56 @@
     <header>
       
         <div class="icon"></div>
+        <time datetime="2014-01-06T06:43:18.000Z"><a href="/2014/01/06/top-实现/">1月 6 2014</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2014/01/06/top-实现/">top 实现</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>心血来潮分析了下操作系统中的idle进程及动态时钟的相关的实现，简单记录下</p>
+
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2014/01/06/top-实现/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  <article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
         <time datetime="2014-01-02T13:28:11.000Z"><a href="/2014/01/02/shell-command-tips/">1月 2 2014</a></time>
       
       
@@ -224,7 +274,7 @@ helloworld/
 <span class="number">11</span> directories, <span class="number">3</span> files
 </pre></td></tr></table></figure>
 
-<p>其中archetype:create称为一个Maven目标，相应的会创建一个pom.xml文件，文件中各项的含义如下：</p>
+<p>其中archetype:create称为一个Maven目标，archetype是一个插件标识而create是目标标识,相应的会创建一个pom.xml文件，文件中各项的含义如下：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -658,7 +708,7 @@ helloworld/
 
 
 
-  <article class="post">
+  <article class="false">
   
     <div class="gallery">
   <div class="photoset">
@@ -676,74 +726,89 @@ helloworld/
     <header>
       
         <div class="icon"></div>
-        <time datetime="2013-11-18T16:01:03.000Z"><a href="/2013/11/19/vim-macro/">11月 19 2013</a></time>
+        <time datetime="2013-11-21T03:55:25.000Z"><a href="/2013/11/21/cgroup-test/">11月 21 2013</a></time>
       
       
   
-    <h1 class="title"><a href="/2013/11/19/vim-macro/">vim Macro</a></h1>
-  
-
-    </header>
-    <div class="entry">
-      
-        <p>vim 宏提供一种将一系列的操作批量应用于多行内容上的功能<br>
-      
-    </div>
-    <footer>
-      
-        
-          <div class="alignleft">
-            <a href="/2013/11/19/vim-macro/#more" class="more-link">Read More</a>
-          </div>
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-
-  <article class="post">
-  
-    <div class="gallery">
-  <div class="photoset">
-    
-      <img src="">
-    
-  </div>
-  <div class="control">
-    <div class="prev"></div>
-    <div class="next"></div>
-  </div>
-</div>
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2013-11-18T15:07:42.000Z"><a href="/2013/11/18/deploy-hexo-on-rhel6/">11月 18 2013</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2013/11/18/deploy-hexo-on-rhel6/">deploy hexo on RHEL6</a></h1>
+    <h1 class="title"><a href="/2013/11/21/cgroup-test/">Cgroup Test</a></h1>
   
 
     </header>
     <div class="entry">
       
-        <p>基于RHEL6成功部署了hexo，博客落户github了，记录下部署的过程<br>
+        <h1 id="Cgroup_Subsystem">Cgroup Subsystem</h1>
+<hr>
+<h2 id="CPU_Subsystem">CPU Subsystem</h2>
+<p>创建三个cgroup，对前两组设定cpu.shares比例为1:2 ，对第三组不设定cpu.shares参数，三个cgroup内运行的进程均被限制仅能在0号核上运行，可访问内存结点为0,1</p>
+<pre><code>[@sohu_41_173 ~]<span class="preprocessor"># cat /etc/cgconfig.conf</span>
+mount {
+    cpu     = /cgroup/cpu<span class="comment">;</span>
+    cpuset  = /cgroup/cpuset<span class="comment">;</span>
+    memory  = /cgroup/memory<span class="comment">;</span>
+}
+
+group test1 {
+    cpuset{
+        cpuset<span class="preprocessor">.cpus</span>=<span class="string">"0"</span><span class="comment">;</span>
+        cpuset<span class="preprocessor">.mems</span>=<span class="string">"0,1"</span><span class="comment">;</span>
+    }
+    cpu{
+        cpu<span class="preprocessor">.shares</span>=<span class="string">"100"</span><span class="comment">;</span>
+    }
+}
+group test2 {
+    cpuset{
+        cpuset<span class="preprocessor">.cpus</span>=<span class="string">"0"</span><span class="comment">;</span>
+        cpuset<span class="preprocessor">.mems</span>=<span class="string">"0,1"</span><span class="comment">;</span>
+    }
+    cpu{
+        cpu<span class="preprocessor">.shares</span>=<span class="string">"200"</span><span class="comment">;</span>
+    }
+}
+
+group test3 {
+    cpuset{
+        cpuset<span class="preprocessor">.cpus</span>=<span class="string">"0"</span><span class="comment">;</span>
+        cpuset<span class="preprocessor">.mems</span>=<span class="string">"0,1"</span><span class="comment">;</span>
+    }
+}
+</code></pre><p>设定cgrules.conf 如下，使用C实现的简易的压测工具stress，其被编译成单独的可执行程序，简单的复制并重命名2份供另两组使用，在启动时将由cgrulesengd自动与配置的cgroup绑定运行，受相应的subsystem控制</p>
+<pre><code>[<span class="variable">@sohu_41_173</span> ~]<span class="comment"># cat /etc/cgrules.conf</span>
+*<span class="symbol">:/usr/local/bin/stress</span>         cpu,cpuset              /test1
+*<span class="symbol">:/usr/local/bin/stress2</span>        cpu,cpuset              /test2
+*<span class="symbol">:/usr/local/bin/stress3</span>        cpuset                  /test3
+</code></pre><p><em>测试一</em></p>
+<pre><code>[<span class="variable">@sohu_41_173</span> ~]<span class="comment"># stress -c 1</span>
+stress: info: [<span class="number">48624</span>] dispatching hogs: <span class="number">1</span> cpu, <span class="number">0</span> io, <span class="number">0</span> vm, <span class="number">0</span> hdd
+
+[<span class="variable">@sohu_41_173</span> ~]<span class="comment"># stress2 -c 1</span>
+stress2: info: [<span class="number">48632</span>] dispatching hogs: <span class="number">1</span> cpu, <span class="number">0</span> io, <span class="number">0</span> vm, <span class="number">0</span> hdd
+
+[<span class="variable">@sohu_41_173</span> ~]<span class="comment"># top -p 48633,48625 -b</span>
+top - <span class="number">12</span>:08:<span class="number">04</span> up <span class="number">9</span> days, <span class="number">16</span>:<span class="number">32</span>,  <span class="number">7</span> users,  load average: <span class="number">1.94</span>, <span class="number">1.19</span>, <span class="number">2.09</span>
+Tasks:   <span class="number">2</span> total,   <span class="number">2</span> running,   <span class="number">0</span> sleeping,   <span class="number">0</span> stopped,   <span class="number">0</span> zombie
+Cpu(<span class="keyword">s</span>):  <span class="number">0</span>.<span class="number">2</span><span class="variable">%us</span>,  <span class="number">0</span>.<span class="number">1</span><span class="variable">%sy</span>,  <span class="number">0</span>.<span class="number">0</span><span class="variable">%ni</span>, <span class="number">99.7</span><span class="variable">%id</span>,  <span class="number">0</span>.<span class="number">0</span><span class="variable">%wa</span>,  <span class="number">0</span>.<span class="number">0</span><span class="variable">%hi</span>,  <span class="number">0</span>.<span class="number">0</span><span class="variable">%si</span>,  <span class="number">0</span>.<span class="number">0</span><span class="variable">%st</span>
+Mem:  <span class="number">65820492</span>k total, <span class="number">30009200</span>k used, <span class="number">35811292</span>k free,  <span class="number">1110200</span>k buffers
+Swap:  <span class="number">4194296</span>k total,        0k used,  <span class="number">4194296</span>k free,  <span class="number">9438732</span>k cached
+
+PID USER      PR  NI  VIRT  RES  SHR S <span class="variable">%CPU</span> <span class="variable">%MEM</span>    TIME+  COMMAND
+<span class="number">48633</span> root      <span class="number">20</span>   <span class="number">0</span>  <span class="number">6516</span>  <span class="number">192</span>  <span class="number">104</span> R <span class="number">67.8</span>  <span class="number">0</span>.<span class="number">0</span>   <span class="number">1</span>:<span class="number">23.57</span> stress2
+<span class="number">48625</span> root      <span class="number">20</span>   <span class="number">0</span>  <span class="number">6516</span>  <span class="number">192</span>  <span class="number">104</span> R <span class="number">33.9</span>  <span class="number">0</span>.<span class="number">0</span>   <span class="number">0</span>:<span class="number">47.31</span> stress
+</code></pre><p>运行stress和stress2，两个程序分别受test和test1 cpu和cpuset子系统控制，从%CPU可看出，当两个进程被限制在同一个CPU核上运行时，其占用CPU的比例符合cpu.shares所配置的1:2的比例</p>
+<p><em>测试二</em><br>修改三个cgroup组cpuset配置如下：</p>
+<pre><code>cpuset<span class="preprocessor">.cpus</span>=<span class="string">"0,2"</span><span class="comment">;</span>
+</code></pre><p>限制三个组内运行的进程可使用的CPU核为0和2号核，重启服务以使配置生效</p>
+<pre><code>[<span class="property">@sohu_41_173</span> ~]<span class="comment"># /etc/init.d/cgconfig restart</span>
+Stopping cgconfig <span class="attribute">service</span>:                                 [  OK  ]
+Starting cgconfig <span class="attribute">service</span>:                                 [  OK  ]
+[<span class="property">@sohu_41_173</span> ~]<span class="comment"># /etc/init.d/cgred restart</span>
+Stopping CGroup Rules Engine Daemon...                     [  OK  ]
+Starting CGroup Rules Engine <span class="attribute">Daemon</span>:                       [  OK  ]
+</code></pre>
       
     </div>
     <footer>
       
-        
-          <div class="alignleft">
-            <a href="/2013/11/18/deploy-hexo-on-rhel6/#more" class="more-link">Read More</a>
-          </div>
         
         
       
@@ -759,6 +824,8 @@ helloworld/
 
 <nav id="pagination">
   
+  
+    <a href="/page/2/" class="alignright next">下一页</a>
   
   <div class="clearfix"></div>
 </nav></div></div>
@@ -776,6 +843,8 @@ helloworld/
   <ul class="entry">
   
     <li><a href="/categories/java/">java</a><small>1</small></li>
+  
+    <li><a href="/categories/kernel/">kernel</a><small>1</small></li>
   
     <li><a href="/categories/vim/">vim</a><small>1</small></li>
   
@@ -800,6 +869,8 @@ helloworld/
   
     <li><a href="/tags/java/">java</a><small>1</small></li>
   
+    <li><a href="/tags/kernel/">kernel</a><small>1</small></li>
+  
     <li><a href="/tags/pig/">pig</a><small>1</small></li>
   
     <li><a href="/tags/storm/">storm</a><small>1</small></li>
@@ -816,7 +887,7 @@ helloworld/
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
+    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/kernel/" style="font-size: 10.00px;">kernel</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
   </div>
 </div>
 
