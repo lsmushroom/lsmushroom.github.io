@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>top 实现 | Mushroom&#39;s blog</title>
+  <title>idle 进程 | Mushroom&#39;s blog</title>
   <meta name="author" content="Yuan Linsi">
   
   <meta name="description" content="hadoop,yarn,mapreduce,linux kernel">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="top 实现"/>
+  <meta property="og:title" content="idle 进程"/>
   <meta property="og:site_name" content="Mushroom&#39;s blog"/>
 
   
@@ -93,7 +93,7 @@
       
       
   
-    <h1 class="title">top 实现</h1>
+    <h1 class="title">idle 进程</h1>
   
 
     </header>
@@ -105,7 +105,8 @@
 <p>动态时钟是在2.6.17版本中引入内核的，Kernel中与动态时钟相关的配置项为CONFIG_NO_HZ,其设计的初衷就是改变周期性时钟带来的消耗。<br>内核中周期性时钟中断主要用于更新进程时间片进而促发进程调度，也用于更新各个进程运行的统计计数等，而周期性时钟中断的问题在于其触发时钟中断时并不考虑当前系统中进程的运行状况，无论当前系统是空闲的运行的是idle进程还是真正处于繁忙状态都只是定时的周期性的触发时钟中断。</p>
 <p>而动态时钟的主要思想是在在系统处于idle状态时主动关闭时钟中断，从而降低时钟中断频率达到减小系统能耗的目的，在有进程需要被调度运行时，将重新开启时钟中断。</p>
 <p>但需要注意的是只有经典定时器需要考虑此用法，高分辨率定时器不绑定到时钟频率，也并非基于周期时钟实现。</p>
-<p>以下源码为RHEL6 2.6.32版本内核源码的实现，idle进程实为操作系统的0号进程，其在系统启动后首先创建1号init进程，随后便调用<figure class="highlight lang-cpu_idle()```函数使自身成为idle进程，其相关实现如下："><table><tr><td class="gutter"><pre>1
+<p>以下源码为RHEL6 2.6.32版本内核源码的实现，idle进程实为操作系统的0号进程，其在系统启动后首先创建1号init进程，随后便调用cpu_idle()函数使自身成为idle进程，其相关实现如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
 4
@@ -154,9 +155,7 @@
 47
 48
 49
-50
-</pre></td><td class="code"><pre>```
-void cpu_idle(void)
+</pre></td><td class="code"><pre>void cpu_idle(void)
 {
 	current_thread_info()-&gt;status |= TS_POLLING;
 
@@ -205,9 +204,39 @@ void cpu_idle(void)
 		preempt_disable();
 	}
 }
-</pre></td></tr></table></figure></p>
+</pre></td></tr></table></figure>
+
 <p>idle进程的主题逻辑十分清晰，而更让我好奇的是idle进程本身在多核系统启动期间的初始化过程。一番上下求索，逐步清晰其初始化的逻辑：</p>
-<p>操作系统启动时将首先启动主CPU，在主CPU上调用start_kernel(),将通过调用<figure class="highlight lang-sched_init```对调度器做初始化,而sched_init()将调用init_idle（）来初始化当前CPU的调度队列的idle,详细如下："><table><tr><td class="gutter"><pre>1
+<p>操作系统启动时将首先启动主CPU，在主CPU上调用start_kernel(),将通过调用sched_init对调度器做初始化,而sched_init()将调用init_idle（）来初始化当前CPU的调度队列的idle,详细如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="code"><pre>void __init sched_init(void)
+{
+    <span class="keyword">...</span>
+
+    init_idle(current, smp_processor_id());
+
+    /*
+     * During early bootup we pretend to be a normal task:
+     */
+    current-&gt;sched_class = &fair_sched_class;
+
+    <span class="keyword">...</span>
+}
+</pre></td></tr></table></figure>
+
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
 4
@@ -221,126 +250,217 @@ void cpu_idle(void)
 12
 13
 14
-</pre></td><td class="code"><pre>```
-void __init sched_init(void)
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+</pre></td><td class="code"><pre>void __cpuinit init_idle(struct task_struct <span class="variable">*idle</span>, <span class="keyword">int</span> cpu)
 {
-    ...
+	struct rq <span class="variable">*rq</span> = cpu_r<span class="string">q(cpu)</span>;
+	unsigned long flags;
 
-    init_idle(current, smp_processor_id());
+	spin_lock_irqsave(&rq-&gt;lock, flags);
 
-    <span class="comment">/*
-     * During early bootup we pretend to be a normal task:
-     */</span>
-    current-&gt;sched_<span class="class"><span class="keyword">class</span> = &<span class="title">fair_sched_class</span>;</span>
+	__sched_fork(idle);
+	idle-&gt;state = TASK_RUNNING;
+	idle-&gt;se.exec_start = sched_clock();
 
-    ...
+	cpumask_copy(&idle-&gt;cpus_allowed, cpumask_of(cpu));
+	__set_task_cpu(idle, cpu);
+
+    <span class="regexp">//</span>在此初始化当前CPU的调度队列的idle进程为当前进程
+	rq-&gt;curr = rq-&gt;idle = idle;
+<span class="comment">#if defined(CONFIG_SMP) && defined(__ARCH_WANT_UNLOCKED_CTXSW)</span>
+	idle-&gt;oncpu = <span class="number">1</span>;
+<span class="comment">#endif</span>
+	spin_unlock_irqrestore(&rq-&gt;lock, flags);
+
+	<span class="regexp">/* Set the preempt count _outside_ the spinlocks! */</span>
+<span class="comment">#if defined(CONFIG_PREEMPT)</span>
+	task_thread_info(idle)-&gt;preempt_count = (idle-&gt;lock_depth &gt;= <span class="number">0</span>);
+<span class="comment">#else</span>
+	task_thread_info(idle)-&gt;preempt_count = <span class="number">0</span>;
+<span class="comment">#endif</span>
+	/*
+	 * The idle tasks have their own, simple scheduling class:
+	 <span class="variable">*/</span>
+	idle-&gt;sched_class = &idle_sched_class;
+	ftrace_graph_init_task(idle);
 }
-</pre></td></tr></table></figure></p>
-<p>void __cpuinit init_idle(struct task_struct <em>idle, int cpu)<br>{<br>    struct rq </em>rq = cpu_rq(cpu);<br>    unsigned long flags;</p>
-<pre><code><span class="title">spin_lock_irqsave</span>(&amp;rq-&gt;lock, flags);
+</pre></td></tr></table></figure>
 
-<span class="title">__sched_fork</span>(idle);
-<span class="title">idle</span>-&gt;state = <span class="type">TASK_RUNNING</span>;
-<span class="title">idle</span>-&gt;se.exec_start = sched_clock();
-
-<span class="title">cpumask_copy</span>(&amp;idle-&gt;cpus_allowed, cpumask_of(cpu));
-<span class="title">__set_task_cpu</span>(idle, cpu);
-
-//在此初始化当前<span class="type">CPU</span>的调度队列的idle进程为当前进程
-<span class="title">rq</span>-&gt;curr = rq-&gt;idle = idle;
-</code></pre><h1 id="if_defined-28-CONFIG_SMP-29-_-26-amp-3b-26-amp-3b-_defined-28-__ARCH_WANT_UNLOCKED_CTXSW-29-">if defined(CONFIG_SMP) &amp;&amp; defined(__ARCH_WANT_UNLOCKED_CTXSW)</h1>
-<pre><code><span class="title">idle</span>-&gt;oncpu = <span class="number">1</span>;
-</code></pre><h1 id="endif">endif</h1>
-<pre><code>spin_unlock_irqrestore(&amp;rq-&gt;<span class="operator"><span class="keyword">lock</span>, flags);</span>
-
-<span class="comment">/* Set the preempt count _outside_ the spinlocks! */</span>
-</code></pre><h1 id="if_defined-28-CONFIG_PREEMPT-29-">if defined(CONFIG_PREEMPT)</h1>
-<pre><code><span class="function"><span class="title">task_thread_info</span><span class="params">(idle)</span>-&gt;</span>preempt_count = (idle-&gt;lock_depth &gt;= <span class="number">0</span>);
-</code></pre><h1 id="else">else</h1>
-<pre><code><span class="function"><span class="title">task_thread_info</span><span class="params">(idle)</span>-&gt;</span>preempt_count = <span class="number">0</span>;
-</code></pre><h1 id="endif-1">endif</h1>
-<pre><code>/*
- * <span class="type">The</span> idle tasks have their own, simple scheduling <span class="keyword">class</span>:
- */
-<span class="title">idle</span>-&gt;sched_class = &amp;idle_sched_class;
-<span class="title">ftrace_graph_init_task</span>(idle);
-</code></pre><p>}</p>
+<p>在start_kernel()函数的最后将调用rest_init(),其中在创建完init进程后，将使当前进程进入idle进程的处理逻辑,当系统空闲时当前进程将作为idle进程被调度：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
-</pre></td><td class="code"><pre>
-在<span class="function">start_kernel()</span>函数的最后将调用<span class="function">rest_init()</span>,其中在创建完init进程后，将使当前进程进入idle进程的处理逻辑,当系统空闲时当前进程将作为idle进程被调度：
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+</pre></td><td class="code"><pre>static noinline void __init_refok rest_init(void)
+	__releases(kernel_lock)
+{
+	int pid;
+
+	rcu_scheduler_starting();
+	/*
+	 * We need to spawn init first so that it obtains pid-1, however
+	 * the init task will end up wanting to create kthreads, which, if
+	 * we schedule it before we create kthreadd, will OOPS.
+	 */
+    //在此创建系统的init进程
+	kernel_thread(kernel_init, NULL, CLONE_FS | CLONE_SIGHAND);
+	numa_default_policy();
+	pid = kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);
+	kthreadd_task = find_task_by_pid_ns(pid, &init_pid_ns);
+	complete(&kthreadd_done);
+	unlock_kernel();
+
+	/*
+	 * The boot idle thread must execute schedule()
+	 * at least once to get things moving:
+	 */
+    //至此，将当前系统启动进程的调度类切换为idle_sched_class调度类,随后让出CPU
+	init_idle_bootup_task(current);
+	preempt_enable_no_resched();
+	schedule();
+	preempt_disable();
+
+	/* Call into cpu_idle with preempt disabled */
+    //当再次回来时，在完成所有的初始化后将调用cpu_idle()函数，将自身作为主CPU的idle进程运行
+	cpu_idle();
+}
 </pre></td></tr></table></figure>
 
-<p>static noinline void <strong>init_refok rest_init(void)
-    </strong>releases(kernel_lock)<br>{<br>    int pid;</p>
-<pre><code>rcu_scheduler_starting()<span class="comment">;</span>
-<span class="comment">/*
- * We need to spawn init first so that it obtains pid-1, however
- * the init task will end up wanting to create kthreads, which, if
- * we schedule it before we create kthreadd, will OOPS.
- */</span>
-//在此创建系统的init进程
-kernel_thread(kernel_init, NULL, CLONE_FS | CLONE_SIGHAND)<span class="comment">;</span>
-numa_default_policy()<span class="comment">;</span>
-pid = kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES)<span class="comment">;</span>
-kthreadd_task = find_task_by_pid_ns(pid, &amp;init_pid_ns)<span class="comment">;</span>
-complete(&amp;kthreadd_done)<span class="comment">;</span>
-unlock_kernel()<span class="comment">;</span>
-
-<span class="comment">/*
- * The boot idle thread must execute schedule()
- * at least once to get things moving:
- */</span>
-//至此，将当前系统启动进程的调度类切换为idle_sched_class调度类,随后让出CPU
-init_idle_bootup_task(current)<span class="comment">;</span>
-preempt_enable_no_resched()<span class="comment">;</span>
-schedule()<span class="comment">;</span>
-preempt_disable()<span class="comment">;</span>
-
-<span class="comment">/* Call into cpu_idle with preempt disabled */</span>
-//当再次回来时，在完成所有的初始化后将调用cpu_idle()函数，将自身作为主CPU的idle进程运行
-cpu_idle()<span class="comment">;</span>
-</code></pre><p>}</p>
+<p>至此idle进程在主CPU上的初始化过程即完成，当系统空闲时，idle进程如何被选中的呢？<br>以上分析中可知系统的主CPU上的启动进程在最后将自己的调度类切换为idle_sched_class，并在最后调用cpu_idle(),使自身完全进入idle进程的处理逻辑,成为一个普通进程供调度器调度。idle_sched_class定义如下：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
-</pre></td><td class="code"><pre>至此idle进程在主CPU上的初始化过程即完成，当系统空闲时，idle进程如何被选中的呢？
-以上分析中可知系统的主CPU上的启动进程在最后将自己的调度类切换为idle_sched_class，并在最后调用<span class="function">cpu_idle()</span>,使自身完全进入idle进程的处理逻辑,成为一个普通进程供调度器调度。idle_sched_class定义如下：
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre>static const struct sched_class idle_sched_class = {
+    <span class="keyword">...</span>
+
+	.pick_next_task		= pick_next_task_idle,
+
+    <span class="keyword">...</span>
+};
 </pre></td></tr></table></figure>
 
-<p>static const struct sched_class idle_sched_class = {<br>    …</p>
-<pre><code>.pick_next_task        = pick_next_task_idle,
-
-<span class="keyword">...</span>
-</code></pre><p>};</p>
+<p>32内核中已引入调度类的概念，在每一次发生进程调度时，将以此遍历各个调度类，需找可被调度需要执行的进程，而idle_sched_class是最后的调度类，当其他的调度类中均没有可被调度的进程时，将由idle_sched_class提供idle进程供调度执行。</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre>32内核中已引入调度类的概念，在每一次发生进程调度时，将以此遍历各个调度类，需找可被调度需要执行的进程，而idle_sched_class是最后的调度类，当其他的调度类中均没有可被调度的进程时，将由idle_sched_class提供idle进程供调度执行。
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre></td><td class="code"><pre><span class="keyword">static</span> inline struct task_struct *
+pick_next_task(struct rq *rq)
+{
+	<span class="keyword">const</span> struct sched_class *<span class="class"><span class="keyword">class</span>;
+	<span class="title">struct</span> <span class="title">task_struct</span> *<span class="title">p</span>;
+
+	/*
+	 * <span class="title">Optimization</span>: <span class="title">we</span> <span class="title">know</span> <span class="title">that</span> <span class="title">if</span> <span class="title">all</span> <span class="title">tasks</span> <span class="title">are</span> <span class="title">in</span>
+	 * <span class="title">the</span> <span class="title">fair</span> <span class="title">class</span> <span class="title">we</span> <span class="title">can</span> <span class="title">call</span> <span class="title">that</span> <span class="title">function</span> <span class="title">directly</span>:
+	 */
+	<span class="title">if</span> (<span class="title">likely</span>(<span class="title">rq</span>-&gt;<span class="title">nr_running</span> == <span class="title">rq</span>-&gt;<span class="title">cfs</span>.<span class="title">h_nr_running</span>)) {</span>
+		p = fair_sched_class.pick_next_task(rq);
+		<span class="keyword">if</span> (likely(p))
+			<span class="keyword">return</span> p;
+	}
+
+    <span class="comment">//循环遍历各个调度类，调用每个调度类定义的pick_next_task()来返回各自调度类中可执行的进程</span>
+	for_each_class(<span class="class"><span class="keyword">class</span>) {</span>
+		p = <span class="class"><span class="keyword">class</span>-&gt;<span class="title">pick_next_task</span>(<span class="title">rq</span>);
+		<span class="title">if</span> (<span class="title">p</span>)
+			<span class="title">return</span> <span class="title">p</span>;
+	}
+
+	<span class="title">BUG</span>(); /* <span class="title">the</span> <span class="title">idle</span> <span class="title">class</span> <span class="title">will</span> <span class="title">always</span> <span class="title">have</span> <span class="title">a</span> <span class="title">runnable</span> <span class="title">task</span> */
+}</span>
 </pre></td></tr></table></figure>
 
-<p>static inline struct task_struct <em><br>pick_next_task(struct rq </em>rq)<br>{<br>    const struct sched_class <em>class;<br>    struct task_struct </em>p;</p>
-<pre><code>/*
- * <span class="type">Optimization</span>: we know that <span class="keyword">if</span> all tasks are <span class="keyword">in</span>
- * the fair <span class="class"><span class="keyword">class</span> we can call that function directly:
- */
-if <span class="container">(<span class="title">likely</span>(<span class="title">rq</span>-&gt;<span class="title">nr_running</span> == <span class="title">rq</span>-&gt;<span class="title">cfs</span>.<span class="title">h_nr_running</span>)</span>) {
-    p = fair_sched_class.pick_next_task<span class="container">(<span class="title">rq</span>)</span>;
-    if <span class="container">(<span class="title">likely</span>(<span class="title">p</span>)</span>)
-        return p;
-}
-
-//循环遍历各个调度类，调用每个调度类定义的pick_next_task<span class="container">()</span>来返回各自调度类中可执行的进程
-for_each_class<span class="container">(<span class="title">class</span>)</span> {
-    p = <span class="keyword">class</span>-&gt;pick_next_task<span class="container">(<span class="title">rq</span>)</span>;
-    if <span class="container">(<span class="title">p</span>)</span>
-        return p;
-}
-
-<span class="type">BUG</span><span class="container">()</span>; /* the idle <span class="keyword">class</span> will always have a runnable task */</span>
-</code></pre><p>}</p>
+<p>pick_next_task_idle的实现如下，简单的返回当前CPU对应的idle进程，而此值是在前文分析的系统启动时被初始化的</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre><span class="title">pick_next_task_idle</span>的实现如下，简单的返回当前<span class="type">CPU</span>对应的idle进程，而此值是在前文分析的系统启动时被初始化的
+2
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre><span class="keyword">static</span> <span class="keyword">struct</span> task_struct *pick_next_task_idle(<span class="keyword">struct</span> rq *rq)
+{
+	schedstat_inc(rq, sched_goidle);
+	<span class="comment">/* adjust the active tasks as we might go into a long sleep */</span>
+	calc_load_account_active(rq);
+	<span class="keyword">return</span> rq-&gt;idle;
+}
 </pre></td></tr></table></figure>
 
-<p>static struct task_struct <em>pick_next_task_idle(struct rq </em>rq)<br>{<br>    schedstat_inc(rq, sched_goidle);<br>    /<em> adjust the active tasks as we might go into a long sleep </em>/<br>    calc_load_account_active(rq);<br>    return rq-&gt;idle;<br>}<br>```<br>至此主CPU的idle进程的初始化及被调度的过程分析完毕，但从CPU的初始化过程略有不一样，后续再分析。</p>
+<p>至此主CPU的idle进程的初始化及被调度的过程分析完毕，但从CPU的初始化过程略有不一样，后续再分析。</p>
 <p>Done. ：）</p>
 
       
