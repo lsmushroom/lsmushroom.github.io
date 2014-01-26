@@ -66,4 +66,19 @@ Starting cgconfig <span class="attribute">service</span>:                       
 [<span class="property">@sohu_41_173</span> ~]<span class="comment"># /etc/init.d/cgred restart</span>
 Stopping CGroup Rules Engine Daemon...                     [  OK  ]
 Starting CGroup Rules Engine <span class="attribute">Daemon</span>:                       [  OK  ]
-</code></pre>
+</code></pre><p><em>测试三</em><br>添加test3 cgroup 用以测试memory cgroup的功能:</p>
+<pre><code>group test3 {
+    cpuset{
+        cpuset<span class="preprocessor">.cpus</span>=<span class="string">"0"</span><span class="comment">;</span>
+        cpuset<span class="preprocessor">.mems</span>=<span class="string">"0,1"</span><span class="comment">;</span>
+    }
+    memory{
+        memory<span class="preprocessor">.limit</span>_in_bytes=<span class="number">50</span>m<span class="comment">;</span>
+        memory<span class="preprocessor">.memsw</span><span class="preprocessor">.limit</span>_in_bytes = <span class="number">50</span>m<span class="comment">;</span>
+    }
+}
+
+cat /etc/cgrules<span class="preprocessor">.conf</span>
+*:/usr/local/bin/stress3        cpuset,memory                  /test3
+</code></pre><p>其中memory.limit_in_bytes用以控制组内可使用的用户态内存（包括文件缓存），有效值的可为数字加单位后缀：k/K,m/M,g/G, 未明确给出单位的默认为字节，-1表示没有内存限制。不可通过此项来限制根cgroup的内存使用量。</p>
+<p>memory.memsw.limit_in_bytes 用以控制内存与swap分区的使用总量，如此项为显示的配置，则当达到memory.limit_in_bytes使用上限时，将开始消耗全局系统的swap分区，直至消耗尽全局系统的所有swap空间，进而因没有swap空间而触发OOM。配置方法同memory.limit_in_bytes，但要求在提供有效的memory.limit_in_bytes值后方可配置memory.memsw.limit_in_bytes，即使在/etc/cgconfig.conf中亦应保证memory.limit_in_bytes在前，否则配置失败。</p>

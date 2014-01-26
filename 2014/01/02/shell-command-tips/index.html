@@ -99,7 +99,9 @@
     </header>
     <div class="entry">
       
-        <ul>
+        <a id="more"></a>
+
+<ul>
 <li><p>trap:</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -129,9 +131,47 @@ arg: 信号处理函数，当接收到有sigspec定义的信号时将触发有ar
 ps <span class="attribute">-U</span> <span class="variable">$USER</span> <span class="attribute">-u</span> <span class="variable">$user</span>
 仅显示指定用户的进程，可用于干掉死掉的终端
 </pre></td></tr></table></figure>
+</li>
+<li><p>here document 用法 (cat &lt;&lt; EOF)<br>Here Document 是在Linux Shell 中的一种特殊的重定向方式，它的基本的形式如下</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+</pre></td><td class="code"><pre><span class="title">cmd</span> &lt;&lt; delimiter
+<span class="type">Here</span> <span class="type">Document</span> <span class="type">Content</span>
+<span class="title">delimiter</span>
+</pre></td></tr></table></figure>
 
 </li>
 </ul>
+<p>它的作用就是将两个 delimiter 之间的内容(Here Document Content 部分) 传递给cmd 作为输入参数，delimiter可自定义，通常可用于在脚本中动态的生成新的脚本。</p>
+<p>delimiter间的内容可嵌入变量 ，其值取决于运行时的shell环境，且变量会在shell运行时被展开，重定向时会将展开后的值写入重定向文件</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>A=test
+cat &lt;&lt; EOF &gt; output.sh
+<span class="built_in">echo</span> <span class="string">"This is output"</span>
+<span class="built_in">echo</span> <span class="variable">$A</span>
+EOF
+</pre></td></tr></table></figure>
+
+<p>写入output.sh将是test<br>如要禁止变量展开，可以通过在起始的 delimiter的前后添加 “ 来实现，</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>A=test
+cat &lt;&lt; <span class="string">"EOF"</span> &gt; output.sh  <span class="comment">#注意引号</span>
+<span class="built_in">echo</span> <span class="string">"hello"</span>
+<span class="built_in">echo</span> <span class="variable">$A</span> 
+EOF
+</pre></td></tr></table></figure>
+
+<p>写入output.sh的将是$A</p>
+<p>&lt;&lt; 变为 &lt;&lt;-<br>Here Document 还有一个用法就是将 ‘«’ 变为 ‘«-‘。 使用 &lt;&lt;- 的唯一变化就是Here Document 的内容部分每行前面的 tab (制表符)将会被删除掉，这种用法是为了编写Here Document的时候可以将内容部分进行缩进，方便阅读代码。</p>
 
       
     </div>
@@ -139,6 +179,11 @@ ps <span class="attribute">-U</span> <span class="variable">$USER</span> <span c
       
         
         
+  
+  <div class="tags">
+    <a href="/tags/shell/">shell</a>
+  </div>
+
         <!-- Baidu Button BEGIN -->
         <div id="bdshare" class="bdshare_t bds_tools_32 get-codes-bdshare">
         <a class="bds_tsina"></a>
@@ -228,6 +273,8 @@ ps <span class="attribute">-U</span> <span class="variable">$USER</span> <span c
   
     <li><a href="/tags/pig/">pig</a><small>1</small></li>
   
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
     <li><a href="/tags/storm/">storm</a><small>1</small></li>
   
     <li><a href="/tags/vim/">vim</a><small>1</small></li>
@@ -242,7 +289,7 @@ ps <span class="attribute">-U</span> <span class="variable">$USER</span> <span c
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/kernel/" style="font-size: 10.00px;">kernel</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
+    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/kernel/" style="font-size: 10.00px;">kernel</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/shell/" style="font-size: 10.00px;">shell</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
   </div>
 </div>
 

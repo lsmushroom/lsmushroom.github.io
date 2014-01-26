@@ -4,7 +4,7 @@
   <subtitle><![CDATA[没时间玩，就扩大玩的定义，我玩的是技术]]></subtitle>
   <link href="http://lsmushroom.github.io/atom.xml" rel="self"/>
   <link href="http://lsmushroom.github.io"/>
-  <updated>2014-01-08T14:06:42.981Z</updated>
+  <updated>2014-01-26T11:13:45.433Z</updated>
   <id>http://lsmushroom.github.io/</id>
   <author>
     <name><![CDATA[Yuan Linsi]]></name>
@@ -389,8 +389,10 @@ pick_next_task(struct rq *rq)
     <link href="http://lsmushroom.github.io/2014/01/02/shell-command-tips/"/>
     <id>http://lsmushroom.github.io/2014/01/02/shell-command-tips/</id>
     <published>2014-01-02T13:28:11.000Z</published>
-    <updated>2014-01-02T13:35:39.000Z</updated>
-    <content type="html"><![CDATA[<ul>
+    <updated>2014-01-26T11:13:40.000Z</updated>
+    <content type="html"><![CDATA[<a id="more"></a>
+
+<ul>
 <li><p>trap:</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -420,10 +422,49 @@ arg: 信号处理函数，当接收到有sigspec定义的信号时将触发有ar
 ps <span class="attribute">-U</span> <span class="variable">$USER</span> <span class="attribute">-u</span> <span class="variable">$user</span>
 仅显示指定用户的进程，可用于干掉死掉的终端
 </pre></td></tr></table></figure>
+</li>
+<li><p>here document 用法 (cat &lt;&lt; EOF)<br>Here Document 是在Linux Shell 中的一种特殊的重定向方式，它的基本的形式如下</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+</pre></td><td class="code"><pre><span class="title">cmd</span> &lt;&lt; delimiter
+<span class="type">Here</span> <span class="type">Document</span> <span class="type">Content</span>
+<span class="title">delimiter</span>
+</pre></td></tr></table></figure>
 
 </li>
 </ul>
+<p>它的作用就是将两个 delimiter 之间的内容(Here Document Content 部分) 传递给cmd 作为输入参数，delimiter可自定义，通常可用于在脚本中动态的生成新的脚本。</p>
+<p>delimiter间的内容可嵌入变量 ，其值取决于运行时的shell环境，且变量会在shell运行时被展开，重定向时会将展开后的值写入重定向文件</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>A=test
+cat &lt;&lt; EOF &gt; output.sh
+<span class="built_in">echo</span> <span class="string">"This is output"</span>
+<span class="built_in">echo</span> <span class="variable">$A</span>
+EOF
+</pre></td></tr></table></figure>
+
+<p>写入output.sh将是test<br>如要禁止变量展开，可以通过在起始的 delimiter的前后添加 “ 来实现，</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>A=test
+cat &lt;&lt; <span class="string">"EOF"</span> &gt; output.sh  <span class="comment">#注意引号</span>
+<span class="built_in">echo</span> <span class="string">"hello"</span>
+<span class="built_in">echo</span> <span class="variable">$A</span> 
+EOF
+</pre></td></tr></table></figure>
+
+<p>写入output.sh的将是$A</p>
+<p>&lt;&lt; 变为 &lt;&lt;-<br>Here Document 还有一个用法就是将 ‘«’ 变为 ‘«-‘。 使用 &lt;&lt;- 的唯一变化就是Here Document 的内容部分每行前面的 tab (制表符)将会被删除掉，这种用法是为了编写Here Document的时候可以将内容部分进行缩进，方便阅读代码。</p>
 ]]></content>
+    <category scheme="http://lsmushroom.github.io/tags/shell/" term="shell"/>
   </entry>
   <entry>
     <title type="html"><![CDATA[maven 使用]]></title>
@@ -1189,7 +1230,7 @@ store D <span class="keyword">into</span> <span class="comment">'./wordcount';</
     <link href="http://lsmushroom.github.io/2013/11/21/cgroup-test/"/>
     <id>http://lsmushroom.github.io/2013/11/21/cgroup-test/</id>
     <published>2013-11-21T03:55:25.000Z</published>
-    <updated>2014-01-06T02:49:17.000Z</updated>
+    <updated>2014-01-15T10:38:05.000Z</updated>
     <content type="html"><![CDATA[<h1 id="Cgroup_Subsystem">Cgroup Subsystem</h1>
 <hr>
 <h2 id="CPU_Subsystem">CPU Subsystem</h2>
@@ -1258,7 +1299,23 @@ Starting cgconfig <span class="attribute">service</span>:                       
 [<span class="property">@sohu_41_173</span> ~]<span class="comment"># /etc/init.d/cgred restart</span>
 Stopping CGroup Rules Engine Daemon...                     [  OK  ]
 Starting CGroup Rules Engine <span class="attribute">Daemon</span>:                       [  OK  ]
-</code></pre>]]></content>
+</code></pre><p><em>测试三</em><br>添加test3 cgroup 用以测试memory cgroup的功能:</p>
+<pre><code>group test3 {
+    cpuset{
+        cpuset<span class="preprocessor">.cpus</span>=<span class="string">"0"</span><span class="comment">;</span>
+        cpuset<span class="preprocessor">.mems</span>=<span class="string">"0,1"</span><span class="comment">;</span>
+    }
+    memory{
+        memory<span class="preprocessor">.limit</span>_in_bytes=<span class="number">50</span>m<span class="comment">;</span>
+        memory<span class="preprocessor">.memsw</span><span class="preprocessor">.limit</span>_in_bytes = <span class="number">50</span>m<span class="comment">;</span>
+    }
+}
+
+cat /etc/cgrules<span class="preprocessor">.conf</span>
+*:/usr/local/bin/stress3        cpuset,memory                  /test3
+</code></pre><p>其中memory.limit_in_bytes用以控制组内可使用的用户态内存（包括文件缓存），有效值的可为数字加单位后缀：k/K,m/M,g/G, 未明确给出单位的默认为字节，-1表示没有内存限制。不可通过此项来限制根cgroup的内存使用量。</p>
+<p>memory.memsw.limit_in_bytes 用以控制内存与swap分区的使用总量，如此项为显示的配置，则当达到memory.limit_in_bytes使用上限时，将开始消耗全局系统的swap分区，直至消耗尽全局系统的所有swap空间，进而因没有swap空间而触发OOM。配置方法同memory.limit_in_bytes，但要求在提供有效的memory.limit_in_bytes值后方可配置memory.memsw.limit_in_bytes，即使在/etc/cgconfig.conf中亦应保证memory.limit_in_bytes在前，否则配置失败。</p>
+]]></content>
   </entry>
   <entry>
     <title type="html"><![CDATA[vim Macro]]></title>
