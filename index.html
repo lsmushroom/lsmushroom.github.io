@@ -90,6 +90,106 @@
     <header>
       
         <div class="icon"></div>
+        <time datetime="2014-03-16T04:03:37.000Z"><a href="/2014/03/16/namenode-ha/">3月 16 2014</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2014/03/16/namenode-ha/">namenode-ha</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>实践测试了下hadoop 2.2.0 版本中的NameNode HA特性，记录如下。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2014/03/16/namenode-ha/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  <article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2014-02-10T10:09:08.000Z"><a href="/2014/02/10/apache-helix-实践/">2月 10 2014</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2014/02/10/apache-helix-实践/">apache helix 实践</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>Helix是一个通用的集群管理框架，用于分区，复制和分发托管在一个集群中的节点资源的自动管理。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2014/02/10/apache-helix-实践/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  <article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
         <time datetime="2014-01-06T06:43:18.000Z"><a href="/2014/01/06/top-实现/">1月 6 2014</a></time>
       
       
@@ -150,84 +250,15 @@
     </header>
     <div class="entry">
       
-        <a id="more"></a>
-
-<ul>
-<li><p>trap:</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-6
-7
-</pre></td><td class="code"><pre>trap [-lp] [[arg] sigspec <span class="keyword">...</span>]
-
-arg: 信号处理函数，当接收到有sigspec定义的信号时将触发有args定义的命令的执行
-
-<span class="number">1.</span> 如未指定arg或arg为<span class="string">" - "</span> ， 则当收到sigspec时将信号复位为原值
-<span class="number">2.</span> 如arg指定为<span class="literal">NULL</span> ， 则sigspec指定的信号将被当前shell脚本以及触发信号的命令忽略
-<span class="number">3.</span> trap -l 列出当前的信号列表
-</pre></td></tr></table></figure>
-</li>
-<li><p>usermod</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-</pre></td><td class="code"><pre>usermod <span class="attribute">-m</span> <span class="attribute">-d</span> <span class="variable">$NEW_HOME_PATH</span> <span class="variable">$USER</span>
-将<span class="variable">$USER</span>指定的用户的home目录切换至新目录中，并将原目录中的文件移动至新目录中
-
-ps <span class="attribute">-U</span> <span class="variable">$USER</span> <span class="attribute">-u</span> <span class="variable">$user</span>
-仅显示指定用户的进程，可用于干掉死掉的终端
-</pre></td></tr></table></figure>
-</li>
-<li><p>here document 用法 (cat &lt;&lt; EOF)<br>Here Document 是在Linux Shell 中的一种特殊的重定向方式，它的基本的形式如下</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-</pre></td><td class="code"><pre><span class="title">cmd</span> &lt;&lt; delimiter
-<span class="type">Here</span> <span class="type">Document</span> <span class="type">Content</span>
-<span class="title">delimiter</span>
-</pre></td></tr></table></figure>
-
-</li>
-</ul>
-<p>它的作用就是将两个 delimiter 之间的内容(Here Document Content 部分) 传递给cmd 作为输入参数，delimiter可自定义，通常可用于在脚本中动态的生成新的脚本。</p>
-<p>delimiter间的内容可嵌入变量 ，其值取决于运行时的shell环境，且变量会在shell运行时被展开，重定向时会将展开后的值写入重定向文件</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-</pre></td><td class="code"><pre>A=test
-cat &lt;&lt; EOF &gt; output.sh
-<span class="built_in">echo</span> <span class="string">"This is output"</span>
-<span class="built_in">echo</span> <span class="variable">$A</span>
-EOF
-</pre></td></tr></table></figure>
-
-<p>写入output.sh将是test<br>如要禁止变量展开，可以通过在起始的 delimiter的前后添加 “ 来实现，</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-</pre></td><td class="code"><pre>A=test
-cat &lt;&lt; <span class="string">"EOF"</span> &gt; output.sh  <span class="comment">#注意引号</span>
-<span class="built_in">echo</span> <span class="string">"hello"</span>
-<span class="built_in">echo</span> <span class="variable">$A</span> 
-EOF
-</pre></td></tr></table></figure>
-
-<p>写入output.sh的将是$A</p>
-<p>&lt;&lt; 变为 &lt;&lt;-<br>Here Document 还有一个用法就是将 ‘«’ 变为 ‘«-‘。 使用 &lt;&lt;- 的唯一变化就是Here Document 的内容部分每行前面的 tab (制表符)将会被删除掉，这种用法是为了编写Here Document的时候可以将内容部分进行缩进，方便阅读代码。</p>
-
+        <p>shell tips<br>
       
     </div>
     <footer>
       
+        
+          <div class="alignleft">
+            <a href="/2014/01/02/shell-command-tips/#more" class="more-link">Read More</a>
+          </div>
         
         
       
@@ -268,127 +299,15 @@ EOF
     </header>
     <div class="entry">
       
-        <ul>
-<li>创建项目<figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre>mvn archetype:create -DgroupId=<span class="keyword">com</span><span class="preprocessor">.practise</span><span class="preprocessor">.java</span> -DartifactId=helloworld -DpackageName=<span class="keyword">com</span><span class="preprocessor">.practise</span><span class="preprocessor">.java</span>
-</pre></td></tr></table></figure>
-
-</li>
-</ul>
-<p>创建后的目录结构如下:</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-</pre></td><td class="code"><pre>[@sohu_41_173 java-practise]$ tree helloworld/
-helloworld/
-├── pom<span class="preprocessor">.xml</span>
-└── src
-    ├── main
-    │   └── java
-    │       └── <span class="keyword">com</span>
-    │           └── practise
-    │               └── java
-    │                   └── App<span class="preprocessor">.java</span>
-    └── test
-        └── java
-            └── <span class="keyword">com</span>
-                └── practise
-                    └── java
-                        └── AppTest<span class="preprocessor">.java</span>
-
-<span class="number">11</span> directories, <span class="number">3</span> files
-</pre></td></tr></table></figure>
-
-<p>其中archetype:create称为一个Maven目标，archetype是一个插件标识而create是目标标识,相应的会创建一个pom.xml文件，文件中各项的含义如下：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-6
-</pre></td><td class="code"><pre><span class="literal">-</span> <span class="comment">groupId:</span> <span class="comment">通常为项目的顶级包名。</span>
-<span class="literal">-</span> <span class="comment">artifactId:</span> <span class="comment">通常为项目名</span>
-<span class="literal">-</span> <span class="comment">version：项目的版本号，在开发的不同阶段，你需要更改这个版本号。</span>
-<span class="literal">-</span> <span class="comment">packaging：项目发布时的打包类型。比如对于普通Java程序打包为jar文件；对于Java</span> <span class="comment">web项目则打包为war文件。</span>
-<span class="literal">-</span> <span class="comment">name：通常也是项目名</span>
-<span class="literal">-</span> <span class="comment">url：项目的主页。</span>
-</pre></td></tr></table></figure>
-
-<ul>
-<li>安装<figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre><span class="title">mvn</span> clean install
-</pre></td></tr></table></figure>
-
-</li>
-</ul>
-<p>会将由mvn package编译生成的jar包拷贝至类似如下的路径：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre><span class="comment">/opt/home/mushroom/</span><span class="string">.</span><span class="comment">m2/repository/com/practise/java/helloworld/1</span><span class="string">.</span><span class="comment">0</span><span class="literal">-</span><span class="comment">SNAPSHOT/helloworld</span><span class="literal">-</span><span class="comment">1</span><span class="string">.</span><span class="comment">0</span><span class="literal">-</span><span class="comment">SNAPSHOT</span><span class="string">.</span><span class="comment">jar</span>
-</pre></td></tr></table></figure>
-
-<ul>
-<li><p>清理</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-</pre></td><td class="code"><pre><span class="title">[</span><span class="comment">@sohu_41_173</span> <span class="comment">helloworld</span><span class="title">]</span><span class="comment">$</span> <span class="comment">mvn</span> <span class="comment">clean</span>
-<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="comment">Scanning</span> <span class="comment">for</span> <span class="comment">projects</span><span class="string">.</span><span class="string">.</span><span class="string">.</span>
-<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span>
-<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span>
-<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="comment">Building</span> <span class="comment">helloworld</span> <span class="comment">1</span><span class="string">.</span><span class="comment">0</span><span class="literal">-</span><span class="comment">SNAPSHOT</span>
-<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span>
-<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span>
-<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">maven</span><span class="literal">-</span><span class="comment">clean</span><span class="literal">-</span><span class="comment">plugin:2</span><span class="string">.</span><span class="comment">5:clean</span> <span class="comment">(default</span><span class="literal">-</span><span class="comment">clean)</span> <span class="comment">@</span> <span class="comment">helloworld</span> <span class="literal">-</span><span class="literal">-</span><span class="literal">-</span>
-<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="comment">Deleting</span> <span class="comment">/opt/linsiyuan/git/java</span><span class="literal">-</span><span class="comment">practise/helloworld/target</span>
-<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span>
-<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="comment">BUILD</span> <span class="comment">SUCCESS</span>
-<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span>
-<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="comment">Total</span> <span class="comment">time:</span> <span class="comment">0</span><span class="string">.</span><span class="comment">294s</span>
-<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="comment">Finished</span> <span class="comment">at:</span> <span class="comment">Fri</span> <span class="comment">Jan</span> <span class="comment">03</span> <span class="comment">10:24:04</span> <span class="comment">CST</span> <span class="comment">2014</span>
-<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="comment">Final</span> <span class="comment">Memory:</span> <span class="comment">16M/963M</span>
-<span class="title">[</span><span class="comment">INFO</span><span class="title">]</span> <span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span>
-</pre></td></tr></table></figure>
-</li>
-<li><p>运行</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre>[@sohu_41_173 target]$ java -<span class="keyword">cp</span> ./helloworld-<span class="number">1.0</span>-SNAPSHOT<span class="preprocessor">.jar</span> <span class="keyword">com</span><span class="preprocessor">.practise</span><span class="preprocessor">.java</span><span class="preprocessor">.App</span>
-</pre></td></tr></table></figure>
-
-</li>
-</ul>
-
+        <p>学习下maven 使用<br>
       
     </div>
     <footer>
       
+        
+          <div class="alignleft">
+            <a href="/2014/01/02/maven-使用/#more" class="more-link">Read More</a>
+          </div>
         
         
       
@@ -478,7 +397,9 @@ helloworld/
     </header>
     <div class="entry">
       
-        <h2 id="-51c6-5907-5b89-88c5-73af-5883-">准备安装环境</h2>
+        <a id="more"></a>
+
+<h2 id="-51c6-5907-5b89-88c5-73af-5883-">准备安装环境</h2>
 <ol>
 <li><p>下载<a href="https://github.com/yahoo/storm-yarn/archive/master.zip" target="_blank">storm-on-yarn</a><br> wget <a href="https://github.com/yahoo/storm-yarn/archive/master.zip" target="_blank">https://github.com/yahoo/storm-yarn/archive/master.zip</a><br> 或<br> git clone git@github.com:yahoo/storm-yarn.git</p>
 </li>
@@ -698,185 +619,6 @@ helloworld/
 
 
 
-  <article class="post">
-  
-    <div class="gallery">
-  <div class="photoset">
-    
-      <img src="">
-    
-  </div>
-  <div class="control">
-    <div class="prev"></div>
-    <div class="next"></div>
-  </div>
-</div>
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2013-11-28T06:52:38.000Z"><a href="/2013/11/28/pig-on-yarn/">11月 28 2013</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2013/11/28/pig-on-yarn/">Pig on Yarn</a></h1>
-  
-
-    </header>
-    <div class="entry">
-      
-        <p>今天尝试了下将pig部署到hadoop2.2.0版的集群上，过程相对较顺利，简单记录下。</p>
-
-      
-    </div>
-    <footer>
-      
-        
-          <div class="alignleft">
-            <a href="/2013/11/28/pig-on-yarn/#more" class="more-link">Read More</a>
-          </div>
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-
-  <article class="false">
-  
-    <div class="gallery">
-  <div class="photoset">
-    
-      <img src="">
-    
-  </div>
-  <div class="control">
-    <div class="prev"></div>
-    <div class="next"></div>
-  </div>
-</div>
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2013-11-21T03:55:25.000Z"><a href="/2013/11/21/cgroup-test/">11月 21 2013</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2013/11/21/cgroup-test/">Cgroup Test</a></h1>
-  
-
-    </header>
-    <div class="entry">
-      
-        <h1 id="Cgroup_Subsystem">Cgroup Subsystem</h1>
-<hr>
-<h2 id="CPU_Subsystem">CPU Subsystem</h2>
-<p>创建三个cgroup，对前两组设定cpu.shares比例为1:2 ，对第三组不设定cpu.shares参数，三个cgroup内运行的进程均被限制仅能在0号核上运行，可访问内存结点为0,1</p>
-<pre><code>[@sohu_41_173 ~]<span class="preprocessor"># cat /etc/cgconfig.conf</span>
-mount {
-    cpu     = /cgroup/cpu<span class="comment">;</span>
-    cpuset  = /cgroup/cpuset<span class="comment">;</span>
-    memory  = /cgroup/memory<span class="comment">;</span>
-}
-
-group test1 {
-    cpuset{
-        cpuset<span class="preprocessor">.cpus</span>=<span class="string">"0"</span><span class="comment">;</span>
-        cpuset<span class="preprocessor">.mems</span>=<span class="string">"0,1"</span><span class="comment">;</span>
-    }
-    cpu{
-        cpu<span class="preprocessor">.shares</span>=<span class="string">"100"</span><span class="comment">;</span>
-    }
-}
-group test2 {
-    cpuset{
-        cpuset<span class="preprocessor">.cpus</span>=<span class="string">"0"</span><span class="comment">;</span>
-        cpuset<span class="preprocessor">.mems</span>=<span class="string">"0,1"</span><span class="comment">;</span>
-    }
-    cpu{
-        cpu<span class="preprocessor">.shares</span>=<span class="string">"200"</span><span class="comment">;</span>
-    }
-}
-
-group test3 {
-    cpuset{
-        cpuset<span class="preprocessor">.cpus</span>=<span class="string">"0"</span><span class="comment">;</span>
-        cpuset<span class="preprocessor">.mems</span>=<span class="string">"0,1"</span><span class="comment">;</span>
-    }
-}
-</code></pre><p>设定cgrules.conf 如下，使用C实现的简易的压测工具stress，其被编译成单独的可执行程序，简单的复制并重命名2份供另两组使用，在启动时将由cgrulesengd自动与配置的cgroup绑定运行，受相应的subsystem控制</p>
-<pre><code>[<span class="variable">@sohu_41_173</span> ~]<span class="comment"># cat /etc/cgrules.conf</span>
-*<span class="symbol">:/usr/local/bin/stress</span>         cpu,cpuset              /test1
-*<span class="symbol">:/usr/local/bin/stress2</span>        cpu,cpuset              /test2
-*<span class="symbol">:/usr/local/bin/stress3</span>        cpuset                  /test3
-</code></pre><p><em>测试一</em></p>
-<pre><code>[<span class="variable">@sohu_41_173</span> ~]<span class="comment"># stress -c 1</span>
-stress: info: [<span class="number">48624</span>] dispatching hogs: <span class="number">1</span> cpu, <span class="number">0</span> io, <span class="number">0</span> vm, <span class="number">0</span> hdd
-
-[<span class="variable">@sohu_41_173</span> ~]<span class="comment"># stress2 -c 1</span>
-stress2: info: [<span class="number">48632</span>] dispatching hogs: <span class="number">1</span> cpu, <span class="number">0</span> io, <span class="number">0</span> vm, <span class="number">0</span> hdd
-
-[<span class="variable">@sohu_41_173</span> ~]<span class="comment"># top -p 48633,48625 -b</span>
-top - <span class="number">12</span>:08:<span class="number">04</span> up <span class="number">9</span> days, <span class="number">16</span>:<span class="number">32</span>,  <span class="number">7</span> users,  load average: <span class="number">1.94</span>, <span class="number">1.19</span>, <span class="number">2.09</span>
-Tasks:   <span class="number">2</span> total,   <span class="number">2</span> running,   <span class="number">0</span> sleeping,   <span class="number">0</span> stopped,   <span class="number">0</span> zombie
-Cpu(<span class="keyword">s</span>):  <span class="number">0</span>.<span class="number">2</span><span class="variable">%us</span>,  <span class="number">0</span>.<span class="number">1</span><span class="variable">%sy</span>,  <span class="number">0</span>.<span class="number">0</span><span class="variable">%ni</span>, <span class="number">99.7</span><span class="variable">%id</span>,  <span class="number">0</span>.<span class="number">0</span><span class="variable">%wa</span>,  <span class="number">0</span>.<span class="number">0</span><span class="variable">%hi</span>,  <span class="number">0</span>.<span class="number">0</span><span class="variable">%si</span>,  <span class="number">0</span>.<span class="number">0</span><span class="variable">%st</span>
-Mem:  <span class="number">65820492</span>k total, <span class="number">30009200</span>k used, <span class="number">35811292</span>k free,  <span class="number">1110200</span>k buffers
-Swap:  <span class="number">4194296</span>k total,        0k used,  <span class="number">4194296</span>k free,  <span class="number">9438732</span>k cached
-
-PID USER      PR  NI  VIRT  RES  SHR S <span class="variable">%CPU</span> <span class="variable">%MEM</span>    TIME+  COMMAND
-<span class="number">48633</span> root      <span class="number">20</span>   <span class="number">0</span>  <span class="number">6516</span>  <span class="number">192</span>  <span class="number">104</span> R <span class="number">67.8</span>  <span class="number">0</span>.<span class="number">0</span>   <span class="number">1</span>:<span class="number">23.57</span> stress2
-<span class="number">48625</span> root      <span class="number">20</span>   <span class="number">0</span>  <span class="number">6516</span>  <span class="number">192</span>  <span class="number">104</span> R <span class="number">33.9</span>  <span class="number">0</span>.<span class="number">0</span>   <span class="number">0</span>:<span class="number">47.31</span> stress
-</code></pre><p>运行stress和stress2，两个程序分别受test和test1 cpu和cpuset子系统控制，从%CPU可看出，当两个进程被限制在同一个CPU核上运行时，其占用CPU的比例符合cpu.shares所配置的1:2的比例</p>
-<p><em>测试二</em><br>修改三个cgroup组cpuset配置如下：</p>
-<pre><code>cpuset<span class="preprocessor">.cpus</span>=<span class="string">"0,2"</span><span class="comment">;</span>
-</code></pre><p>限制三个组内运行的进程可使用的CPU核为0和2号核，重启服务以使配置生效</p>
-<pre><code>[<span class="property">@sohu_41_173</span> ~]<span class="comment"># /etc/init.d/cgconfig restart</span>
-Stopping cgconfig <span class="attribute">service</span>:                                 [  OK  ]
-Starting cgconfig <span class="attribute">service</span>:                                 [  OK  ]
-[<span class="property">@sohu_41_173</span> ~]<span class="comment"># /etc/init.d/cgred restart</span>
-Stopping CGroup Rules Engine Daemon...                     [  OK  ]
-Starting CGroup Rules Engine <span class="attribute">Daemon</span>:                       [  OK  ]
-</code></pre><p><em>测试三</em><br>添加test3 cgroup 用以测试memory cgroup的功能:</p>
-<pre><code>group test3 {
-    cpuset{
-        cpuset<span class="preprocessor">.cpus</span>=<span class="string">"0"</span><span class="comment">;</span>
-        cpuset<span class="preprocessor">.mems</span>=<span class="string">"0,1"</span><span class="comment">;</span>
-    }
-    memory{
-        memory<span class="preprocessor">.limit</span>_in_bytes=<span class="number">50</span>m<span class="comment">;</span>
-        memory<span class="preprocessor">.memsw</span><span class="preprocessor">.limit</span>_in_bytes = <span class="number">50</span>m<span class="comment">;</span>
-    }
-}
-
-cat /etc/cgrules<span class="preprocessor">.conf</span>
-*:/usr/local/bin/stress3        cpuset,memory                  /test3
-</code></pre><p>其中memory.limit_in_bytes用以控制组内可使用的用户态内存（包括文件缓存），有效值的可为数字加单位后缀：k/K,m/M,g/G, 未明确给出单位的默认为字节，-1表示没有内存限制。不可通过此项来限制根cgroup的内存使用量。</p>
-<p>memory.memsw.limit_in_bytes 用以控制内存与swap分区的使用总量，如此项为显示的配置，则当达到memory.limit_in_bytes使用上限时，将开始消耗全局系统的swap分区，直至消耗尽全局系统的所有swap空间，进而因没有swap空间而触发OOM。配置方法同memory.limit_in_bytes，但要求在提供有效的memory.limit_in_bytes值后方可配置memory.memsw.limit_in_bytes，即使在/etc/cgconfig.conf中亦应保证memory.limit_in_bytes在前，否则配置失败。</p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-
 
 <nav id="pagination">
   
@@ -904,7 +646,7 @@ cat /etc/cgrules<span class="preprocessor">.conf</span>
   
     <li><a href="/categories/vim/">vim</a><small>1</small></li>
   
-    <li><a href="/categories/yarn/">yarn</a><small>7</small></li>
+    <li><a href="/categories/yarn/">yarn</a><small>8</small></li>
   
   </ul>
 </div>
@@ -935,7 +677,7 @@ cat /etc/cgrules<span class="preprocessor">.conf</span>
   
     <li><a href="/tags/vim/">vim</a><small>1</small></li>
   
-    <li><a href="/tags/yarn/">yarn</a><small>6</small></li>
+    <li><a href="/tags/yarn/">yarn</a><small>8</small></li>
   
   </ul>
 </div>

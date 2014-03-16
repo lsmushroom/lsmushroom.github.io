@@ -99,8 +99,7 @@
     </header>
     <div class="entry">
       
-        <a id="more"></a>
-
+        <p>shell tips<br><a id="more"></a></p>
 <ul>
 <li><p>trap:</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
@@ -172,6 +171,16 @@ EOF
 
 <p>写入output.sh的将是$A</p>
 <p>&lt;&lt; 变为 &lt;&lt;-<br>Here Document 还有一个用法就是将 ‘«’ 变为 ‘«-‘。 使用 &lt;&lt;- 的唯一变化就是Here Document 的内容部分每行前面的 tab (制表符)将会被删除掉，这种用法是为了编写Here Document的时候可以将内容部分进行缩进，方便阅读代码。</p>
+<ul>
+<li><p>netstat 查看当前打开的端口及对应的进程<br>netstat -nlpt</p>
+</li>
+<li><p>expect<br>运行autoexpect -p就进入autoexpect创建的shell中，然后输入的命令交互都被记录下来，最后输入exit退出，expect脚本被保存在script.exp中。<br>下面的例子演示了通过ssh登录到一台主机然后退出。</p>
+</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="comment">rong@dev:~＄</span> <span class="comment">autoexpect</span> <span class="literal">-</span><span class="comment">p</span> <span class="comment">ssh</span> <span class="comment">172</span><span class="string">.</span><span class="comment">16</span><span class="string">.</span><span class="comment">24</span><span class="string">.</span><span class="comment">57</span> <span class="literal">-</span><span class="comment">lroot</span> <span class="literal">-</span><span class="comment">p3600</span>
+</pre></td></tr></table></figure>
+
 
       
     </div>
@@ -248,7 +257,7 @@ EOF
   
     <li><a href="/categories/vim/">vim</a><small>1</small></li>
   
-    <li><a href="/categories/yarn/">yarn</a><small>7</small></li>
+    <li><a href="/categories/yarn/">yarn</a><small>8</small></li>
   
   </ul>
 </div>
@@ -279,7 +288,7 @@ EOF
   
     <li><a href="/tags/vim/">vim</a><small>1</small></li>
   
-    <li><a href="/tags/yarn/">yarn</a><small>6</small></li>
+    <li><a href="/tags/yarn/">yarn</a><small>8</small></li>
   
   </ul>
 </div>

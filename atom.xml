@@ -4,13 +4,619 @@
   <subtitle><![CDATA[没时间玩，就扩大玩的定义，我玩的是技术]]></subtitle>
   <link href="http://lsmushroom.github.io/atom.xml" rel="self"/>
   <link href="http://lsmushroom.github.io"/>
-  <updated>2014-01-26T11:13:45.433Z</updated>
+  <updated>2014-03-16T04:16:37.433Z</updated>
   <id>http://lsmushroom.github.io/</id>
   <author>
     <name><![CDATA[Yuan Linsi]]></name>
     <email><![CDATA[lsmushroom@126.com]]></email>
   </author>
   <generator uri="http://zespia.tw/hexo">Hexo</generator>
+  <entry>
+    <title type="html"><![CDATA[namenode-ha]]></title>
+    <link href="http://lsmushroom.github.io/2014/03/16/namenode-ha/"/>
+    <id>http://lsmushroom.github.io/2014/03/16/namenode-ha/</id>
+    <published>2014-03-16T04:03:37.000Z</published>
+    <updated>2014-03-16T04:10:58.000Z</updated>
+    <content type="html"><![CDATA[<p>实践测试了下hadoop 2.2.0 版本中的NameNode HA特性，记录如下。</p>
+<a id="more"></a>
+
+<h1 id="-914d-7f6e-">配置</h1>
+<p>开启NameNode HA功能需在hdfs-site.xml与core-site.xml两个文件中添加以下相关的配置项</p>
+<p>hdfs-site.xml:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+</pre></td><td class="code"><pre><span class="comment">&lt;!-- Start NameNode HA --&gt;</span>
+
+<span class="tag">&lt;<span class="title">property</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">name</span>&gt;</span>dfs.nameservices<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">value</span>&gt;</span>cluster1<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">description</span>&gt;</span>
+    Comma-separated list of nameservices.
+  <span class="tag">&lt;/<span class="title">description</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">property</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">name</span>&gt;</span>dfs.ha.namenodes.cluster1<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">value</span>&gt;</span>nn1,nn2<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">description</span>&gt;</span>
+    命名服务下包含的NameNode列表
+    The prefix for a given nameservice, contains a comma-separated
+    list of namenodes for a given nameservice (eg EXAMPLENAMESERVICE).
+  <span class="tag">&lt;/<span class="title">description</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">property</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">name</span>&gt;</span>dfs.namenode.rpc-address.cluster1.nn1<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">value</span>&gt;</span>master:8020<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">description</span>&gt;</span>
+    设置namenode id 对应的RPC端口
+    RPC address that handles all clients requests. In the case of HA/Federation where multiple namenodes exist,
+    the name service id is added to the name e.g. dfs.namenode.rpc-address.ns1
+    dfs.namenode.rpc-address.EXAMPLENAMESERVICE
+    The value of this property will take the form of nn-host1:rpc-port.
+  <span class="tag">&lt;/<span class="title">description</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">property</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">name</span>&gt;</span>dfs.namenode.rpc-address.cluster1.nn2<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">value</span>&gt;</span>slave0:8020<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">description</span>&gt;</span>
+    RPC address that handles all clients requests. In the case of HA/Federation where multiple namenodes exist,
+    the name service id is added to the name e.g. dfs.namenode.rpc-address.ns1
+    dfs.namenode.rpc-address.EXAMPLENAMESERVICE
+    The value of this property will take the form of nn-host1:rpc-port.
+  <span class="tag">&lt;/<span class="title">description</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">property</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">name</span>&gt;</span>dfs.namenode.http-address.cluster.nn1<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">value</span>&gt;</span>10.1.93.42:50070<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">description</span>&gt;</span>
+    设置每个NameNode对外提供Http服务的端口
+    The address and the base port where the dfs namenode web ui will listen on.
+  <span class="tag">&lt;/<span class="title">description</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">property</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">name</span>&gt;</span>dfs.namenode.http-address.cluster.nn2<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">value</span>&gt;</span>10.1.93.43:50070<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">description</span>&gt;</span>
+    The address and the base port where the dfs namenode web ui will listen on.
+  <span class="tag">&lt;/<span class="title">description</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">property</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">name</span>&gt;</span>dfs.namenode.shared.edits.dir<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">value</span>&gt;</span>qjournal://10.1.93.42:8485;10.1.93.43:8485;10.1.93.44:8485/cluster1<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">description</span>&gt;</span>
+  提供journal服务的服务器列表,cluster1指定具体的文件夹
+  A directory on shared storage between the multiple namenodes
+  in an HA cluster. This directory will be written by the active and read
+  by the standby in order to keep the namespaces synchronized. This directory
+  does not need to be listed in dfs.namenode.edits.dir above. It should be
+  left empty in a non-HA cluster.
+  <span class="tag">&lt;/<span class="title">description</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">property</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">name</span>&gt;</span>dfs.client.failover.proxy.provider.cluster1<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">value</span>&gt;</span>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">description</span>&gt;</span>
+    DFS客户端通过此类查找当前的active NameNode
+  <span class="tag">&lt;/<span class="title">description</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">property</span>&gt;</span>
+<span class="tag">&lt;<span class="title">name</span>&gt;</span>dfs.ha.fencing.methods<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+<span class="tag">&lt;<span class="title">value</span>&gt;</span>sshfence<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+<span class="tag">&lt;<span class="title">description</span>&gt;</span>
+        状态切换过程中执行的fencing方法，当前提供ssh与shell脚本两种方式,对指定的fencing方法将逐一尝试，直至成功，否则将超时退出
+    <span class="tag">&lt;/<span class="title">description</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">property</span>&gt;</span>
+<span class="tag">&lt;<span class="title">name</span>&gt;</span>dfs.ha.fencing.ssh.private-key-files<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+<span class="tag">&lt;<span class="title">value</span>&gt;</span>/opt/home/yuanlinsi/.ssh/id_rsa<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+    
+    <span class="tag">&lt;<span class="title">property</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">name</span>&gt;</span>dfs.ha.fencing.ssh.connect-timeout<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">value</span>&gt;</span>10000<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">description</span>&gt;</span>以毫秒为单位,默认30000<span class="tag">&lt;/<span class="title">description</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+
+    <span class="tag">&lt;<span class="title">property</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">name</span>&gt;</span>ha.zookeeper.session-timeout.ms<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">value</span>&gt;</span>10000<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+
+<span class="tag">&lt;<span class="title">property</span>&gt;</span>
+<span class="tag">&lt;<span class="title">name</span>&gt;</span>dfs.journalnode.edits.dir<span class="tag">&lt;/<span class="title">name</span>&gt;</span>
+<span class="tag">&lt;<span class="title">value</span>&gt;</span>/opt/linsiyuan/hadoop-journalnode-data<span class="tag">&lt;/<span class="title">value</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">property</span>&gt;</span>
+</pre></td></tr></table></figure>
+
+<h1 id="-90e8-7f72-">部署</h1>
+<h2 id="-542f-52a8-journalnode">启动journalnode</h2>
+<p>在dfs.namenode.shared.edits.dir配置项指定的节点上启动journalnode服务，若在所有结点上均启动journalnode，直接通过hadoop-daemons.sh启动，否则需在指定的结点上执行hadoop-daemon.sh来启动journalnode服务</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre><span class="string">.</span><span class="comment">/sbin/hadoop</span><span class="literal">-</span><span class="comment">daemon</span><span class="string">.</span><span class="comment">sh</span> <span class="comment">start</span> <span class="comment">journalnode</span>
+<span class="string">.</span><span class="comment">/sbin/hadoop</span><span class="literal">-</span><span class="comment">daemons</span><span class="string">.</span><span class="comment">sh</span> <span class="comment">start</span> <span class="comment">journalnode</span>
+</pre></td></tr></table></figure>
+
+<h2 id="-521d-59cb-5316-NameNode">初始化NameNode</h2>
+<ul>
+<li><p>对于新建立的HDFS集群，需首先在主NameNode上进行格式化操作</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="comment">hdfs</span> <span class="comment">namenode</span> <span class="literal">-</span><span class="comment">format</span>
+</pre></td></tr></table></figure>
+</li>
+<li><p>在主NameNode上启动namenode</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre><span class="comment">hdfs</span> <span class="comment">namenode</span> <span class="literal">-</span><span class="comment">initializeSharedEdits</span>
+<span class="comment">sbin/hadoop</span><span class="literal">-</span><span class="comment">daemon</span><span class="string">.</span><span class="comment">sh</span> <span class="comment">start</span> <span class="comment">namenode</span>
+</pre></td></tr></table></figure>
+</li>
+<li><p>在从NameNode上启动NameNode,首先通过hdfs namenode -bootstrapStandby 从主NameNode上同步元数据,然后启动namenode</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre><span class="comment">hdfs</span> <span class="comment">namenode</span> <span class="literal">-</span><span class="comment">bootstrapStandby</span>
+<span class="string">.</span><span class="comment">/sbin/hadoop</span><span class="literal">-</span><span class="comment">daemon</span><span class="string">.</span><span class="comment">sh</span> <span class="comment">start</span> <span class="comment">namenode</span>
+</pre></td></tr></table></figure>
+</li>
+<li><p>启动所有结点的DataNode</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="string">.</span><span class="comment">/sbin/hadoop</span><span class="literal">-</span><span class="comment">daemons</span><span class="string">.</span><span class="comment">sh</span> <span class="comment">start</span> <span class="comment">datanode</span>
+</pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>切换NameNode的运行状态</p>
+<p>在HA模式下，NameNode启动后会直接进入standby模式，可通过以下命令将NameNode切换为active模式</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="code"><pre> <span class="comment">查询NameNode状态</span>
+<span class="string">.</span><span class="comment">/bin/hdfs</span> <span class="comment">haadmin</span> <span class="literal">-</span><span class="comment">getServiceState</span> <span class="comment">nn1</span>
+<span class="string">.</span><span class="comment">/bin/hdfs</span> <span class="comment">haadmin</span> <span class="literal">-</span><span class="comment">getServiceState</span> <span class="comment">nn2</span>
+
+ <span class="comment">查询在指定的name</span> <span class="comment">service下，NameNode的状态</span>
+<span class="string">.</span><span class="comment">/bin/hdfs</span> <span class="comment">haadmin</span> <span class="literal">-</span><span class="comment">ns</span> <span class="comment">cluster2</span> <span class="literal">-</span><span class="comment">getServiceState</span> <span class="comment">nn1</span>
+<span class="string">.</span><span class="comment">/bin/hdfs</span> <span class="comment">haadmin</span> <span class="literal">-</span><span class="comment">ns</span> <span class="comment">cluster2</span> <span class="literal">-</span><span class="comment">getServiceState</span> <span class="comment">nn2</span>
+
+ <span class="comment">在指定的name</span> <span class="comment">service下的切换NameNode的状态</span>
+ <span class="string">.</span><span class="comment">/bin/hdfs</span> <span class="comment">haadmin</span> <span class="literal">-</span><span class="comment">ns</span> <span class="title">[</span><span class="comment">name</span> <span class="comment">service</span><span class="title">]</span> <span class="literal">-</span><span class="comment">failover</span> <span class="title">[</span><span class="comment">standby</span><span class="title">]</span> <span class="title">[</span><span class="comment">active</span><span class="title">]</span>
+<span class="string">.</span><span class="comment">/bin/hdfs</span> <span class="comment">haadmin</span> <span class="literal">-</span><span class="comment">ns</span> <span class="comment">cluster1</span> <span class="literal">-</span><span class="comment">failover</span> <span class="comment">nn1</span> <span class="comment">nn2</span>
+</pre></td></tr></table></figure>
+
+<h1 id="Automatic_Failover">Automatic Failover</h1>
+<p>以上方式当处于active模式的NameNode挂掉时需手动进行主备间的状态切换，生产环境显然不现实。hadoop2.2.0 中同样提供基于zookeeper实现的自动切换。</p>
+<h2 id="-914d-7f6e--1">配置</h2>
+<p>开启自动Failover处理需在以上的配置基础上添加以下的配置项：<br>hdfs-site.xml：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="code"><pre>&lt;<span class="keyword">property</span>&gt;
+  &lt;<span class="property">name</span>&gt;dfs.ha.automatic-failover.enabled&lt;/<span class="property">name</span>&gt;
+  &lt;value&gt;<span class="constant">true</span>&lt;/value&gt;
+  &lt;description&gt;
+    Whether automatic failover <span class="keyword">is</span> enabled. See <span class="keyword">the</span> HDFS High
+    Availability documentation <span class="keyword">for</span> details <span class="function_start"><span class="keyword">on</span> <span class="title">automatic</span></span> HA
+    configuration.
+  &lt;/description&gt;
+&lt;/<span class="keyword">property</span>&gt;
+
+
+core-site.xml
+
+&lt;<span class="keyword">property</span>&gt;
+  &lt;<span class="property">name</span>&gt;ha.zookeeper.quorum&lt;/<span class="property">name</span>&gt;
+  &lt;value&gt;<span class="number">10.1</span><span class="number">.93</span><span class="number">.42</span>:<span class="number">2188</span>,<span class="number">10.1</span><span class="number">.93</span><span class="number">.43</span>:<span class="number">2188</span>,<span class="number">10.1</span><span class="number">.93</span><span class="number">.44</span>:<span class="number">2188</span>&lt;/value&gt;
+  &lt;description&gt;
+    A <span class="type">list</span> <span class="keyword">of</span> ZooKeeper server addresses, separated <span class="keyword">by</span> commas, <span class="keyword">that</span> are
+    <span class="keyword">to</span> be used <span class="keyword">by</span> <span class="keyword">the</span> ZKFailoverController <span class="keyword">in</span> automatic failover.
+  &lt;/description&gt;
+&lt;/<span class="keyword">property</span>&gt;
+</pre></td></tr></table></figure>
+
+<h2 id="-542f-52a8-">启动</h2>
+<p>停止集群并添加以上配置项后，可通过以下方式启动集群：</p>
+<p>在主NameNode上，启动namenode结点：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+</pre></td><td class="code"><pre><span class="literal">-</span> <span class="comment">hdfs</span> <span class="comment">namenode</span> <span class="literal">-</span><span class="comment">format</span>
+<span class="literal">-</span> <span class="comment">hdfs</span> <span class="comment">namenode</span> <span class="literal">-</span><span class="comment">initializeSharedEdits</span>
+<span class="literal">-</span> <span class="comment">sbin/hadoop</span><span class="literal">-</span><span class="comment">daemon</span><span class="string">.</span><span class="comment">sh</span> <span class="comment">start</span> <span class="comment">namenode</span>
+</pre></td></tr></table></figure>
+
+<h2 id="-542f-52a8-zkfc-ff1a-">启动zkfc：</h2>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre><span class="literal">-</span> <span class="comment">hdfs</span> <span class="comment">zkfc</span> <span class="literal">-</span><span class="comment">formatZK</span>
+<span class="literal">-</span> <span class="string">.</span><span class="comment">/sbin/hadoop</span><span class="literal">-</span><span class="comment">daemon</span><span class="string">.</span><span class="comment">sh</span> <span class="comment">start</span> <span class="comment">zkfc</span>
+</pre></td></tr></table></figure>
+
+<p>在从NameNode上，启动namenode结点：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre><span class="literal">-</span> <span class="comment">hdfs</span> <span class="comment">namenode</span> <span class="literal">-</span><span class="comment">bootstrapStandby</span>
+<span class="literal">-</span> <span class="string">.</span><span class="comment">/sbin/hadoop</span><span class="literal">-</span><span class="comment">daemon</span><span class="string">.</span><span class="comment">sh</span> <span class="comment">start</span> <span class="comment">namenode</span>
+</pre></td></tr></table></figure>
+
+<h2 id="-542f-52a8-zkfc-ff1a--1">启动zkfc：</h2>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="literal">-</span> <span class="string">.</span><span class="comment">/sbin/hadoop</span><span class="literal">-</span><span class="comment">daemon</span><span class="string">.</span><span class="comment">sh</span> <span class="comment">start</span> <span class="comment">zkfc</span>
+</pre></td></tr></table></figure>
+
+<h2 id="check_NameNode_-72b6-6001-">check NameNode 状态</h2>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre><span class="comment">hdfs</span> <span class="comment">haadmin</span> <span class="literal">-</span><span class="comment">getServiceState</span> <span class="comment">nn1</span>
+<span class="comment">hdfs</span> <span class="comment">haadmin</span> <span class="literal">-</span><span class="comment">getServiceState</span> <span class="comment">nn2</span>
+</pre></td></tr></table></figure>
+
+<h2 id="-6d4b-8bd5-">测试</h2>
+<p>通过两种方式模拟Namenode异常</p>
+<ul>
+<li>终止NameNode进程</li>
+<li>直接重启active NN </li>
+</ul>
+<p>两种方式NameNode状态均切换成功，且保持与client及Datanode端的正常通信。</p>
+<p>不同之处在于对于直接kill active NameNode，会有zookeeper主动释放锁，而掉电重启active NN所运行的服务器则需等待zookeeper锁超时方能进行Namenode状态切换，由此在掉电的情景中状态切换的过程更长</p>
+]]></content>
+    <category scheme="http://lsmushroom.github.io/tags/yarn/" term="yarn"/>
+  </entry>
+  <entry>
+    <title type="html"><![CDATA[apache helix 实践]]></title>
+    <link href="http://lsmushroom.github.io/2014/02/10/apache-helix-实践/"/>
+    <id>http://lsmushroom.github.io/2014/02/10/apache-helix-实践/</id>
+    <published>2014-02-10T10:09:08.000Z</published>
+    <updated>2014-02-11T08:38:30.000Z</updated>
+    <content type="html"><![CDATA[<p>Helix是一个通用的集群管理框架，用于分区，复制和分发托管在一个集群中的节点资源的自动管理。</p>
+<a id="more"></a>
+
+<h1 id="Helix_-7279-6027-">Helix 特性</h1>
+<p>Helix 提供了以下特性： </p>
+<ul>
+<li>节点资源的自动分配/分区</li>
+<li>节点故障检测和恢复</li>
+<li>资源动态增加</li>
+<li>集群的动态添加节点</li>
+<li>Pluggable distributed state machine to manage the state of a resource via state transitions</li>
+<li>自动负载平衡</li>
+</ul>
+<p>Helix aims to provide the following abilities to a distributed system:</p>
+<ul>
+<li>Automatic management of a cluster hosting partitioned, replicated resources.</li>
+<li>Soft and hard failure detection and handling.</li>
+<li>Automatic load balancing via smart placement of resources on servers(nodes) based on server capacity and resource profile (size of partition, access patterns, etc).</li>
+<li>Centralized config management and self discovery. Eliminates the need to modify config on each node.</li>
+<li>Fault tolerance and optimized rebalancing during cluster expansion.</li>
+<li>Manages entire operational lifecycle of a node. Addition, start, stop, enable/disable without downtime.</li>
+<li>Monitor cluster health and provide alerts on SLA violation.</li>
+<li>Service discovery mechanism to route requests.</li>
+</ul>
+<h1 id="Helix_Architecture">Helix Architecture</h1>
+<p>Helix 作为一套通用的集群管理框架，</p>
+<p>Helix 分布式系统的主要组件及属性：</p>
+<ul>
+<li>结点：实例</li>
+<li>资源：Helix 作为一套通用的集群管理框架，可管理多种分布式系统，资源可为数据库，lucense索引或任务等</li>
+<li>分区：将全局资源分片为多个分区，Helix管理的对象即为分区</li>
+<li>副本：每个分区可有一或多个副本以作冗余</li>
+<li>状态: 每个副本均需与特定的状态关联。如：Master, Slave, Leader, Standby, Online, Offline等</li>
+</ul>
+<p>Helix 集群管理框架中定义了如下三种角色：</p>
+<ol>
+<li>参与者：集群中实际持有资源的结点</li>
+<li>监测者：负责监测参与者结点状态并负责将资源请求发送至适当的参与者</li>
+<li><p>控制者：负责全局监测并管理参与者结点。</p>
+</li>
+<li><p>Participant: The nodes that actually host the distributed resources.</p>
+</li>
+<li>Spectator: The nodes that simply observe the Participant state and route the request accordingly. Routers, for example, need to know the instance on which a partition is hosted and its state in order to route the request to the appropriate end point.</li>
+<li>Controller: The controller observes and controls the Participant nodes. It is responsible for coordinating all transitions in the cluster and ensuring that state constraints are satisfied and cluster stability is maintained. </li>
+</ol>
+<p>Helix 采用 Zookeeper 来完成集群状态元数据的存储</p>
+<p>Helixc 使用一下术语用于描述状态机:</p>
+<ul>
+<li>IdealState: 理想状态。顾名思义即集群所有节点运行正常，满足所有的状态约束条件。</li>
+<li>CurrentState： 当前状态。亦即某个节点运行时的实际状态</li>
+<li>ExternalView： 全局视图。即所有节点的当前状态</li>
+</ul>
+<h1 id="Helix_-5b9e-8df5-">Helix 实践</h1>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+</pre></td><td class="code"><pre>[@<span class="number">10.1</span><span class="number">.41</span><span class="number">.173</span> bin]$ ./quickstart.sh
+STARTING Zookeeper <span class="keyword">at</span> localhost:<span class="number">2199</span>
+Creating cluster: HELIX_QUICKSTART
+Adding <span class="number">2</span> participants <span class="keyword">to</span> <span class="keyword">the</span> cluster
+Added participant: localhost_12000
+Added participant: localhost_12001
+Configuring StateModel: MyStateModel  <span class="keyword">with</span> <span class="number">1</span> Master <span class="keyword">and</span> <span class="number">1</span> Slave
+Adding a resource MyResource: <span class="keyword">with</span> <span class="number">6</span> partitions <span class="keyword">and</span> <span class="number">2</span> replicas
+Starting Participants
+Started Participant: localhost_12000
+Started Participant: localhost_12001
+Starting Helix Controller
+localhost_12001 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_0
+localhost_12000 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_0
+localhost_12000 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_2
+localhost_12001 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_1
+localhost_12001 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_2
+localhost_12000 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_1
+localhost_12000 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_3
+localhost_12001 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_4
+localhost_12000 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_5
+localhost_12001 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_3
+localhost_12000 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_4
+localhost_12001 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_5
+localhost_12000 transitioning <span class="keyword">from</span> SLAVE <span class="keyword">to</span> MASTER <span class="keyword">for</span> MyResource_2
+localhost_12000 transitioning <span class="keyword">from</span> SLAVE <span class="keyword">to</span> MASTER <span class="keyword">for</span> MyResource_0
+localhost_12000 transitioning <span class="keyword">from</span> SLAVE <span class="keyword">to</span> MASTER <span class="keyword">for</span> MyResource_3
+localhost_12001 transitioning <span class="keyword">from</span> SLAVE <span class="keyword">to</span> MASTER <span class="keyword">for</span> MyResource_1
+localhost_12001 transitioning <span class="keyword">from</span> SLAVE <span class="keyword">to</span> MASTER <span class="keyword">for</span> MyResource_4
+localhost_12001 transitioning <span class="keyword">from</span> SLAVE <span class="keyword">to</span> MASTER <span class="keyword">for</span> MyResource_5
+CLUSTER STATE: After starting <span class="number">2</span> nodes
+                localhost_12000 localhost_12001
+        MyResource_0    M               S
+        MyResource_1    S               M
+        MyResource_2    M               S
+        MyResource_3    M               S
+        MyResource_4    S               M
+        MyResource_5    S               M
+<span class="comment">###################################################################</span>
+ADDING NEW NODE :localhost_12002. Partitions will move <span class="keyword">from</span> old nodes <span class="keyword">to</span> <span class="keyword">the</span> new node.
+localhost_12001 transitioning <span class="keyword">from</span> MASTER <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_1
+localhost_12000 transitioning <span class="keyword">from</span> MASTER <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_0
+localhost_12001 transitioning <span class="keyword">from</span> MASTER <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_4
+localhost_12000 transitioning <span class="keyword">from</span> MASTER <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_3
+localhost_12001 transitioning <span class="keyword">from</span> SLAVE <span class="keyword">to</span> MASTER <span class="keyword">for</span> MyResource_0
+localhost_12000 transitioning <span class="keyword">from</span> SLAVE <span class="keyword">to</span> MASTER <span class="keyword">for</span> MyResource_4
+localhost_12002 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_2
+localhost_12002 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_1
+localhost_12002 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_5
+localhost_12002 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_0
+localhost_12002 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_3
+localhost_12002 transitioning <span class="keyword">from</span> OFFLINE <span class="keyword">to</span> SLAVE <span class="keyword">for</span> MyResource_4
+localhost_12002 transitioning <span class="keyword">from</span> SLAVE <span class="keyword">to</span> MASTER <span class="keyword">for</span> MyResource_1
+localhost_12002 transitioning <span class="keyword">from</span> SLAVE <span class="keyword">to</span> MASTER <span class="keyword">for</span> MyResource_3
+CLUSTER STATE: After adding a <span class="keyword">third</span> node
+                localhost_12000 localhost_12001 localhost_12002
+        MyResource_0    S               M               S
+        MyResource_1    S               S               M
+        MyResource_2    M               S               S
+        MyResource_3    S               S               M
+        MyResource_4    M               S               S
+        MyResource_5    S               M               S
+<span class="comment">###################################################################</span>
+STOPPING localhost_12002. Mastership will be transferred <span class="keyword">to</span> <span class="keyword">the</span> remaining nodes
+localhost_12000 transitioning <span class="keyword">from</span> SLAVE <span class="keyword">to</span> MASTER <span class="keyword">for</span> MyResource_1
+localhost_12001 transitioning <span class="keyword">from</span> SLAVE <span class="keyword">to</span> MASTER <span class="keyword">for</span> MyResource_3
+CLUSTER STATE: After <span class="keyword">the</span> <span class="number">3</span>rd node stops/crashes
+                localhost_12000 localhost_12001 localhost_12002
+        MyResource_0    S               M               -
+        MyResource_1    M               S               -
+        MyResource_2    M               S               -
+        MyResource_3    S               M               -
+        MyResource_4    M               S               -
+        MyResource_5    S               M               -
+<span class="comment">###################################################################</span>
+</pre></td></tr></table></figure>
+
+]]></content>
+    <category scheme="http://lsmushroom.github.io/tags/yarn/" term="yarn"/>
+    <category scheme="http://lsmushroom.github.io/categories/yarn/" term="yarn"/>
+  </entry>
   <entry>
     <title type="html"><![CDATA[idle 进程]]></title>
     <link href="http://lsmushroom.github.io/2014/01/06/top-实现/"/>
@@ -389,9 +995,8 @@ pick_next_task(struct rq *rq)
     <link href="http://lsmushroom.github.io/2014/01/02/shell-command-tips/"/>
     <id>http://lsmushroom.github.io/2014/01/02/shell-command-tips/</id>
     <published>2014-01-02T13:28:11.000Z</published>
-    <updated>2014-01-26T11:13:40.000Z</updated>
-    <content type="html"><![CDATA[<a id="more"></a>
-
+    <updated>2014-03-16T04:11:43.000Z</updated>
+    <content type="html"><![CDATA[<p>shell tips<br><a id="more"></a></p>
 <ul>
 <li><p>trap:</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
@@ -463,6 +1068,16 @@ EOF
 
 <p>写入output.sh的将是$A</p>
 <p>&lt;&lt; 变为 &lt;&lt;-<br>Here Document 还有一个用法就是将 ‘«’ 变为 ‘«-‘。 使用 &lt;&lt;- 的唯一变化就是Here Document 的内容部分每行前面的 tab (制表符)将会被删除掉，这种用法是为了编写Here Document的时候可以将内容部分进行缩进，方便阅读代码。</p>
+<ul>
+<li><p>netstat 查看当前打开的端口及对应的进程<br>netstat -nlpt</p>
+</li>
+<li><p>expect<br>运行autoexpect -p就进入autoexpect创建的shell中，然后输入的命令交互都被记录下来，最后输入exit退出，expect脚本被保存在script.exp中。<br>下面的例子演示了通过ssh登录到一台主机然后退出。</p>
+</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="comment">rong@dev:~＄</span> <span class="comment">autoexpect</span> <span class="literal">-</span><span class="comment">p</span> <span class="comment">ssh</span> <span class="comment">172</span><span class="string">.</span><span class="comment">16</span><span class="string">.</span><span class="comment">24</span><span class="string">.</span><span class="comment">57</span> <span class="literal">-</span><span class="comment">lroot</span> <span class="literal">-</span><span class="comment">p3600</span>
+</pre></td></tr></table></figure>
+
 ]]></content>
     <category scheme="http://lsmushroom.github.io/tags/shell/" term="shell"/>
   </entry>
@@ -471,8 +1086,9 @@ EOF
     <link href="http://lsmushroom.github.io/2014/01/02/maven-使用/"/>
     <id>http://lsmushroom.github.io/2014/01/02/maven-使用/</id>
     <published>2014-01-02T12:27:46.000Z</published>
-    <updated>2014-01-05T03:32:53.000Z</updated>
-    <content type="html"><![CDATA[<ul>
+    <updated>2014-03-16T04:12:29.000Z</updated>
+    <content type="html"><![CDATA[<p>学习下maven 使用<br><a id="more"></a></p>
+<ul>
 <li>创建项目<figure class="highlight"><table><tr><td class="gutter"><pre>1
 </pre></td><td class="code"><pre>mvn archetype:create -DgroupId=<span class="keyword">com</span><span class="preprocessor">.practise</span><span class="preprocessor">.java</span> -DartifactId=helloworld -DpackageName=<span class="keyword">com</span><span class="preprocessor">.practise</span><span class="preprocessor">.java</span>
 </pre></td></tr></table></figure>
@@ -825,8 +1441,10 @@ containers.<span class="tag">&lt;/<span class="title">description</span>&gt;</sp
     <link href="http://lsmushroom.github.io/2013/12/25/storm-on-yarn-部署/"/>
     <id>http://lsmushroom.github.io/2013/12/25/storm-on-yarn-部署/</id>
     <published>2013-12-25T12:55:03.000Z</published>
-    <updated>2014-01-02T09:52:52.000Z</updated>
-    <content type="html"><![CDATA[<h2 id="-51c6-5907-5b89-88c5-73af-5883-">准备安装环境</h2>
+    <updated>2014-03-16T04:07:38.000Z</updated>
+    <content type="html"><![CDATA[<a id="more"></a>
+
+<h2 id="-51c6-5907-5b89-88c5-73af-5883-">准备安装环境</h2>
 <ol>
 <li><p>下载<a href="https://github.com/yahoo/storm-yarn/archive/master.zip" target="_blank">storm-on-yarn</a><br> wget <a href="https://github.com/yahoo/storm-yarn/archive/master.zip" target="_blank">https://github.com/yahoo/storm-yarn/archive/master.zip</a><br> 或<br> git clone git@github.com:yahoo/storm-yarn.git</p>
 </li>
@@ -890,7 +1508,7 @@ containers.<span class="tag">&lt;/<span class="title">description</span>&gt;</sp
     <link href="http://lsmushroom.github.io/2013/12/23/yarn-多用户权限配置/"/>
     <id>http://lsmushroom.github.io/2013/12/23/yarn-多用户权限配置/</id>
     <published>2013-12-23T07:32:23.000Z</published>
-    <updated>2013-12-25T10:32:57.000Z</updated>
+    <updated>2014-02-25T12:42:14.000Z</updated>
     <content type="html"><![CDATA[<p>近期将在yarn集群中添加多用户环境，修改了下集群的用户访问权限，记录下已备忘。</p>
 <p><a id="more"></a></p>
 <h1 id="-6e90-7801-5206-6790-">源码分析</h1>
@@ -1073,8 +1691,8 @@ allowed<span class="preprocessor">.system</span><span class="preprocessor">.user
 2
 3
 4
-</pre></td><td class="code"><pre><span class="title">[</span><span class="comment">@slave0</span> <span class="comment">hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0</span><span class="title">]</span><span class="comment">#</span> <span class="comment">chmod</span> <span class="comment">6050</span> <span class="string">.</span><span class="comment">/container</span><span class="literal">-</span><span class="comment">executor</span>
-<span class="title">[</span><span class="comment">@slave0</span> <span class="comment">hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0</span><span class="title">]</span><span class="comment">#</span> <span class="comment">chown</span> <span class="comment">root:hadoop</span> <span class="string">.</span><span class="comment">/container</span><span class="literal">-</span><span class="comment">executor</span>
+</pre></td><td class="code"><pre><span class="title">[</span><span class="comment">@slave0</span> <span class="comment">hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0</span><span class="title">]</span><span class="comment">#</span> <span class="comment">chown</span> <span class="comment">root:hadoop</span> <span class="string">.</span><span class="comment">/container</span><span class="literal">-</span><span class="comment">executor</span>
+<span class="title">[</span><span class="comment">@slave0</span> <span class="comment">hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0</span><span class="title">]</span><span class="comment">#</span> <span class="comment">chmod</span> <span class="comment">6050</span> <span class="string">.</span><span class="comment">/container</span><span class="literal">-</span><span class="comment">executor</span>
 <span class="title">[</span><span class="comment">@slave0</span> <span class="comment">hadoop</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0</span><span class="title">]</span><span class="comment">#</span> <span class="comment">ll</span> <span class="comment">bin/container</span><span class="literal">-</span><span class="comment">executor</span>
 <span class="literal">-</span><span class="literal">-</span><span class="literal">-</span><span class="comment">Sr</span><span class="literal">-</span><span class="comment">s</span><span class="literal">-</span><span class="literal">-</span><span class="literal">-</span> <span class="comment">1</span> <span class="comment">root</span> <span class="comment">hadoop</span> <span class="comment">101927</span> <span class="comment">Nov</span> <span class="comment">14</span> <span class="comment">17:46</span> <span class="comment">bin/container</span><span class="literal">-</span><span class="comment">executor</span>
 </pre></td></tr></table></figure>
@@ -1112,7 +1730,7 @@ allowed<span class="preprocessor">.system</span><span class="preprocessor">.user
     <link href="http://lsmushroom.github.io/2013/12/04/yarn日志级别调整/"/>
     <id>http://lsmushroom.github.io/2013/12/04/yarn日志级别调整/</id>
     <published>2013-12-04T09:00:06.000Z</published>
-    <updated>2013-12-04T09:04:55.000Z</updated>
+    <updated>2014-03-16T04:07:56.000Z</updated>
     <content type="html"><![CDATA[<p>Yarn 中默认的日志级别为INFO，如何调整其输出日志的级别呢？</p>
 <a id="more"></a>
 
@@ -1230,8 +1848,10 @@ store D <span class="keyword">into</span> <span class="comment">'./wordcount';</
     <link href="http://lsmushroom.github.io/2013/11/21/cgroup-test/"/>
     <id>http://lsmushroom.github.io/2013/11/21/cgroup-test/</id>
     <published>2013-11-21T03:55:25.000Z</published>
-    <updated>2014-01-15T10:38:05.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="Cgroup_Subsystem">Cgroup Subsystem</h1>
+    <updated>2014-03-16T04:01:24.000Z</updated>
+    <content type="html"><![CDATA[<a id="more"></a>
+
+<h1 id="Cgroup_Subsystem">Cgroup Subsystem</h1>
 <hr>
 <h2 id="CPU_Subsystem">CPU Subsystem</h2>
 <p>创建三个cgroup，对前两组设定cpu.shares比例为1:2 ，对第三组不设定cpu.shares参数，三个cgroup内运行的进程均被限制仅能在0号核上运行，可访问内存结点为0,1</p>
