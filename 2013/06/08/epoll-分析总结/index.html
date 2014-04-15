@@ -89,7 +89,7 @@
     <header>
       
         <div class="icon"></div>
-        <time datetime="2013-12-08T07:23:47.000Z"><a href="/2013/12/08/epoll-分析总结/">12月 8 2013</a></time>
+        <time datetime="2013-06-08T07:23:47.000Z"><a href="/2013/06/08/epoll-分析总结/">6月 8 2013</a></time>
       
       
   
@@ -99,9 +99,8 @@
     </header>
     <div class="entry">
       
-        <h2 id="epoll_-662f-7ebf-7a0b-5b89-5168-7684-5417-ff1f-">epoll 是线程安全的吗？</h2>
-<h2 id="-591a-4e2a-8fdb-7a0b-540c-65f6-6267-884c-epoll_wait-28-29-662f-5426-4f1a-89e6-53d1-60ca-7fa4-95ee-9898-ff1f-5185-6838-662f-5982-4f55-89e3-51b3-ff1f-">多个进程同时执行epoll_wait()是否会触发惊群问题？内核是如何解决？</h2>
-<p>惊群问题其实是内核中早已有并有对应的应对办法的问题。对epoll而言，其关键就在以下几行代码：</p>
+        <h2 id="-591a-4e2a-8fdb-7a0b-540c-65f6-6267-884c-epoll_wait-28-29-662f-5426-4f1a-89e6-53d1-60ca-7fa4-95ee-9898-ff1f-5185-6838-662f-5982-4f55-89e3-51b3-ff1f-">多个进程同时执行epoll_wait()是否会触发惊群问题？内核是如何解决？</h2>
+<p>惊群问题其实是内核中早已有并有对应的应对办法的问题。对epoll而言，其关键就在以下几行代码：<br><a id="more"></a></p>
 <p>ep_poll():</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -167,6 +166,7 @@ static void __wake_up_common(wait_queue_head_t *q, unsigned int mode,
 </pre></td></tr></table></figure>
 
 <p>基于以上的分析，对于每一个调用epoll_wait()的进程/线程，kernel中在创建等待队列项时均设置了WQ_FLAG_EXCLUSIVE标志，由此保证了多个进程同时wait时不会有惊群问题，同时也可自动完成事件在多个进程的平均分配。</p>
+<h2 id="epoll_-662f-7ebf-7a0b-5b89-5168-7684-5417-ff1f-">epoll 是线程安全的吗？</h2>
 
       
     </div>

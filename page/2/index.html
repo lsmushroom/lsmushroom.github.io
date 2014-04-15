@@ -90,119 +90,6 @@
     <header>
       
         <div class="icon"></div>
-        <time datetime="2013-12-08T07:23:47.000Z"><a href="/2013/12/08/epoll-分析总结/">12月 8 2013</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2013/12/08/epoll-分析总结/">epoll 分析总结</a></h1>
-  
-
-    </header>
-    <div class="entry">
-      
-        <h2 id="epoll_-662f-7ebf-7a0b-5b89-5168-7684-5417-ff1f-">epoll 是线程安全的吗？</h2>
-<h2 id="-591a-4e2a-8fdb-7a0b-540c-65f6-6267-884c-epoll_wait-28-29-662f-5426-4f1a-89e6-53d1-60ca-7fa4-95ee-9898-ff1f-5185-6838-662f-5982-4f55-89e3-51b3-ff1f-">多个进程同时执行epoll_wait()是否会触发惊群问题？内核是如何解决？</h2>
-<p>惊群问题其实是内核中早已有并有对应的应对办法的问题。对epoll而言，其关键就在以下几行代码：</p>
-<p>ep_poll():</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-6
-</pre></td><td class="code"><pre>    <span class="keyword">...</span>
-
-    init_waitqueue_entry(&wait, current);
-    wait.flags |= WQ_FLAG_EXCLUSIVE;
-    __add_wait_queue(&ep-&gt;wq, &wait);
-    <span class="keyword">...</span>
-</pre></td></tr></table></figure>
-
-<p>以上三行代码初始化了一个等待队列entry，等待队列是linux kernel中常用的一种机制。进程请求的资源(如内存、文件等)不能得到满足时，就会主动放弃CPU，进入等待状态(可中断等待或者不可中断等待)。当资源满足时，就会由别的进程唤醒，从而投入运行。等待队列表示一组睡眠的进程，这些进程正在等待特定的事件发生(或者说条件为真)，比如，等待足够的内存。</p>
-<p>其中关键之处在于WQ_FLAG_EXCLUSIVE 标志的设置。WQ_FLAG_EXCLUSIVE 意味着排他的，等待队列中将睡眠的进程划分为两种，一种即设置了WQ_FLAG_EXCLUSIVE标志的，另一种为没有设置WQ_FLAG_EXCLUSIVE标志的。当进程等待的事件发生时，尝试唤醒等待在同一事件上的所有非排他的进程，而排他的进程将只唤醒一个，由于所有睡眠的进程时挂在一个双向链表，而唤醒动作将按链表中的顺序从前往后顺序唤醒，由此对所有设置了WQ_FLAG_EXCLUSIVE的进程项将随着等待事件的发生而被逐个唤醒，而不会被全部唤醒，由此可达到两个效果，1）避免了惊群的问题，2）顺便实现了多进程/多线程对同一事件源的负载均衡，不会出现有某个进程处理过多的事件而被累死同时有的进程又处于空闲状态，在多核系统上可藉此轻松提高机器的CPU利用率。</p>
-<p>相关的唤醒逻辑处理如下(还是代码更直白易懂些)：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-</pre></td><td class="code"><pre>/*
-* The core wakeup function. Non-exclusive wakeups (nr_exclusive == <span class="number">0</span>) just
-* wake everything up. If <span class="keyword">it</span>'s an exclusive wakeup (nr_exclusive == small +ve
-* <span class="type">number</span>) <span class="keyword">then</span> we wake all <span class="keyword">the</span> non-exclusive tasks <span class="keyword">and</span> one exclusive task.
-*
-* There are circumstances <span class="keyword">in</span> which we can <span class="keyword">try</span> <span class="keyword">to</span> wake a task which has already
-* started <span class="keyword">to</span> <span class="command">run</span> <span class="keyword">but</span> <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">in</span> state TASK_RUNNING. try_to_wake_up() returns
-* zero <span class="keyword">in</span> this (rare) case, <span class="keyword">and</span> we handle <span class="keyword">it</span> <span class="keyword">by</span> continuing <span class="keyword">to</span> scan <span class="keyword">the</span> queue.
-*/
-static void __wake_up_common(wait_queue_head_t *q, unsigned int mode,
-        int nr_exclusive, int wake_flags, void *key)
-{
-    wait_queue_t *curr, *next;
-
-    list_for_each_entry_safe(curr, next, &q-&gt;task_list, task_list) {
-        unsigned flags = curr-&gt;flags;
-
-        <span class="keyword">if</span> (curr-&gt;func(curr, mode, wake_flags, key) &&
-                (flags & WQ_FLAG_EXCLUSIVE) && !<span class="comment">--nr_exclusive)</span>
-            break;
-    }
-}
-</pre></td></tr></table></figure>
-
-<p>基于以上的分析，对于每一个调用epoll_wait()的进程/线程，kernel中在创建等待队列项时均设置了WQ_FLAG_EXCLUSIVE标志，由此保证了多个进程同时wait时不会有惊群问题，同时也可自动完成事件在多个进程的平均分配。</p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-
-  <article class="post">
-  
-    <div class="gallery">
-  <div class="photoset">
-    
-      <img src="">
-    
-  </div>
-  <div class="control">
-    <div class="prev"></div>
-    <div class="next"></div>
-  </div>
-</div>
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
         <time datetime="2013-12-04T09:00:06.000Z"><a href="/2013/12/04/yarn日志级别调整/">12月 4 2013</a></time>
       
       
@@ -317,7 +204,7 @@ static void __wake_up_common(wait_queue_head_t *q, unsigned int mode,
 <hr>
 <h2 id="CPU_Subsystem">CPU Subsystem</h2>
 <p>创建三个cgroup，对前两组设定cpu.shares比例为1:2 ，对第三组不设定cpu.shares参数，三个cgroup内运行的进程均被限制仅能在0号核上运行，可访问内存结点为0,1</p>
-<p>
+
       
     </div>
     <footer>
@@ -423,6 +310,56 @@ static void __wake_up_common(wait_queue_head_t *q, unsigned int mode,
         
           <div class="alignleft">
             <a href="/2013/11/18/deploy-hexo-on-rhel6/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+  <article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2013-06-08T07:23:47.000Z"><a href="/2013/06/08/epoll-分析总结/">6月 8 2013</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2013/06/08/epoll-分析总结/">epoll 分析总结</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="-591a-4e2a-8fdb-7a0b-540c-65f6-6267-884c-epoll_wait-28-29-662f-5426-4f1a-89e6-53d1-60ca-7fa4-95ee-9898-ff1f-5185-6838-662f-5982-4f55-89e3-51b3-ff1f-">多个进程同时执行epoll_wait()是否会触发惊群问题？内核是如何解决？</h2>
+<p>惊群问题其实是内核中早已有并有对应的应对办法的问题。对epoll而言，其关键就在以下几行代码：<br>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2013/06/08/epoll-分析总结/#more" class="more-link">Read More</a>
           </div>
         
         
