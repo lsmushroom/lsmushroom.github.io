@@ -4,7 +4,7 @@
   <subtitle><![CDATA[没时间玩，就扩大玩的定义，我玩的是技术]]></subtitle>
   <link href="http://lsmushroom.github.io/atom.xml" rel="self"/>
   <link href="http://lsmushroom.github.io"/>
-  <updated>2014-04-15T15:37:14.949Z</updated>
+  <updated>2014-04-15T15:58:12.932Z</updated>
   <id>http://lsmushroom.github.io/</id>
   <author>
     <name><![CDATA[Yuan Linsi]]></name>
@@ -1769,12 +1769,10 @@ containers.<span class="tag">&lt;/<span class="title">description</span>&gt;</sp
     <link href="http://lsmushroom.github.io/2013/12/25/storm-on-yarn-部署/"/>
     <id>http://lsmushroom.github.io/2013/12/25/storm-on-yarn-部署/</id>
     <published>2013-12-25T12:55:03.000Z</published>
-    <updated>2014-03-16T04:07:38.000Z</updated>
-    <content type="html"><![CDATA[<a id="more"></a>
-
-<h2 id="-51c6-5907-5b89-88c5-73af-5883-">准备安装环境</h2>
+    <updated>2014-04-15T15:57:23.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="-51c6-5907-5b89-88c5-73af-5883-">准备安装环境</h2>
 <ol>
-<li><p>下载<a href="https://github.com/yahoo/storm-yarn/archive/master.zip" target="_blank">storm-on-yarn</a><br> wget <a href="https://github.com/yahoo/storm-yarn/archive/master.zip" target="_blank">https://github.com/yahoo/storm-yarn/archive/master.zip</a><br> 或<br> git clone git@github.com:yahoo/storm-yarn.git</p>
+<li><p>下载<a href="https://github.com/yahoo/storm-yarn/archive/master.zip" target="_blank">storm-on-yarn</a><br><a id="more"></a><br> wget <a href="https://github.com/yahoo/storm-yarn/archive/master.zip" target="_blank">https://github.com/yahoo/storm-yarn/archive/master.zip</a><br> 或<br> git clone git@github.com:yahoo/storm-yarn.git</p>
 </li>
 <li><p>创建一个目录用以存放storm相关文件<br> mkdir storm</p>
 </li>
@@ -2253,21 +2251,13 @@ store D <span class="keyword">into</span> <span class="comment">'./wordcount';</
     <link href="http://lsmushroom.github.io/2013/11/21/cgroup-test/"/>
     <id>http://lsmushroom.github.io/2013/11/21/cgroup-test/</id>
     <published>2013-11-21T03:55:25.000Z</published>
-    <updated>2014-03-16T04:01:24.000Z</updated>
-    <content type="html"><![CDATA[<a id="more"></a>
-
-<h1 id="Cgroup_Subsystem">Cgroup Subsystem</h1>
+    <updated>2014-04-15T15:57:05.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="Cgroup_Subsystem">Cgroup Subsystem</h1>
 <hr>
 <h2 id="CPU_Subsystem">CPU Subsystem</h2>
 <p>创建三个cgroup，对前两组设定cpu.shares比例为1:2 ，对第三组不设定cpu.shares参数，三个cgroup内运行的进程均被限制仅能在0号核上运行，可访问内存结点为0,1</p>
-<pre><code>[@sohu_41_173 ~]<span class="preprocessor"># cat /etc/cgconfig.conf</span>
-mount {
-    cpu     = /cgroup/cpu<span class="comment">;</span>
-    cpuset  = /cgroup/cpuset<span class="comment">;</span>
-    memory  = /cgroup/memory<span class="comment">;</span>
-}
-
-group test1 {
+<p><a id="more"></a><br>    [@sohu_41_173 ~]# cat /etc/cgconfig.conf<br>    mount {<br>        cpu     = /cgroup/cpu;<br>        cpuset  = /cgroup/cpuset;<br>        memory  = /cgroup/memory;<br>    }</p>
+<pre><code>group test1 {
     cpuset{
         cpuset<span class="preprocessor">.cpus</span>=<span class="string">"0"</span><span class="comment">;</span>
         cpuset<span class="preprocessor">.mems</span>=<span class="string">"0,1"</span><span class="comment">;</span>
