@@ -101,6 +101,35 @@
       
         <p>shell tips<br><a id="more"></a></p>
 <ul>
+<li><p>execstack</p>
+</li>
+<li><p>vim 缩进</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="code"><pre>[vim 自动缩进]http:<span class="regexp">//linux</span>-wiki.cn/wiki/zh-hans/Vim<span class="variable">%E4</span><span class="variable">%BB</span><span class="variable">%A3</span><span class="variable">%E7</span><span class="variable">%A0</span><span class="variable">%81</span><span class="variable">%E7</span><span class="variable">%BC</span><span class="variable">%A9</span><span class="variable">%E8</span><span class="variable">%BF</span><span class="variable">%9B</span><span class="variable">%E8</span><span class="variable">%AE</span><span class="variable">%BE</span><span class="variable">%E7</span><span class="variable">%BD</span><span class="variable">%AE</span>
+set ci       <span class="comment"># 开启cindent</span>
+set noet     <span class="comment"># 关闭expandtab</span>
+set sw=<span class="number">4</span>     <span class="comment"># shiftwidth=4</span>
+
+变量名           缩写    含义
+tabstop=X        ts      编辑时一个TAB字符占多少个空格的位置。
+shiftwidth=X     sw      使用每层缩进的空格数。
+(<span class="keyword">no</span>)expandtab    (<span class="keyword">no</span>)et  是否将输入的TAB自动展开成空格。开启后要输入TAB，需要Ctrl-V&lt;TAB&gt;
+softtabstop=X    sts     方便在开启了et后使用退格（backspace）键，每次退格将删除X个空格
+(<span class="keyword">no</span>)smarttab     (<span class="keyword">no</span>)sta 开启时，在行首按TAB将加入sw个空格，否则加入ts个空格。
+</pre></td></tr></table></figure>
+</li>
+<li><p>ss<br>ss 是一个查看当前系统中网络连接信息的利器<br>ss -n -e -m -p -i -s</p>
+</li>
 <li><p>trap:</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -278,7 +307,7 @@ EOF
   
     <li><a href="/tags/java/">java</a><small>1</small></li>
   
-    <li><a href="/tags/kernel/">kernel</a><small>1</small></li>
+    <li><a href="/tags/kernel/">kernel</a><small>3</small></li>
   
     <li><a href="/tags/pig/">pig</a><small>1</small></li>
   
@@ -298,7 +327,7 @@ EOF
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/hadoop/" style="font-size: 15.00px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/kernel/" style="font-size: 10.00px;">kernel</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/shell/" style="font-size: 10.00px;">shell</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
+    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/hadoop/" style="font-size: 16.67px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/kernel/" style="font-size: 13.33px;">kernel</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/shell/" style="font-size: 10.00px;">shell</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
   </div>
 </div>
 

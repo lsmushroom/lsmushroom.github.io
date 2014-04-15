@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>vim Macro | Mushroom&#39;s blog</title>
+  <title>accept 惊群问题 | Mushroom&#39;s blog</title>
   <meta name="author" content="Yuan Linsi">
   
   <meta name="description" content="hadoop,yarn,mapreduce,linux kernel">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="vim Macro"/>
+  <meta property="og:title" content="accept 惊群问题"/>
   <meta property="og:site_name" content="Mushroom&#39;s blog"/>
 
   
@@ -89,47 +89,59 @@
     <header>
       
         <div class="icon"></div>
-        <time datetime="2013-11-18T16:01:03.000Z"><a href="/2013/11/19/vim-macro/">11月 19 2013</a></time>
+        <time datetime="2013-04-15T14:15:28.000Z"><a href="/2013/04/15/accept-惊群问题/">4月 15 2013</a></time>
       
       
   
-    <h1 class="title">vim Macro</h1>
+    <h1 class="title">accept 惊群问题</h1>
   
 
     </header>
     <div class="entry">
       
-        <p>vim 宏提供一种将一系列的操作批量应用于多行内容上的功能<br><a id="more"></a></p>
-<h2 id="-8bb0-5f55-5b8f-3a-">记录宏:</h2>
-<pre><code><span class="comment">visual</span> <span class="comment">模式下q</span><span class="literal">+</span><span class="comment">'</span><span class="title">[</span><span class="comment">a</span><span class="literal">-</span><span class="comment">z</span><span class="title">]</span><span class="comment">'</span><span class="string">,</span><span class="comment">q加任意一个字母按键即开始进入宏记录模式，所记录的操作后续可使用字母引用。</span>
-<span class="comment">随后进入编辑模式，输入一系列的命令，在完成输入后再按q即可完成记录</span><span class="string">,</span><span class="comment">记录被保存。</span>
-</code></pre><h2 id="-5e94-7528-5b8f-ff1a-">应用宏：</h2>
-<pre><code><span class="comment">@</span><span class="title">[</span><span class="comment">a</span><span class="literal">-</span><span class="comment">z</span><span class="title">]</span><span class="comment">:@</span><span class="literal">+</span><span class="comment">之前宏对应的字母即可将宏操作应用于新的记录上</span>
-</code></pre><h2 id="-5347-7ea7-7248-ff1a-">升级版：</h2>
-<pre><code>在.vimrc中添加以下内容，即可将<span class="variable">@q</span>操作映射为空格键。
-由此在记录宏时可按如下步骤进行：
-开始记录：qq
-结束记录：q
-应用宏：敲空格键
-</code></pre><h2 id="-5c06-5b8f-5e94-7528-5728-591a-884c-4e0a-ff1a-">将宏应用在多行上：</h2>
-<pre><code>可在<span class="constant">VISUAL</span>模式下选定多行，然后输入<span class="symbol">:normal</span> <span class="variable">@q</span>,即可将宏同时作用于多行
-</code></pre><h2 id="-5b8f-7684-wiki">宏的wiki</h2>
-<pre><code>&lt;http://vim<span class="preprocessor">.wikia</span><span class="preprocessor">.com</span>/wiki/Macros&gt;
-</code></pre>
+        <p>Unix 网络编程上有一章中曾对多种网络编程模型做了个对比， 其中一种典型的网络编程模型为预先创建一进程池，在父进程中listen，各个子进程同时执行accept()同一个listenfd，且无锁互斥。</p>
+<p>书中谈到多个进程同时accept()同一个listenfd，当有可用的连接而至accept()返回时，不会产生惊群现象。对此十分好奇，翻看下listen() 与 accept()相关的系统调用内核源码查个原委。</p>
+<a id="more"></a>
+
+<p>accept()是由glibc提供的，应用程序中所使用socket api最终均是通过socketcall实现统一的系统调用:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="code"><pre>man <span class="number">2</span> socketcall
+
+<span class="variable">SYNOPSIS</span>
+int socketcall(int call, unsigned long *args);
+
+<span class="variable">DESCRIPTION</span>
+<span class="function"><span class="title">socketcall</span><span class="params">()</span>  <span class="title">is</span>  <span class="title">a</span> <span class="title">common</span> <span class="title">kernel</span> <span class="title">entry</span> <span class="title">point</span> <span class="title">for</span> <span class="title">the</span> <span class="title">socket</span> <span class="title">system</span> <span class="title">calls</span>.  <span class="title">call</span> <span class="title">determines</span> <span class="title">which</span> <span class="title">socket</span> <span class="title">function</span> <span class="title">to</span> <span class="title">invoke</span>.  <span class="title">args</span> <span class="title">points</span> <span class="title">to</span> <span class="title">a</span> <span class="title">block</span> <span class="title">containing</span> <span class="title">the</span> <span class="title">actual</span> <span class="title">arguments</span>, <span class="title">which</span> <span class="title">are</span> <span class="title">passed</span> <span class="title">through</span> <span class="title">to</span>  <span class="title">the</span>  <span class="title">appropriate</span> <span class="title">call</span>.
+
+U<span class="title">ser</span> <span class="title">programs</span> <span class="title">should</span> <span class="title">call</span> <span class="title">the</span> <span class="title">appropriate</span> <span class="title">functions</span> <span class="title">by</span> <span class="title">their</span> <span class="title">usual</span> <span class="title">names</span>.  O<span class="title">nly</span> <span class="title">standard</span> <span class="title">library</span> <span class="title">implementors</span> <span class="title">and</span>
+<span class="title">kernel</span> <span class="title">hackers</span> <span class="title">need</span> <span class="title">to</span> <span class="title">know</span> <span class="title">about</span> <span class="title">socketcall</span><span class="params">()</span>.</span>
+</pre></td></tr></table></figure>
+
+<p>Kernel中通过用户态传入的系统调用号调用相关的系统调用，对listen() 与 accept() 将分别调用 sys_listen() 和 sys_accept4()</p>
+<p>对accept() 而言，其将从listen系统调用接受的连接的队列中(struct inet_connection_sock-&gt;isck_accept_queue.listen_sock-&gt;syn_table)取一个连接，并建立一个新的socket，把这个连接(struct request_sock)赋给这个新的sokcet，此后，该连接就由这个新的socket负责与对端进行通讯。</p>
+<p>inet_csk_accept()函数中将首先检查等待连接的队列是否为空，若为空则表示当前还没有收到顺利经过三次握手而建立的连接请求，若已经加listenfd设置O_NONBLOCK 非阻塞标志，则将立即返回并将errno设置为-EAGAIN，否则将调用inet_csk_wait_for_connect()。</p>
+<p>inet_csk_wait_for_connect()将完成accept()的阻塞等待，其核心是通过定义一等待队列项，将当前调用accept()系统调用的进程挂至listernfd 的sk-&gt;sk_sleep等待队列上，当有完成三次握手而成功建立的连接时将尝试唤醒挂在此等待队列上的进程。当有多个进程同时accept()同一个listenfd时，亦即有多个进程同时挂载同一listenfd的sk-&gt;sk_sleep等待队列上时，唤醒时将仅唤醒一个，未被唤醒的将继续睡眠等待下一次事件的到来，多个等待的进程将依次顺序被唤醒，而保证这一点的关键为inet_csk_wait_for_connect()中创建的等待队列项设置了WQ_FLAG_EXCLUSIVE标志项，kernel中的等待队列机制将保证对所有设置了WQ_FLAG_EXCLUSIVE标志的等待队列项，等待的同一事件发生时将仅唤醒一个进程。</p>
+<p>由此用户态代码可放心的起多个进程同时accept() ,内核可保证各个连接均能被进程正确的处理且事件将被均匀的分发至各个进程处理。</p>
+<p>Done. :)</p>
+
       
     </div>
     <footer>
       
         
-  
-  <div class="categories">
-    <a href="/categories/vim/">vim</a>
-  </div>
-
         
   
   <div class="tags">
-    <a href="/tags/vim/">vim</a>
+    <a href="/tags/kernel/">kernel</a>
   </div>
 
         <!-- Baidu Button BEGIN -->
