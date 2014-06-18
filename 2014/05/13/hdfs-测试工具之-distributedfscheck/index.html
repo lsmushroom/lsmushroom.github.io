@@ -1,0 +1,271 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>hdfs 测试工具之 DistributedFSCheck | Mushroom&#39;s blog</title>
+  <meta name="author" content="Yuan Linsi">
+  
+  <meta name="description" content="hadoop,yarn,mapreduce,linux kernel">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="hdfs 测试工具之 DistributedFSCheck"/>
+  <meta property="og:site_name" content="Mushroom&#39;s blog"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Mushroom&#39;s blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<!--script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'true']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script-->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-46104206-1', 'lsmushroom.github.io');
+    ga('send', 'pageview');
+</script>
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F048b20646e05afe9255eeb7c85739b79' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Mushroom&#39;s blog</a></h1>
+  <h2><a href="/">入行久久，未逢敌手，专业贴膜，祖传秘方</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+    <li><a href="/atom.xml">RSS</a></li>
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2014-05-13T10:42:39.000Z"><a href="/2014/05/13/hdfs-测试工具之-distributedfscheck/">5月 13 2014</a></time>
+      
+      
+  
+    <h1 class="title">hdfs 测试工具之 DistributedFSCheck</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>DistributedFSCheck 是hadoop中自带的一个用以检查分布式文件系统一致性的工具。今天用它简单的测试了下，看了下相关的源码。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre><span class="title">[</span><span class="comment">linsiyuan@client</span> <span class="comment">~</span><span class="title">]</span><span class="comment">$</span> <span class="comment">hadoop</span> <span class="comment">jar</span> <span class="comment">/usr/lib/hadoop</span><span class="literal">-</span><span class="comment">mapreduce/hadoop</span><span class="literal">-</span><span class="comment">mapreduce</span><span class="literal">-</span><span class="comment">client</span><span class="literal">-</span><span class="comment">jobclient</span><span class="literal">-</span><span class="comment">2</span><span class="string">.</span><span class="comment">2</span><span class="string">.</span><span class="comment">0</span><span class="literal">-</span><span class="comment">tests</span><span class="string">.</span><span class="comment">jar</span> <span class="comment">DistributedFSCheck</span> <span class="literal">-</span><span class="comment">h</span>
+<span class="comment">Usage:</span> <span class="comment">DistributedFSCheck</span> <span class="title">[</span><span class="literal">-</span><span class="comment">root</span> <span class="comment">name</span><span class="title">]</span> <span class="title">[</span><span class="literal">-</span><span class="comment">clean</span><span class="title">]</span> <span class="title">[</span><span class="literal">-</span><span class="comment">resFile</span> <span class="comment">resultFileName</span><span class="title">]</span> <span class="title">[</span><span class="literal">-</span><span class="comment">bufferSize</span> <span class="comment">Bytes</span><span class="title">]</span> <span class="title">[</span><span class="literal">-</span><span class="comment">stats</span><span class="title">]</span>
+</pre></td></tr></table></figure>
+
+<p>Example:<br>[linsiyuan@client ~]$ hadoop jar /usr/lib/hadoop-mapreduce/hadoop-mapreduce-client-jobclient-2.2.0-tests.jar DistributedFSCheck -Dtest.build.data=/user/linsiyuan -root /user/linsiyuan/nn<br>```</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/hadoop/">hadoop</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/hadoop/">hadoop</a>
+  </div>
+
+        <!-- Baidu Button BEGIN -->
+        <div id="bdshare" class="bdshare_t bds_tools_32 get-codes-bdshare">
+        <a class="bds_tsina"></a>
+        <a class="bds_sqq"></a>
+        <a class="bds_douban"></a>
+        <a class="bds_tqq"></a>
+        <a class="bds_qzone"></a>
+        <a class="bds_renren"></a>
+        <a class="bds_tsohu"></a>
+        <a class="bds_t163"></a>
+        <span class="bds_more"></span>
+        <a class="shareCount"></a>
+        </div>
+        <script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=6878295" ></script>
+        <script type="text/javascript" id="bdshell_js"></script>
+        <script type="text/javascript">
+        document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000)
+        </script>
+        <!-- Baidu Button END -->
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+    <!-- Duoshuo Comment BEGIN -->
+    <div class="ds-thread"></div>
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"lsmushroom"};
+    (function() {
+         var ds = document.createElement('script');
+         ds.type = 'text/javascript';ds.async = true;
+         ds.src = 'http://static.duoshuo.com/embed.js';
+         ds.charset = 'UTF-8';
+         (document.getElementsByTagName('head')[0] 
+          || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+    <!-- Duoshuo Comment END -->
+</section>
+
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="搜索">
+    <input type="hidden" name="q" value="site:lsmushroom.github.io">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">分类</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/git/">git</a><small>1</small></li>
+  
+    <li><a href="/categories/hadoop/">hadoop</a><small>1</small></li>
+  
+    <li><a href="/categories/java/">java</a><small>1</small></li>
+  
+    <li><a href="/categories/kernel/">kernel</a><small>10</small></li>
+  
+    <li><a href="/categories/vim/">vim</a><small>1</small></li>
+  
+    <li><a href="/categories/yarn/">yarn</a><small>15</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">标签</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/api/">api</a><small>1</small></li>
+  
+    <li><a href="/tags/chm/">chm</a><small>1</small></li>
+  
+    <li><a href="/tags/git/">git</a><small>1</small></li>
+  
+    <li><a href="/tags/hadoop/">hadoop</a><small>6</small></li>
+  
+    <li><a href="/tags/hexo/">hexo</a><small>1</small></li>
+  
+    <li><a href="/tags/java/">java</a><small>1</small></li>
+  
+    <li><a href="/tags/kernel/">kernel</a><small>16</small></li>
+  
+    <li><a href="/tags/pig/">pig</a><small>1</small></li>
+  
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
+    <li><a href="/tags/storm/">storm</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>1</small></li>
+  
+    <li><a href="/tags/yarn/">yarn</a><small>19</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/git/" style="font-size: 10.00px;">git</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/kernel/" style="font-size: 16.67px;">kernel</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/shell/" style="font-size: 10.00px;">shell</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
+  </div>
+</div>
+
+
+  <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=5&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=1632605594&verifier=ff6d468c&dpc=1"></iframe>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2014 Yuan Linsi
+  
+</div>
+<div class="clearfix"></div>
+</footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>

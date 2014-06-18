@@ -1,0 +1,347 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>configure log4j in Hadoop Cluster | Mushroom&#39;s blog</title>
+  <meta name="author" content="Yuan Linsi">
+  
+  <meta name="description" content="hadoop,yarn,mapreduce,linux kernel">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="configure log4j in Hadoop Cluster"/>
+  <meta property="og:site_name" content="Mushroom&#39;s blog"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Mushroom&#39;s blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<!--script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'true']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script-->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-46104206-1', 'lsmushroom.github.io');
+    ga('send', 'pageview');
+</script>
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F048b20646e05afe9255eeb7c85739b79' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Mushroom&#39;s blog</a></h1>
+  <h2><a href="/">入行久久，未逢敌手，专业贴膜，祖传秘方</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+    <li><a href="/atom.xml">RSS</a></li>
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2013-12-18T02:34:58.000Z"><a href="/2013/12/18/configure-log4j-in-hadoop-cluster/">12月 18 2013</a></time>
+      
+      
+  
+    <h1 class="title">configure log4j in Hadoop Cluster</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>hadoop 中的日志输出主要分三大类，相应的不同类别的日志将存放于不同的路径下:<br>    任务运行日志：此类日志多由yarn框架生成，主要记录其运行过程，对应于jobhistory上的task标签<br>    作业运行日志：此为用户所提交应用被yarn调度运行后所记录下的日志，对应于jobhistory上的job标签<br>    jobhisotry日志：<br>Logging库所应该具备的基本功能<br>    1 控制logging语句何时生效和何时失效。<br>    2 控制logging的输出位置。<br>    3 控制logging的输出格式。</p>
+<p>在log4j的实现中，有3个核心的类分别实现了上面所提到的logging库应该具备的基本功能。<br>他们分别是Logger，Appender和Layout。</p>
+<hr>
+<p>以下部分源引自<a href="http://baike.baidu.com/view/25347.htm?fromTaglist" target="_blank">log4j 百度百科</a>,摘录下来备忘：</p>
+<p>Log4j支持两种配置文件格式，一种是XML格式的文件，一种是Java特性文件log4j.properties（键=值）。下面将介绍使用log4j.properties文件作为配置文件的方法:</p>
+<h1 id="-914d-7f6e-6839-logger">配置根logger</h1>
+<p>Logger 负责处理日志记录的大部分操作。<br>其语法为：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="transposed_variable">log4j.</span>rootLogger = <span class="matrix">[ level ]</span> , appenderName, appenderName, …
+</pre></td></tr></table></figure>
+
+<p>其中，level 是日志记录的优先级，分为<code>OFF、FATAL、ERROR、WARN、INFO、DEBUG、ALL</code>或者自定义的级别。Log4j建议只使用四个级别，优先级从高到低分别是ERROR、WARN、INFO、DEBUG。通过在这里定义的级别，您可以控制到应用程序中相应级别的日志信息的开关。比如在这里定义了INFO级别，只有等于及高于这个级别的才进行处理，则应用程序中所有DEBUG级别的日志信息将不被打印出来。ALL:打印所有的日志，OFF：关闭所有的日志输出。 appenderName就是指定日志信息输出到哪个地方。可同时指定多个输出目的地。</p>
+<h1 id="-914d-7f6e-65e5-5fd7-4fe1-606f-8f93-51fa-76ee-7684-5730-_Appender">配置日志信息输出目的地 Appender</h1>
+<p>Appender 负责控制日志记录操作的输出。<br>其语法为：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+</pre></td><td class="code"><pre>log4j<span class="preprocessor">.appender</span><span class="preprocessor">.appenderName</span> = fully<span class="preprocessor">.qualified</span><span class="preprocessor">.name</span><span class="preprocessor">.of</span><span class="preprocessor">.appender</span><span class="preprocessor">.class</span>
+log4j<span class="preprocessor">.appender</span><span class="preprocessor">.appenderName</span><span class="preprocessor">.option</span>1 = value1
+log4j<span class="preprocessor">.appender</span><span class="preprocessor">.appenderName</span><span class="preprocessor">.optionN</span> = valueN
+</pre></td></tr></table></figure>
+
+<p>这里的appenderName为在(1)里定义的，可任意起名。<br>其中，Log4j提供的appender有以下几种：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>org<span class="preprocessor">.apache</span><span class="preprocessor">.log</span>4j<span class="preprocessor">.ConsoleAppender</span>（控制台），
+org<span class="preprocessor">.apache</span><span class="preprocessor">.log</span>4j<span class="preprocessor">.FileAppender</span>（文件），
+org<span class="preprocessor">.apache</span><span class="preprocessor">.log</span>4j<span class="preprocessor">.DailyRollingFileAppender</span>（每天产生一个日志文件），
+org<span class="preprocessor">.apache</span><span class="preprocessor">.log</span>4j<span class="preprocessor">.RollingFileAppender</span>（文件大小到达指定尺寸的时候产生一个新的文件），可通过log4j<span class="preprocessor">.appender</span><span class="preprocessor">.R</span><span class="preprocessor">.MaxFileSize</span>=<span class="number">100</span>KB设置文件大小，还可通过log4j<span class="preprocessor">.appender</span><span class="preprocessor">.R</span><span class="preprocessor">.MaxBackupIndex</span>=<span class="number">1</span>设置为保存一个备份文件。
+org<span class="preprocessor">.apache</span><span class="preprocessor">.log</span>4j<span class="preprocessor">.WriterAppender</span>（将日志信息以流格式发送到任意指定的地方）
+</pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>log4j<span class="preprocessor">.appender</span><span class="preprocessor">.stdout</span>=org<span class="preprocessor">.apache</span><span class="preprocessor">.log</span>4j<span class="preprocessor">.ConsoleAppender</span>
+</pre></td></tr></table></figure>
+
+<p>定义一个名为stdout的输出目的地，ConsoleAppender为控制台。</p>
+<h1 id="-914d-7f6e-65e5-5fd7-4fe1-606f-7684-683c-5f0f-ff08-5e03-5c40-ff09-Layout">配置日志信息的格式（布局）Layout</h1>
+<p>Layout 负责格式化Appender的输出。<br>其语法为：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+</pre></td><td class="code"><pre>log4j<span class="preprocessor">.appender</span><span class="preprocessor">.appenderName</span><span class="preprocessor">.layout</span> = fully<span class="preprocessor">.qualified</span><span class="preprocessor">.name</span><span class="preprocessor">.of</span><span class="preprocessor">.layout</span><span class="preprocessor">.class</span>
+log4j<span class="preprocessor">.appender</span><span class="preprocessor">.appenderName</span><span class="preprocessor">.layout</span><span class="preprocessor">.option</span>1 = value1
+log4j<span class="preprocessor">.appender</span><span class="preprocessor">.appenderName</span><span class="preprocessor">.layout</span><span class="preprocessor">.optionN</span> = valueN
+</pre></td></tr></table></figure>
+
+<p>其中，Log4j提供的layout有以下几种：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+</pre></td><td class="code"><pre>org<span class="preprocessor">.apache</span><span class="preprocessor">.log</span>4j<span class="preprocessor">.HTMLLayout</span>（以HTML表格形式布局），
+org<span class="preprocessor">.apache</span><span class="preprocessor">.log</span>4j<span class="preprocessor">.PatternLayout</span>（可以灵活地指定布局模式），
+org<span class="preprocessor">.apache</span><span class="preprocessor">.log</span>4j<span class="preprocessor">.SimpleLayout</span>（包含日志信息的级别和信息字符串），
+org<span class="preprocessor">.apache</span><span class="preprocessor">.log</span>4j<span class="preprocessor">.TTCCLayout</span>（包含日志产生的时间、线程、类别等等信息）
+</pre></td></tr></table></figure>
+
+<p>格式化日志信息</p>
+<p>Log4J采用类似C语言中的printf函数的打印格式格式化日志信息，打印参数如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="code"><pre><span class="tag">%<span class="title">m</span></span> 输出代码中指定的消息；
+<span class="tag">%<span class="title">M</span></span> 输出打印该条日志的方法名；
+<span class="tag">%<span class="title">p</span></span> 输出优先级，即DEBUG，INFO，WARN，ERROR，FATAL；
+<span class="tag">%<span class="title">r</span></span> 输出自应用启动到输出该log信息耗费的毫秒数；
+<span class="tag">%<span class="title">c</span></span> 输出所属的类目，通常就是所在类的全名；
+<span class="tag">%<span class="title">t</span></span> 输出产生该日志事件的线程名；
+<span class="tag">%<span class="title">n</span></span> 输出一个回车换行符，Windows平台为"rn”，Unix平台为"n”；
+<span class="tag">%<span class="title">d</span></span> 输出日志时间点的日期或时间，默认格式为ISO8601，也可以在其后指定格式，比如：%d{yyyy-MM-dd HH:mm:ss,SSS}，输出类似：2002-10-18 22:10:28,921；
+<span class="tag">%<span class="title">l</span></span> 输出日志事件的发生位置，及在代码中的行数。
+</pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/yarn/">yarn</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/yarn/">yarn</a>, <a href="/tags/hadoop/">hadoop</a>
+  </div>
+
+        <!-- Baidu Button BEGIN -->
+        <div id="bdshare" class="bdshare_t bds_tools_32 get-codes-bdshare">
+        <a class="bds_tsina"></a>
+        <a class="bds_sqq"></a>
+        <a class="bds_douban"></a>
+        <a class="bds_tqq"></a>
+        <a class="bds_qzone"></a>
+        <a class="bds_renren"></a>
+        <a class="bds_tsohu"></a>
+        <a class="bds_t163"></a>
+        <span class="bds_more"></span>
+        <a class="shareCount"></a>
+        </div>
+        <script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=6878295" ></script>
+        <script type="text/javascript" id="bdshell_js"></script>
+        <script type="text/javascript">
+        document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000)
+        </script>
+        <!-- Baidu Button END -->
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+    <!-- Duoshuo Comment BEGIN -->
+    <div class="ds-thread"></div>
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"lsmushroom"};
+    (function() {
+         var ds = document.createElement('script');
+         ds.type = 'text/javascript';ds.async = true;
+         ds.src = 'http://static.duoshuo.com/embed.js';
+         ds.charset = 'UTF-8';
+         (document.getElementsByTagName('head')[0] 
+          || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+    <!-- Duoshuo Comment END -->
+</section>
+
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="搜索">
+    <input type="hidden" name="q" value="site:lsmushroom.github.io">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">分类</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/git/">git</a><small>1</small></li>
+  
+    <li><a href="/categories/hadoop/">hadoop</a><small>1</small></li>
+  
+    <li><a href="/categories/java/">java</a><small>1</small></li>
+  
+    <li><a href="/categories/kernel/">kernel</a><small>10</small></li>
+  
+    <li><a href="/categories/vim/">vim</a><small>1</small></li>
+  
+    <li><a href="/categories/yarn/">yarn</a><small>15</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">标签</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/api/">api</a><small>1</small></li>
+  
+    <li><a href="/tags/chm/">chm</a><small>1</small></li>
+  
+    <li><a href="/tags/git/">git</a><small>1</small></li>
+  
+    <li><a href="/tags/hadoop/">hadoop</a><small>6</small></li>
+  
+    <li><a href="/tags/hexo/">hexo</a><small>1</small></li>
+  
+    <li><a href="/tags/java/">java</a><small>1</small></li>
+  
+    <li><a href="/tags/kernel/">kernel</a><small>16</small></li>
+  
+    <li><a href="/tags/pig/">pig</a><small>1</small></li>
+  
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
+    <li><a href="/tags/storm/">storm</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>1</small></li>
+  
+    <li><a href="/tags/yarn/">yarn</a><small>19</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/git/" style="font-size: 10.00px;">git</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/kernel/" style="font-size: 16.67px;">kernel</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/shell/" style="font-size: 10.00px;">shell</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
+  </div>
+</div>
+
+
+  <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=5&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=1632605594&verifier=ff6d468c&dpc=1"></iframe>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2014 Yuan Linsi
+  
+</div>
+<div class="clearfix"></div>
+</footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>

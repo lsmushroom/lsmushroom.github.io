@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>shell-command-tips | Mushroom&#39;s blog</title>
+  <title>Shell command tips | Mushroom&#39;s blog</title>
   <meta name="author" content="Yuan Linsi">
   
   <meta name="description" content="hadoop,yarn,mapreduce,linux kernel">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="shell-command-tips"/>
+  <meta property="og:title" content="Shell command tips"/>
   <meta property="og:site_name" content="Mushroom&#39;s blog"/>
 
   
@@ -55,7 +55,7 @@
 <body>
   <header id="header" class="inner"><div class="alignleft">
   <h1><a href="/">Mushroom&#39;s blog</a></h1>
-  <h2><a href="/">没时间玩，就扩大玩的定义，我玩的是技术</a></h2>
+  <h2><a href="/">入行久久，未逢敌手，专业贴膜，祖传秘方</a></h2>
 </div>
 <nav id="main-nav" class="alignright">
   <ul>
@@ -89,47 +89,17 @@
     <header>
       
         <div class="icon"></div>
-        <time datetime="2014-01-02T13:28:11.000Z"><a href="/2014/01/02/shell-command-tips/">1月 2 2014</a></time>
+        <time datetime="2013-06-18T02:34:48.000Z"><a href="/2013/06/18/shell-command-tips/">6月 18 2013</a></time>
       
       
   
-    <h1 class="title">shell-command-tips</h1>
+    <h1 class="title">Shell command tips</h1>
   
 
     </header>
     <div class="entry">
       
-        <p>shell tips<br><a id="more"></a></p>
-<ul>
-<li><p>execstack</p>
-</li>
-<li><p>vim 缩进</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-</pre></td><td class="code"><pre>[vim 自动缩进]http:<span class="regexp">//linux</span>-wiki.cn/wiki/zh-hans/Vim<span class="variable">%E4</span><span class="variable">%BB</span><span class="variable">%A3</span><span class="variable">%E7</span><span class="variable">%A0</span><span class="variable">%81</span><span class="variable">%E7</span><span class="variable">%BC</span><span class="variable">%A9</span><span class="variable">%E8</span><span class="variable">%BF</span><span class="variable">%9B</span><span class="variable">%E8</span><span class="variable">%AE</span><span class="variable">%BE</span><span class="variable">%E7</span><span class="variable">%BD</span><span class="variable">%AE</span>
-set ci       <span class="comment"># 开启cindent</span>
-set noet     <span class="comment"># 关闭expandtab</span>
-set sw=<span class="number">4</span>     <span class="comment"># shiftwidth=4</span>
-
-变量名           缩写    含义
-tabstop=X        ts      编辑时一个TAB字符占多少个空格的位置。
-shiftwidth=X     sw      使用每层缩进的空格数。
-(<span class="keyword">no</span>)expandtab    (<span class="keyword">no</span>)et  是否将输入的TAB自动展开成空格。开启后要输入TAB，需要Ctrl-V&lt;TAB&gt;
-softtabstop=X    sts     方便在开启了et后使用退格（backspace）键，每次退格将删除X个空格
-(<span class="keyword">no</span>)smarttab     (<span class="keyword">no</span>)sta 开启时，在行首按TAB将加入sw个空格，否则加入ts个空格。
-</pre></td></tr></table></figure>
-</li>
-<li><p>ss<br>ss 是一个查看当前系统中网络连接信息的利器<br>ss -n -e -m -p -i -s</p>
-</li>
+        <ul>
 <li><p>trap:</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -159,57 +129,9 @@ arg: 信号处理函数，当接收到有sigspec定义的信号时将触发有ar
 ps <span class="attribute">-U</span> <span class="variable">$USER</span> <span class="attribute">-u</span> <span class="variable">$user</span>
 仅显示指定用户的进程，可用于干掉死掉的终端
 </pre></td></tr></table></figure>
-</li>
-<li><p>here document 用法 (cat &lt;&lt; EOF)<br>Here Document 是在Linux Shell 中的一种特殊的重定向方式，它的基本的形式如下</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-</pre></td><td class="code"><pre><span class="title">cmd</span> &lt;&lt; delimiter
-<span class="type">Here</span> <span class="type">Document</span> <span class="type">Content</span>
-<span class="title">delimiter</span>
-</pre></td></tr></table></figure>
 
 </li>
 </ul>
-<p>它的作用就是将两个 delimiter 之间的内容(Here Document Content 部分) 传递给cmd 作为输入参数，delimiter可自定义，通常可用于在脚本中动态的生成新的脚本。</p>
-<p>delimiter间的内容可嵌入变量 ，其值取决于运行时的shell环境，且变量会在shell运行时被展开，重定向时会将展开后的值写入重定向文件</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-</pre></td><td class="code"><pre>A=test
-cat &lt;&lt; EOF &gt; output.sh
-<span class="built_in">echo</span> <span class="string">"This is output"</span>
-<span class="built_in">echo</span> <span class="variable">$A</span>
-EOF
-</pre></td></tr></table></figure>
-
-<p>写入output.sh将是test<br>如要禁止变量展开，可以通过在起始的 delimiter的前后添加 “ 来实现，</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-</pre></td><td class="code"><pre>A=test
-cat &lt;&lt; <span class="string">"EOF"</span> &gt; output.sh  <span class="comment">#注意引号</span>
-<span class="built_in">echo</span> <span class="string">"hello"</span>
-<span class="built_in">echo</span> <span class="variable">$A</span> 
-EOF
-</pre></td></tr></table></figure>
-
-<p>写入output.sh的将是$A</p>
-<p>&lt;&lt; 变为 &lt;&lt;-<br>Here Document 还有一个用法就是将 ‘«’ 变为 ‘«-‘。 使用 &lt;&lt;- 的唯一变化就是Here Document 的内容部分每行前面的 tab (制表符)将会被删除掉，这种用法是为了编写Here Document的时候可以将内容部分进行缩进，方便阅读代码。</p>
-<ul>
-<li><p>netstat 查看当前打开的端口及对应的进程<br>netstat -nlpt</p>
-</li>
-<li><p>expect<br>运行autoexpect -p就进入autoexpect创建的shell中，然后输入的命令交互都被记录下来，最后输入exit退出，expect脚本被保存在script.exp中。<br>下面的例子演示了通过ssh登录到一台主机然后退出。</p>
-</li>
-</ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre><span class="comment">rong@dev:~＄</span> <span class="comment">autoexpect</span> <span class="literal">-</span><span class="comment">p</span> <span class="comment">ssh</span> <span class="comment">172</span><span class="string">.</span><span class="comment">16</span><span class="string">.</span><span class="comment">24</span><span class="string">.</span><span class="comment">57</span> <span class="literal">-</span><span class="comment">lroot</span> <span class="literal">-</span><span class="comment">p3600</span>
-</pre></td></tr></table></figure>
-
 
       
     </div>
@@ -280,13 +202,17 @@ EOF
   <h3 class="title">分类</h3>
   <ul class="entry">
   
+    <li><a href="/categories/git/">git</a><small>1</small></li>
+  
+    <li><a href="/categories/hadoop/">hadoop</a><small>1</small></li>
+  
     <li><a href="/categories/java/">java</a><small>1</small></li>
   
-    <li><a href="/categories/kernel/">kernel</a><small>1</small></li>
+    <li><a href="/categories/kernel/">kernel</a><small>10</small></li>
   
     <li><a href="/categories/vim/">vim</a><small>1</small></li>
   
-    <li><a href="/categories/yarn/">yarn</a><small>8</small></li>
+    <li><a href="/categories/yarn/">yarn</a><small>15</small></li>
   
   </ul>
 </div>
@@ -301,13 +227,15 @@ EOF
   
     <li><a href="/tags/chm/">chm</a><small>1</small></li>
   
-    <li><a href="/tags/hadoop/">hadoop</a><small>4</small></li>
+    <li><a href="/tags/git/">git</a><small>1</small></li>
+  
+    <li><a href="/tags/hadoop/">hadoop</a><small>6</small></li>
   
     <li><a href="/tags/hexo/">hexo</a><small>1</small></li>
   
     <li><a href="/tags/java/">java</a><small>1</small></li>
   
-    <li><a href="/tags/kernel/">kernel</a><small>3</small></li>
+    <li><a href="/tags/kernel/">kernel</a><small>16</small></li>
   
     <li><a href="/tags/pig/">pig</a><small>1</small></li>
   
@@ -317,7 +245,7 @@ EOF
   
     <li><a href="/tags/vim/">vim</a><small>1</small></li>
   
-    <li><a href="/tags/yarn/">yarn</a><small>8</small></li>
+    <li><a href="/tags/yarn/">yarn</a><small>19</small></li>
   
   </ul>
 </div>
@@ -327,7 +255,7 @@ EOF
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/hadoop/" style="font-size: 16.67px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/kernel/" style="font-size: 13.33px;">kernel</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/shell/" style="font-size: 10.00px;">shell</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
+    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/git/" style="font-size: 10.00px;">git</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/kernel/" style="font-size: 16.67px;">kernel</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/shell/" style="font-size: 10.00px;">shell</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
   </div>
 </div>
 

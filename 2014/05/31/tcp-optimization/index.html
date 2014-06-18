@@ -1,0 +1,318 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Socket 缓冲区 | Mushroom&#39;s blog</title>
+  <meta name="author" content="Yuan Linsi">
+  
+  <meta name="description" content="hadoop,yarn,mapreduce,linux kernel">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Socket 缓冲区"/>
+  <meta property="og:site_name" content="Mushroom&#39;s blog"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Mushroom&#39;s blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<!--script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'true']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script-->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-46104206-1', 'lsmushroom.github.io');
+    ga('send', 'pageview');
+</script>
+<script type="text/javascript">
+    var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F048b20646e05afe9255eeb7c85739b79' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Mushroom&#39;s blog</a></h1>
+  <h2><a href="/">入行久久，未逢敌手，专业贴膜，祖传秘方</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+    <li><a href="/atom.xml">RSS</a></li>
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2014-05-31T14:38:14.000Z"><a href="/2014/05/31/tcp-optimization/">5月 31 2014</a></time>
+      
+      
+  
+    <h1 class="title">Socket 缓冲区</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="-5957-63a5-5b57-7f13-51b2-533a-">套接字缓冲区</h2>
+<p>每个套接字都对应着一个缓冲区，当调用write()系统调用时，kernel将从应用的缓冲区中将数据拷贝的socket的发送缓冲区中，当缓冲区中无法容纳应用本次发送的所有数据时（或是因为应用缓冲区本身就大于发送缓冲区，或是发送缓冲区中已有数据剩余空间不足），应用将被阻塞而睡眠等待，直至应用缓冲区中的数据全被拷贝至发送缓冲区中，write系统调用方返回，此时仅仅意味着应用缓冲区可被重用，但数据本身还未必被发送。</p>
+<p>TCP将取套接口缓冲区中的数据并发送给对端，在对端确认已收到数据后，本端方可将缓冲区中的数据删除，TCP将保留数据拷贝直至对端确认。（连接关闭时缓冲区中数据的处理？）</p>
+<p>TCP以MSS大小的或更小的块将数据传递给IP，同时给每个数据块安上一个TCP头部以构成TCP分节。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>MSS为最大分节大小，在连接建立时协商，是SYN包的一个选项，用于向对端TCP通告对端在每个分节中能发送的最大的TCP数据量。MSS的目的是告诉对端其重组缓冲区大小的实际值，从而避免分片，通常设置为MTU减去IP与TCP头部的固定长度，IPV4中为1460。
+</pre></td></tr></table></figure>
+
+<p>MSS是对端通告的，在对端未通告时就用536这个值（IPV4的最小重组缓冲区字节数576减去IPV4头部字节数20与TCP头部字节数20）。</p>
+<p>IP层将为每个TCP分节加上IP头以构成IP数据报，查找其宿IP地址的路由表以确定外出的接口。然后将数据报传递给相应的数据链路。IP可能在数据报传递给数据链路前将其分片。</p>
+<p>每个数据链路有一个输出队列，如果队列已满，则新到的分组将被丢弃，并沿协议栈向上返回错误，TCP将处理这个错误，并尝试重传相应的分节，应用进程并不知道这个错误。</p>
+<h2 id="-7f13-51b2-533a-5927-5c0f-8bbe-7f6e-">缓冲区大小设置</h2>
+<p>套接口缓冲区中”可用空间的”大小本身还影响着TCP通告对端的窗口大小，TCP套接口接收缓冲区不可能溢出，因为不允许对端发出超过本端所通告的窗口大小的数据，这就是TCP的流量控制。</p>
+<p>SO_RCVBUF和SO_SNDBUF选项可用于查看或设置套接口缓冲区大小。由于TCP的窗口大小是在连接建立时用SYN与对端互换得到的，由此client端与server端需在连接建立前查看或者设置套接口缓冲区的大小。具体的，对client端而言，需在调用connect()系统调用前，而server端在调用listen()前给监听套接字设置，由accept()系统调用返回的已连接套接字将继承自listen套接字。</p>
+<h1 id="BDP">BDP</h1>
+<p>在了解了如何设置套接字缓冲区后，随之而来的问题是缓冲区到底该设置多大呢？<br>一个网络连接，可被视为一个管道，带宽为管道的直径，而RTT即为管道的长度，BDP(Bandwidth-Delay Product)带宽-时延积即描述了管道的容量。<br>BDP:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>The delay-bandwidth product <span class="operator">of</span> <span class="operator">a</span> transmission path defines <span class="operator">the</span> amount <span class="operator">of</span> data TCP should have <span class="operator">within</span> <span class="operator">the</span> transmission path <span class="keyword">at</span> <span class="keyword">any</span> <span class="constant">one</span> <span class="built_in">time</span>, <span class="operator">in</span> order <span class="built_in">to</span> fully utilize <span class="operator">the</span> available channel capacity.
+</pre></td></tr></table></figure>
+
+<p>BDP 给出了一种简单的方法来计算理论上最优的 TCP socket 缓冲区大小(其中保存了排队等待传输和等待应用程序接收的数据)。如果缓冲区太小，那么 TCP 窗口就不能完全打开，这会对性能造成限制。如果缓冲区太大，那么宝贵的内存资源就会造成浪费。如果您设置的缓冲区大小正好合适，那么就可以完全利用可用的带宽。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="setting">BDP=<span class="value">带宽*RTT</span></span>
+</pre></td></tr></table></figure>
+
+<p>由于TCP头部窗口规模字段只占16位，当BDP大小超过64kb时，可考虑在建立连接前通过设置窗口规模选项使用长胖管道选项。</p>
+<h2 id="-7cfb-7edf-914d-7f6e-">系统配置</h2>
+<p>以上这些配置在2.6.7版本的内核后不再需要劳心的去逐一检查配置，kernel中提供了协议栈自动调优功能：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="title">cat</span> /<span class="keyword">proc</span>/sys/net/ipv4/tcp_moderate_rcvbuf
+</pre></td></tr></table></figure>
+
+<p>kernel中读写缓存：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+</pre></td><td class="code"><pre><span class="variable">$ </span>cat /proc/sys/net/ipv4/tcp_rmem
+<span class="number">4096</span> <span class="number">87380</span> <span class="number">4194304</span>
+<span class="variable">$ </span>cat /proc/sys/net/ipv4/tcp_wmem
+<span class="number">4096</span> <span class="number">16384</span> <span class="number">4194304</span>
+</pre></td></tr></table></figure>
+
+<p>应用可申请的最大读写缓存：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+</pre></td><td class="code"><pre><span class="variable">$ </span>cat /proc/sys/net/core/rmem_max
+<span class="number">124928</span>
+<span class="variable">$ </span>cat /proc/sys/net/core/wmem_max
+<span class="number">124928</span>
+</pre></td></tr></table></figure>
+
+<p>参考：<br><a href="http://lonesysadmin.net/2013/12/19/account-bandwidth-delay-product-larger-network-buffers/" target="_blank">Account for the Bandwidth-Delay Product with Larger Network Buffers</a><br><a href="http://sandilands.info/sgordon/impact-of-bandwidth-delay-product-on-tcp-throughput" target="_blank">Impact of Bandwidth Delay Product on TCP Throughput</a></p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/kernel/">kernel</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/kernel/">kernel</a>
+  </div>
+
+        <!-- Baidu Button BEGIN -->
+        <div id="bdshare" class="bdshare_t bds_tools_32 get-codes-bdshare">
+        <a class="bds_tsina"></a>
+        <a class="bds_sqq"></a>
+        <a class="bds_douban"></a>
+        <a class="bds_tqq"></a>
+        <a class="bds_qzone"></a>
+        <a class="bds_renren"></a>
+        <a class="bds_tsohu"></a>
+        <a class="bds_t163"></a>
+        <span class="bds_more"></span>
+        <a class="shareCount"></a>
+        </div>
+        <script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=6878295" ></script>
+        <script type="text/javascript" id="bdshell_js"></script>
+        <script type="text/javascript">
+        document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000)
+        </script>
+        <!-- Baidu Button END -->
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+    <!-- Duoshuo Comment BEGIN -->
+    <div class="ds-thread"></div>
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"lsmushroom"};
+    (function() {
+         var ds = document.createElement('script');
+         ds.type = 'text/javascript';ds.async = true;
+         ds.src = 'http://static.duoshuo.com/embed.js';
+         ds.charset = 'UTF-8';
+         (document.getElementsByTagName('head')[0] 
+          || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+    <!-- Duoshuo Comment END -->
+</section>
+
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="搜索">
+    <input type="hidden" name="q" value="site:lsmushroom.github.io">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">分类</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/git/">git</a><small>1</small></li>
+  
+    <li><a href="/categories/hadoop/">hadoop</a><small>1</small></li>
+  
+    <li><a href="/categories/java/">java</a><small>1</small></li>
+  
+    <li><a href="/categories/kernel/">kernel</a><small>10</small></li>
+  
+    <li><a href="/categories/vim/">vim</a><small>1</small></li>
+  
+    <li><a href="/categories/yarn/">yarn</a><small>15</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">标签</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/api/">api</a><small>1</small></li>
+  
+    <li><a href="/tags/chm/">chm</a><small>1</small></li>
+  
+    <li><a href="/tags/git/">git</a><small>1</small></li>
+  
+    <li><a href="/tags/hadoop/">hadoop</a><small>6</small></li>
+  
+    <li><a href="/tags/hexo/">hexo</a><small>1</small></li>
+  
+    <li><a href="/tags/java/">java</a><small>1</small></li>
+  
+    <li><a href="/tags/kernel/">kernel</a><small>16</small></li>
+  
+    <li><a href="/tags/pig/">pig</a><small>1</small></li>
+  
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
+    <li><a href="/tags/storm/">storm</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>1</small></li>
+  
+    <li><a href="/tags/yarn/">yarn</a><small>19</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/git/" style="font-size: 10.00px;">git</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/kernel/" style="font-size: 16.67px;">kernel</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/shell/" style="font-size: 10.00px;">shell</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
+  </div>
+</div>
+
+
+  <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=5&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=1632605594&verifier=ff6d468c&dpc=1"></iframe>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2014 Yuan Linsi
+  
+</div>
+<div class="clearfix"></div>
+</footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>

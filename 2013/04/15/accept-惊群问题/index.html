@@ -55,7 +55,7 @@
 <body>
   <header id="header" class="inner"><div class="alignleft">
   <h1><a href="/">Mushroom&#39;s blog</a></h1>
-  <h2><a href="/">没时间玩，就扩大玩的定义，我玩的是技术</a></h2>
+  <h2><a href="/">入行久久，未逢敌手，专业贴膜，祖传秘方</a></h2>
 </div>
 <nav id="main-nav" class="alignright">
   <ul>
@@ -129,7 +129,9 @@ U<span class="title">ser</span> <span class="title">programs</span> <span class=
 <p>Kernel中通过用户态传入的系统调用号调用相关的系统调用，对listen() 与 accept() 将分别调用 sys_listen() 和 sys_accept4()</p>
 <p>对accept() 而言，其将从listen系统调用接受的连接的队列中(struct inet_connection_sock-&gt;isck_accept_queue.listen_sock-&gt;syn_table)取一个连接，并建立一个新的socket，把这个连接(struct request_sock)赋给这个新的sokcet，此后，该连接就由这个新的socket负责与对端进行通讯。</p>
 <p>inet_csk_accept()函数中将首先检查等待连接的队列是否为空，若为空则表示当前还没有收到顺利经过三次握手而建立的连接请求，若已经加listenfd设置O_NONBLOCK 非阻塞标志，则将立即返回并将errno设置为-EAGAIN，否则将调用inet_csk_wait_for_connect()。</p>
-<p>inet_csk_wait_for_connect()将完成accept()的阻塞等待，其核心是通过定义一等待队列项，将当前调用accept()系统调用的进程挂至listernfd 的sk-&gt;sk_sleep等待队列上，当有完成三次握手而成功建立的连接时将尝试唤醒挂在此等待队列上的进程。当有多个进程同时accept()同一个listenfd时，亦即有多个进程同时挂载同一listenfd的sk-&gt;sk_sleep等待队列上时，唤醒时将仅唤醒一个，未被唤醒的将继续睡眠等待下一次事件的到来，多个等待的进程将依次顺序被唤醒，而保证这一点的关键为inet_csk_wait_for_connect()中创建的等待队列项设置了WQ_FLAG_EXCLUSIVE标志项，kernel中的等待队列机制将保证对所有设置了WQ_FLAG_EXCLUSIVE标志的等待队列项，等待的同一事件发生时将仅唤醒一个进程。</p>
+<p>inet_csk_wait_for_connect()将完成accept()的阻塞等待，其核心是通过定义一等待队列项，将当前调用accept()系统调用的进程挂至listernfd 的sk-&gt;sk_sleep等待队列上，当有完成三次握手而成功建立的连接时将尝试唤醒挂在此等待队列上的进程。</p>
+<p>当收到客户端的ACK后，会经过如下调用来唤醒：<br>tcp_v4_rcv<br>    —&gt;tcp_v4_do_rcv<br>        —&gt;tcp_child_process<br>            —&gt;sock_def_readable<br>                —&gt;wake_up_interruptible_sync_poll<br>                    —&gt;<strong>wake_up_sync_key<br>                        —&gt;</strong>wake_up_common</p>
+<p>而当有多个进程同时accept()同一个listenfd时，亦即有多个进程同时挂载同一listenfd的sk-&gt;sk_sleep等待队列上时，唤醒时将仅唤醒一个，未被唤醒的将继续睡眠等待下一次事件的到来，多个等待的进程将依次顺序被唤醒，而保证这一点的关键为inet_csk_wait_for_connect()中创建的等待队列项设置了WQ_FLAG_EXCLUSIVE标志项，kernel中的等待队列机制将保证对所有设置了WQ_FLAG_EXCLUSIVE标志的等待队列项，等待的同一事件发生时将仅唤醒一个进程。</p>
 <p>由此用户态代码可放心的起多个进程同时accept() ,内核可保证各个连接均能被进程正确的处理且事件将被均匀的分发至各个进程处理。</p>
 <p>Done. :)</p>
 
@@ -202,13 +204,17 @@ U<span class="title">ser</span> <span class="title">programs</span> <span class=
   <h3 class="title">分类</h3>
   <ul class="entry">
   
+    <li><a href="/categories/git/">git</a><small>1</small></li>
+  
+    <li><a href="/categories/hadoop/">hadoop</a><small>1</small></li>
+  
     <li><a href="/categories/java/">java</a><small>1</small></li>
   
-    <li><a href="/categories/kernel/">kernel</a><small>1</small></li>
+    <li><a href="/categories/kernel/">kernel</a><small>10</small></li>
   
     <li><a href="/categories/vim/">vim</a><small>1</small></li>
   
-    <li><a href="/categories/yarn/">yarn</a><small>8</small></li>
+    <li><a href="/categories/yarn/">yarn</a><small>15</small></li>
   
   </ul>
 </div>
@@ -223,13 +229,15 @@ U<span class="title">ser</span> <span class="title">programs</span> <span class=
   
     <li><a href="/tags/chm/">chm</a><small>1</small></li>
   
-    <li><a href="/tags/hadoop/">hadoop</a><small>4</small></li>
+    <li><a href="/tags/git/">git</a><small>1</small></li>
+  
+    <li><a href="/tags/hadoop/">hadoop</a><small>6</small></li>
   
     <li><a href="/tags/hexo/">hexo</a><small>1</small></li>
   
     <li><a href="/tags/java/">java</a><small>1</small></li>
   
-    <li><a href="/tags/kernel/">kernel</a><small>3</small></li>
+    <li><a href="/tags/kernel/">kernel</a><small>16</small></li>
   
     <li><a href="/tags/pig/">pig</a><small>1</small></li>
   
@@ -239,7 +247,7 @@ U<span class="title">ser</span> <span class="title">programs</span> <span class=
   
     <li><a href="/tags/vim/">vim</a><small>1</small></li>
   
-    <li><a href="/tags/yarn/">yarn</a><small>8</small></li>
+    <li><a href="/tags/yarn/">yarn</a><small>19</small></li>
   
   </ul>
 </div>
@@ -249,7 +257,7 @@ U<span class="title">ser</span> <span class="title">programs</span> <span class=
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/hadoop/" style="font-size: 16.67px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/kernel/" style="font-size: 13.33px;">kernel</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/shell/" style="font-size: 10.00px;">shell</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
+    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/git/" style="font-size: 10.00px;">git</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/kernel/" style="font-size: 16.67px;">kernel</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/shell/" style="font-size: 10.00px;">shell</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
   </div>
 </div>
 

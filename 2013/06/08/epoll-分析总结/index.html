@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>epoll 分析总结 | Mushroom&#39;s blog</title>
+  <title>epoll 惊群问题 | Mushroom&#39;s blog</title>
   <meta name="author" content="Yuan Linsi">
   
   <meta name="description" content="hadoop,yarn,mapreduce,linux kernel">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="epoll 分析总结"/>
+  <meta property="og:title" content="epoll 惊群问题"/>
   <meta property="og:site_name" content="Mushroom&#39;s blog"/>
 
   
@@ -55,7 +55,7 @@
 <body>
   <header id="header" class="inner"><div class="alignleft">
   <h1><a href="/">Mushroom&#39;s blog</a></h1>
-  <h2><a href="/">没时间玩，就扩大玩的定义，我玩的是技术</a></h2>
+  <h2><a href="/">入行久久，未逢敌手，专业贴膜，祖传秘方</a></h2>
 </div>
 <nav id="main-nav" class="alignright">
   <ul>
@@ -93,13 +93,13 @@
       
       
   
-    <h1 class="title">epoll 分析总结</h1>
+    <h1 class="title">epoll 惊群问题</h1>
   
 
     </header>
     <div class="entry">
       
-        <h2 id="-591a-4e2a-8fdb-7a0b-540c-65f6-6267-884c-epoll_wait-28-29-662f-5426-4f1a-89e6-53d1-60ca-7fa4-95ee-9898-ff1f-5185-6838-662f-5982-4f55-89e3-51b3-ff1f-">多个进程同时执行epoll_wait()是否会触发惊群问题？内核是如何解决？</h2>
+        <p>多个进程同时执行epoll_wait()是否会触发惊群问题？</p>
 <p>惊群问题其实是内核中早已有并有对应的应对办法的问题。对epoll而言，其关键就在以下几行代码：<br><a id="more"></a></p>
 <p>ep_poll():</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
@@ -166,7 +166,6 @@ static void __wake_up_common(wait_queue_head_t *q, unsigned int mode,
 </pre></td></tr></table></figure>
 
 <p>基于以上的分析，对于每一个调用epoll_wait()的进程/线程，kernel中在创建等待队列项时均设置了WQ_FLAG_EXCLUSIVE标志，由此保证了多个进程同时wait时不会有惊群问题，同时也可自动完成事件在多个进程的平均分配。</p>
-<h2 id="epoll_-662f-7ebf-7a0b-5b89-5168-7684-5417-ff1f-">epoll 是线程安全的吗？</h2>
 
       
     </div>
@@ -237,13 +236,17 @@ static void __wake_up_common(wait_queue_head_t *q, unsigned int mode,
   <h3 class="title">分类</h3>
   <ul class="entry">
   
+    <li><a href="/categories/git/">git</a><small>1</small></li>
+  
+    <li><a href="/categories/hadoop/">hadoop</a><small>1</small></li>
+  
     <li><a href="/categories/java/">java</a><small>1</small></li>
   
-    <li><a href="/categories/kernel/">kernel</a><small>1</small></li>
+    <li><a href="/categories/kernel/">kernel</a><small>10</small></li>
   
     <li><a href="/categories/vim/">vim</a><small>1</small></li>
   
-    <li><a href="/categories/yarn/">yarn</a><small>8</small></li>
+    <li><a href="/categories/yarn/">yarn</a><small>15</small></li>
   
   </ul>
 </div>
@@ -258,13 +261,15 @@ static void __wake_up_common(wait_queue_head_t *q, unsigned int mode,
   
     <li><a href="/tags/chm/">chm</a><small>1</small></li>
   
-    <li><a href="/tags/hadoop/">hadoop</a><small>4</small></li>
+    <li><a href="/tags/git/">git</a><small>1</small></li>
+  
+    <li><a href="/tags/hadoop/">hadoop</a><small>6</small></li>
   
     <li><a href="/tags/hexo/">hexo</a><small>1</small></li>
   
     <li><a href="/tags/java/">java</a><small>1</small></li>
   
-    <li><a href="/tags/kernel/">kernel</a><small>3</small></li>
+    <li><a href="/tags/kernel/">kernel</a><small>16</small></li>
   
     <li><a href="/tags/pig/">pig</a><small>1</small></li>
   
@@ -274,7 +279,7 @@ static void __wake_up_common(wait_queue_head_t *q, unsigned int mode,
   
     <li><a href="/tags/vim/">vim</a><small>1</small></li>
   
-    <li><a href="/tags/yarn/">yarn</a><small>8</small></li>
+    <li><a href="/tags/yarn/">yarn</a><small>19</small></li>
   
   </ul>
 </div>
@@ -284,7 +289,7 @@ static void __wake_up_common(wait_queue_head_t *q, unsigned int mode,
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/hadoop/" style="font-size: 16.67px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/kernel/" style="font-size: 13.33px;">kernel</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/shell/" style="font-size: 10.00px;">shell</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
+    <a href="/tags/api/" style="font-size: 10.00px;">api</a><a href="/tags/chm/" style="font-size: 10.00px;">chm</a><a href="/tags/git/" style="font-size: 10.00px;">git</a><a href="/tags/hadoop/" style="font-size: 13.33px;">hadoop</a><a href="/tags/hexo/" style="font-size: 10.00px;">hexo</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/kernel/" style="font-size: 16.67px;">kernel</a><a href="/tags/pig/" style="font-size: 10.00px;">pig</a><a href="/tags/shell/" style="font-size: 10.00px;">shell</a><a href="/tags/storm/" style="font-size: 10.00px;">storm</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/yarn/" style="font-size: 20.00px;">yarn</a>
   </div>
 </div>
 
