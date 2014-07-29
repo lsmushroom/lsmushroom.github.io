@@ -55,7 +55,7 @@
 <body>
   <header id="header" class="inner"><div class="alignleft">
   <h1><a href="/">Mushroom&#39;s blog</a></h1>
-  <h2><a href="/">入行久久，未逢敌手，专业贴膜，祖传秘方</a></h2>
+  <h2><a href="/">吾尝终日而思矣，不如须臾之所学也</a></h2>
 </div>
 <nav id="main-nav" class="alignright">
   <ul>
@@ -409,7 +409,7 @@ union thread_union {
 };
 </pre></td></tr></table></figure>
 
-<p>当进程陷入内核时将使用内核态的堆栈，thread_info被置于内存区的开始的位置，而内核栈从高地址向低地址方向增长。由于thread_info置于内存区的开始位置，可以很方便获得其地址，对当前在CPU上执行指令的进程来说，内核可屏蔽掉esp指针的低13位即可获得（8k=2^13）,而thread_info结构的收个元素为进程描述符，直接对thread_info的地址做解引用即可获得当前进程的进程描述符，此及current宏的实现方式。</p>
+<p>当进程陷入内核时将使用内核态的堆栈，thread_info被置于内存区的开始的位置，而内核栈从高地址向低地址方向增长。由于thread_info置于内存区的开始位置，可以很方便获得其地址，对当前在CPU上执行指令的进程来说，内核可屏蔽掉esp指针的低13位即可获得（8k=2^13）,而thread_info结构的首个元素为进程描述符，直接对thread_info的地址做解引用即可获得当前进程的进程描述符，此及current宏的实现方式。</p>
 <h3 id="-786c-4ef6-4e0a-4e0b-6587-">硬件上下文</h3>
 <p>进程描述符中包含一个struct thread_struct thread结构体，其作用就在于当进程切换时用以保存硬件寄存器中的信息</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1

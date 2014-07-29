@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title><![CDATA[Mushroom's blog]]></title>
-  <subtitle><![CDATA[入行久久，未逢敌手，专业贴膜，祖传秘方]]></subtitle>
+  <subtitle><![CDATA[吾尝终日而思矣，不如须臾之所学也]]></subtitle>
   <link href="http://lsmushroom.github.io/atom.xml" rel="self"/>
   <link href="http://lsmushroom.github.io"/>
-  <updated>2014-06-18T03:07:59.960Z</updated>
+  <updated>2014-07-29T00:55:35.325Z</updated>
   <id>http://lsmushroom.github.io/</id>
   <author>
     <name><![CDATA[Yuan Linsi]]></name>
@@ -670,141 +670,6 @@ check_preempt_tick(struct cfs_rq *cfs_rq, struct sched_entity *curr)
 ]]></content>
     <category scheme="http://lsmushroom.github.io/tags/kernel/" term="kernel"/>
     <category scheme="http://lsmushroom.github.io/categories/kernel/" term="kernel"/>
-  </entry>
-  <entry>
-    <title type="html"><![CDATA[Yarn counter]]></title>
-    <link href="http://lsmushroom.github.io/2014/06/09/yarn-counter/"/>
-    <id>http://lsmushroom.github.io/2014/06/09/yarn-counter/</id>
-    <published>2014-06-09T12:02:41.000Z</published>
-    <updated>2014-06-09T12:11:12.000Z</updated>
-    <content type="html"><![CDATA[<p>更新进程资源使用统计,</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-</pre></td><td class="code"><pre>  <span class="comment">/**
-   * Construct the ProcessInfo using the process' PID and procfs rooted at the
-   * specified directory and return the same. It is provided mainly to assist
-   * testing purposes.
-   *
-   * Returns null on failing to read from procfs,
-   *
-   * @param pinfo ProcessInfo that needs to be updated
-   * @param procfsDir root of the proc file system
-   * @return updated ProcessInfo, null on errors.
-   */</span>
-  private static ProcessInfo constructProcessInfo(ProcessInfo pinfo,
-                                                    String procfsDir) {
-    ProcessInfo <span class="keyword">ret</span> = null<span class="comment">;</span>
-    // Read <span class="string">"procfsDir/&lt;pid&gt;/stat"</span> file - typically /proc/&lt;pid&gt;/stat
-    BufferedReader <span class="keyword">in</span> = null<span class="comment">;</span>
-    FileReader fReader = null<span class="comment">;</span>
-    try {
-      File pidDir = new File(procfsDir, pinfo<span class="preprocessor">.getPid</span>())<span class="comment">;</span>
-      fReader = new FileReader(new File(pidDir, PROCFS_STAT_FILE))<span class="comment">;</span>
-      <span class="keyword">in</span> = new BufferedReader(fReader)<span class="comment">;</span>
-    } catch (FileNotFoundException f) {
-      // The process vanished <span class="keyword">in</span> the interim!
-      return <span class="keyword">ret</span><span class="comment">;</span>
-    }
-
-    <span class="keyword">ret</span> = pinfo<span class="comment">;</span>
-    try {
-      String str = <span class="keyword">in</span><span class="preprocessor">.readLine</span>()<span class="comment">; // only one line</span>
-      Matcher m = PROCFS_STAT_FILE_FORMAT<span class="preprocessor">.matcher</span>(str)<span class="comment">;</span>
-      boolean mat = m<span class="preprocessor">.find</span>()<span class="comment">;</span>
-      if (mat) {
-        // <span class="keyword">Set</span> (name) (ppid) (pgrpId) (session) (utime) (stime) (vsize) (rss)
-        pinfo<span class="preprocessor">.updateProcessInfo</span>(m<span class="preprocessor">.group</span>(<span class="number">2</span>), m<span class="preprocessor">.group</span>(<span class="number">3</span>),
-                Integer<span class="preprocessor">.parseInt</span>(m<span class="preprocessor">.group</span>(<span class="number">4</span>)), Integer<span class="preprocessor">.parseInt</span>(m<span class="preprocessor">.group</span>(<span class="number">5</span>)),
-                Long<span class="preprocessor">.parseLong</span>(m<span class="preprocessor">.group</span>(<span class="number">7</span>)), new BigInteger(m<span class="preprocessor">.group</span>(<span class="number">8</span>)),
-                Long<span class="preprocessor">.parseLong</span>(m<span class="preprocessor">.group</span>(<span class="number">10</span>)), Long<span class="preprocessor">.parseLong</span>(m<span class="preprocessor">.group</span>(<span class="number">11</span>)))<span class="comment">;</span>
-      } else {
-        LOG<span class="preprocessor">.warn</span>(<span class="string">"Unexpected: procfs stat file is not in the expected format"</span>
-            + <span class="string">" for process with pid "</span> + pinfo<span class="preprocessor">.getPid</span>())<span class="comment">;</span>
-        <span class="keyword">ret</span> = null<span class="comment">;</span>
-      }
-    } catch (IOException io) {
-      LOG<span class="preprocessor">.warn</span>(<span class="string">"Error reading the stream "</span> + io)<span class="comment">;</span>
-      <span class="keyword">ret</span> = null<span class="comment">;</span>
-    } finally {
-      // Close the streams
-      try {
-        fReader<span class="preprocessor">.close</span>()<span class="comment">;</span>
-        try {
-          <span class="keyword">in</span><span class="preprocessor">.close</span>()<span class="comment">;</span>
-        } catch (IOException i) {
-          LOG<span class="preprocessor">.warn</span>(<span class="string">"Error closing the stream "</span> + <span class="keyword">in</span>)<span class="comment">;</span>
-        }
-      } catch (IOException i) {
-        LOG<span class="preprocessor">.warn</span>(<span class="string">"Error closing the stream "</span> + fReader)<span class="comment">;</span>
-      }
-    }
-
-    return <span class="keyword">ret</span><span class="comment">;</span>
-  }
-</pre></td></tr></table></figure>
-
-]]></content>
-    <category scheme="http://lsmushroom.github.io/tags/yarn/" term="yarn"/>
-    <category scheme="http://lsmushroom.github.io/categories/yarn/" term="yarn"/>
   </entry>
   <entry>
     <title type="html"><![CDATA[Hadoop RPC]]></title>
@@ -6278,6 +6143,141 @@ git cat<span class="attribute">-file</span> <span class="attribute">-p</span> eb
     <category scheme="http://lsmushroom.github.io/categories/git/" term="git"/>
   </entry>
   <entry>
+    <title type="html"><![CDATA[Yarn counter]]></title>
+    <link href="http://lsmushroom.github.io/2014/05/09/yarn-counter/"/>
+    <id>http://lsmushroom.github.io/2014/05/09/yarn-counter/</id>
+    <published>2014-05-09T12:02:41.000Z</published>
+    <updated>2014-06-18T03:09:49.000Z</updated>
+    <content type="html"><![CDATA[<p>更新进程资源使用统计,</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+</pre></td><td class="code"><pre>  <span class="comment">/**
+   * Construct the ProcessInfo using the process' PID and procfs rooted at the
+   * specified directory and return the same. It is provided mainly to assist
+   * testing purposes.
+   *
+   * Returns null on failing to read from procfs,
+   *
+   * @param pinfo ProcessInfo that needs to be updated
+   * @param procfsDir root of the proc file system
+   * @return updated ProcessInfo, null on errors.
+   */</span>
+  private static ProcessInfo constructProcessInfo(ProcessInfo pinfo,
+                                                    String procfsDir) {
+    ProcessInfo <span class="keyword">ret</span> = null<span class="comment">;</span>
+    // Read <span class="string">"procfsDir/&lt;pid&gt;/stat"</span> file - typically /proc/&lt;pid&gt;/stat
+    BufferedReader <span class="keyword">in</span> = null<span class="comment">;</span>
+    FileReader fReader = null<span class="comment">;</span>
+    try {
+      File pidDir = new File(procfsDir, pinfo<span class="preprocessor">.getPid</span>())<span class="comment">;</span>
+      fReader = new FileReader(new File(pidDir, PROCFS_STAT_FILE))<span class="comment">;</span>
+      <span class="keyword">in</span> = new BufferedReader(fReader)<span class="comment">;</span>
+    } catch (FileNotFoundException f) {
+      // The process vanished <span class="keyword">in</span> the interim!
+      return <span class="keyword">ret</span><span class="comment">;</span>
+    }
+
+    <span class="keyword">ret</span> = pinfo<span class="comment">;</span>
+    try {
+      String str = <span class="keyword">in</span><span class="preprocessor">.readLine</span>()<span class="comment">; // only one line</span>
+      Matcher m = PROCFS_STAT_FILE_FORMAT<span class="preprocessor">.matcher</span>(str)<span class="comment">;</span>
+      boolean mat = m<span class="preprocessor">.find</span>()<span class="comment">;</span>
+      if (mat) {
+        // <span class="keyword">Set</span> (name) (ppid) (pgrpId) (session) (utime) (stime) (vsize) (rss)
+        pinfo<span class="preprocessor">.updateProcessInfo</span>(m<span class="preprocessor">.group</span>(<span class="number">2</span>), m<span class="preprocessor">.group</span>(<span class="number">3</span>),
+                Integer<span class="preprocessor">.parseInt</span>(m<span class="preprocessor">.group</span>(<span class="number">4</span>)), Integer<span class="preprocessor">.parseInt</span>(m<span class="preprocessor">.group</span>(<span class="number">5</span>)),
+                Long<span class="preprocessor">.parseLong</span>(m<span class="preprocessor">.group</span>(<span class="number">7</span>)), new BigInteger(m<span class="preprocessor">.group</span>(<span class="number">8</span>)),
+                Long<span class="preprocessor">.parseLong</span>(m<span class="preprocessor">.group</span>(<span class="number">10</span>)), Long<span class="preprocessor">.parseLong</span>(m<span class="preprocessor">.group</span>(<span class="number">11</span>)))<span class="comment">;</span>
+      } else {
+        LOG<span class="preprocessor">.warn</span>(<span class="string">"Unexpected: procfs stat file is not in the expected format"</span>
+            + <span class="string">" for process with pid "</span> + pinfo<span class="preprocessor">.getPid</span>())<span class="comment">;</span>
+        <span class="keyword">ret</span> = null<span class="comment">;</span>
+      }
+    } catch (IOException io) {
+      LOG<span class="preprocessor">.warn</span>(<span class="string">"Error reading the stream "</span> + io)<span class="comment">;</span>
+      <span class="keyword">ret</span> = null<span class="comment">;</span>
+    } finally {
+      // Close the streams
+      try {
+        fReader<span class="preprocessor">.close</span>()<span class="comment">;</span>
+        try {
+          <span class="keyword">in</span><span class="preprocessor">.close</span>()<span class="comment">;</span>
+        } catch (IOException i) {
+          LOG<span class="preprocessor">.warn</span>(<span class="string">"Error closing the stream "</span> + <span class="keyword">in</span>)<span class="comment">;</span>
+        }
+      } catch (IOException i) {
+        LOG<span class="preprocessor">.warn</span>(<span class="string">"Error closing the stream "</span> + fReader)<span class="comment">;</span>
+      }
+    }
+
+    return <span class="keyword">ret</span><span class="comment">;</span>
+  }
+</pre></td></tr></table></figure>
+
+]]></content>
+    <category scheme="http://lsmushroom.github.io/tags/yarn/" term="yarn"/>
+    <category scheme="http://lsmushroom.github.io/categories/yarn/" term="yarn"/>
+  </entry>
+  <entry>
     <title type="html"><![CDATA[内联汇编]]></title>
     <link href="http://lsmushroom.github.io/2014/05/04/内联汇编/"/>
     <id>http://lsmushroom.github.io/2014/05/04/内联汇编/</id>
@@ -6608,7 +6608,7 @@ struct sk_buff *skb_clone(struct sk_buff *skb, gfp_t gfp_mask)
     <link href="http://lsmushroom.github.io/2014/04/18/process-manager/"/>
     <id>http://lsmushroom.github.io/2014/04/18/process-manager/</id>
     <published>2014-04-18T02:34:31.000Z</published>
-    <updated>2014-06-18T02:59:31.000Z</updated>
+    <updated>2014-07-28T07:15:11.000Z</updated>
     <content type="html"><![CDATA[<h3 id="PID_namespace_-7684-521b-5efa-">PID namespace 的创建</h3>
 <p>copy_process()<br>    —&gt; copy_namespaces()<br>        —&gt; create_new_namespaces()<br>            —&gt; copy_pid_ns()<br>                —&gt; create_pid_namespace()</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
@@ -6919,7 +6919,7 @@ union thread_union {
 };
 </pre></td></tr></table></figure>
 
-<p>当进程陷入内核时将使用内核态的堆栈，thread_info被置于内存区的开始的位置，而内核栈从高地址向低地址方向增长。由于thread_info置于内存区的开始位置，可以很方便获得其地址，对当前在CPU上执行指令的进程来说，内核可屏蔽掉esp指针的低13位即可获得（8k=2^13）,而thread_info结构的收个元素为进程描述符，直接对thread_info的地址做解引用即可获得当前进程的进程描述符，此及current宏的实现方式。</p>
+<p>当进程陷入内核时将使用内核态的堆栈，thread_info被置于内存区的开始的位置，而内核栈从高地址向低地址方向增长。由于thread_info置于内存区的开始位置，可以很方便获得其地址，对当前在CPU上执行指令的进程来说，内核可屏蔽掉esp指针的低13位即可获得（8k=2^13）,而thread_info结构的首个元素为进程描述符，直接对thread_info的地址做解引用即可获得当前进程的进程描述符，此及current宏的实现方式。</p>
 <h3 id="-786c-4ef6-4e0a-4e0b-6587-">硬件上下文</h3>
 <p>进程描述符中包含一个struct thread_struct thread结构体，其作用就在于当进程切换时用以保存硬件寄存器中的信息</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
